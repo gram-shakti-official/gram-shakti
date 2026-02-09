@@ -1,149 +1,158 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <title>Gram Shakti</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gram Shakti</title>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f2f2f2;
-    }
-    header {
-      background: #2e7d32;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-    }
-    .container {
-      padding: 15px;
-    }
-    .card {
-      background: white;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      cursor: pointer;
-    }
-    .hidden {
-      display: none;
-    }
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      font-size: 16px;
-    }
-    button {
-      background: #2e7d32;
-      color: white;
-      border: none;
-      border-radius: 5px;
-    }
-  </style>
+<style>
+body{margin:0;font-family:Arial;background:#f4f4f4}
+header{background:#2e7d32;color:#fff;padding:15px;text-align:center;font-size:20px}
+.container{padding:15px}
+.card{background:#fff;padding:15px;margin-bottom:10px;border-radius:8px;cursor:pointer}
+.hidden{display:none}
+button,input,select{width:100%;padding:10px;margin-top:10px}
+button{background:#2e7d32;color:#fff;border:none}
+.call{background:#0d47a1}
+</style>
 </head>
 
 <body>
 
-<header id="title">GRAM SHAKTI</header>
+<header>GRAM SHAKTI</header>
 
-<div class="container" id="home">
-  <div class="card" onclick="openForm('उत्तर प्रदेश')">उत्तर प्रदेश</div>
-  <div class="card" onclick="openForm('बिहार')">बिहार</div>
-  <div class="card" onclick="openForm('मध्य प्रदेश')">मध्य प्रदेश</div>
-  <div class="card" onclick="openForm('राजस्थान')">राजस्थान</div>
+<div class="container" id="locationBox">
+  <h3>गाँव चुनें</h3>
+  <div id="villageList"></div>
 </div>
 
-<div class="container hidden" id="formBox">
-  <h3 id="stateName"></h3>
-  <input type="text" id="name" placeholder="पूरा नाम">
-  <input type="tel" id="mobile" placeholder="मोबाइल नंबर">
-  <button onclick="submitForm()">रजिस्टर करें</button>
+<div class="container hidden" id="villageHome">
+  <h3 id="villageTitle"></h3>
+
+  <div class="card" onclick="openCategory('दूध')">🥛 दूध</div>
+  <div class="card" onclick="openCategory('पानी')">🚰 पानी</div>
+  <div class="card" onclick="openCategory('मजदूर')">👷 मजदूर</div>
+  <div class="card" onclick="openCategory('प्लंबर')">🔧 प्लंबर</div>
+  <div class="card" onclick="openCategory('JCB')">🚜 JCB</div>
+
+  <div class="card" onclick="openRegister()">📝 मैं काम करता हूँ</div>
 </div>
 
-<div class="container hidden" id="admin">
-  <h3>Admin Panel</h3>
-  <div id="data"></div>
+<div class="container hidden" id="categoryBox">
+  <h3 id="catTitle"></h3>
+  <div id="catList"></div>
+</div>
+
+<div class="container hidden" id="registerBox">
+  <h3>सेवा पंजीकरण</h3>
+  <input id="rName" placeholder="पूरा नाम">
+  <input id="rMobile" placeholder="मोबाइल नंबर">
+  <select id="rCat">
+    <option>दूध</option>
+    <option>पानी</option>
+    <option>मजदूर</option>
+    <option>प्लंबर</option>
+    <option>JCB</option>
+  </select>
+  <button onclick="saveWorker()">Register</button>
 </div>
 
 <script>
-  // 🔥 Firebase Config (आपका)
-  const firebaseConfig = {
-    apiKey: "AIzaSyCuvev3-jwZwQu0_fHYyv2E2ovLny4LhRQ",
-    authDomain: "gram-shakti-b135a.firebaseapp.com",
-    projectId: "gram-shakti-b135a",
-    storageBucket: "gram-shakti-b135a.firebasestorage.app",
-    messagingSenderId: "340909973482",
-    appId: "1:340909973482:web:c562cb3dd591b78de21c93"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyCuvev3-jwZwQu0_fHYyv2E2ovLny4LhRQ",
+  authDomain: "gram-shakti-b135a.firebaseapp.com",
+  projectId: "gram-shakti-b135a"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+let currentVillage = null;
 
-  let selectedState = "";
-  let adminTap = 0;
-
-  function openForm(state) {
-    selectedState = state;
-    document.getElementById("stateName").innerText = state;
-    document.getElementById("home").classList.add("hidden");
-    document.getElementById("formBox").classList.remove("hidden");
-  }
-
-  function submitForm() {
-    const name = document.getElementById("name").value;
-    const mobile = document.getElementById("mobile").value;
-
-    if (name === "" || mobile === "") {
-      alert("सभी जानकारी भरें");
-      return;
+// Load saved village (user)
+function checkUser() {
+  const mobile = prompt("मोबाइल नंबर डालें");
+  db.collection("users").doc(mobile).get().then(doc=>{
+    if(doc.exists){
+      currentVillage = doc.data().village;
+      showVillage(currentVillage);
+    }else{
+      loadVillages(mobile);
     }
+  });
+}
 
-    db.collection("registrations").add({
-      name: name,
-      mobile: mobile,
-      state: selectedState,
-      time: new Date()
-    }).then(() => {
-      alert("रजिस्ट्रेशन सफल हुआ");
-      location.reload();
+function loadVillages(mobile){
+  db.collection("villages").get().then(snap=>{
+    const box=document.getElementById("villageList");
+    box.innerHTML="";
+    snap.forEach(d=>{
+      const v=d.data().village;
+      box.innerHTML+=`<div class="card" onclick="selectVillage('${v}','${mobile}')">${v}</div>`;
     });
-  }
+  });
+}
 
-  document.getElementById("title").onclick = function () {
-    adminTap++;
-    if (adminTap === 5) {
-      showAdmin();
-    }
-  };
+function selectVillage(v,mobile){
+  db.collection("users").doc(mobile).set({village:v});
+  showVillage(v);
+}
 
-  function showAdmin() {
-    document.getElementById("home").classList.add("hidden");
-    document.getElementById("formBox").classList.add("hidden");
-    document.getElementById("admin").classList.remove("hidden");
+function showVillage(v){
+  document.getElementById("locationBox").classList.add("hidden");
+  document.getElementById("villageHome").classList.remove("hidden");
+  document.getElementById("villageTitle").innerText="📍 "+v;
+  currentVillage=v;
+}
 
-    db.collection("registrations").get().then(snapshot => {
-      let html = "";
-      snapshot.forEach(doc => {
-        const d = doc.data();
-        html += `<div class="card">
-          <b>${d.name}</b><br>
-          ${d.mobile}<br>
-          ${d.state}
+function openCategory(cat){
+  document.getElementById("villageHome").classList.add("hidden");
+  document.getElementById("categoryBox").classList.remove("hidden");
+  document.getElementById("catTitle").innerText=cat;
+
+  const list=document.getElementById("catList");
+  list.innerHTML="";
+
+  db.collection("workers")
+    .where("category","==",cat)
+    .where("village","==",currentVillage)
+    .get().then(snap=>{
+      if(snap.empty){list.innerHTML="कोई उपलब्ध नहीं";return;}
+      snap.forEach(d=>{
+        const w=d.data();
+        list.innerHTML+=`
+        <div class="card">
+          <b>${w.name}</b><br>
+          ${w.mobile}
+          <a href="tel:${w.mobile}">
+            <button class="call">📞 Call</button>
+          </a>
         </div>`;
       });
-      document.getElementById("data").innerHTML = html;
     });
-  }
+}
+
+function openRegister(){
+  document.getElementById("villageHome").classList.add("hidden");
+  document.getElementById("registerBox").classList.remove("hidden");
+}
+
+function saveWorker(){
+  db.collection("workers").add({
+    name:rName.value,
+    mobile:rMobile.value,
+    category:rCat.value,
+    village:currentVillage
+  }).then(()=>{
+    alert("रजिस्ट्रेशन सफल");
+    location.reload();
+  });
+}
+
+checkUser();
 </script>
 
 </body>
