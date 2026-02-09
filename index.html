@@ -3,223 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ग्राम शक्ति - मास्टर कंट्रोल सिस्टम</title>
+    <title>ग्राम शक्ति - डिजिटल भारत, डिजिटल गाँव</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <style>
-        .step-box { background: white; border-radius: 30px; padding: 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); margin-top: 15px; }
-        .input-style { @apply w-full p-4 rounded-2xl border-2 border-gray-100 font-bold outline-none focus:border-orange-500 bg-gray-50 mb-4 transition-all; appearance: none; }
-        .label-tag { @apply text-[10px] font-black text-gray-400 uppercase mb-1 ml-2 block tracking-widest; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.05); }
+        .btn-orange { background: linear-gradient(135deg, #FF5722 0%, #E64A19 100%); transition: all 0.3s ease; }
         .hidden { display: none !important; }
-        .btn-main { background: #FF5722; color: white; width: 100%; padding: 18px; border-radius: 18px; font-weight: 900; box-shadow: 0 8px 15px rgba(255,87,34,0.3); text-transform: uppercase; }
-        .admin-theme { background: #0f172a; color: white; }
-        .card-worker { background: #1e293b; border-left: 4px solid #f97316; padding: 15px; border-radius: 15px; margin-bottom: 10px; }
+        .input-field { @apply w-full p-4 rounded-2xl border-2 border-gray-100 bg-gray-50 font-bold focus:border-orange-500 outline-none transition-all mb-4; }
     </style>
 </head>
-<body class="bg-[#F4F7FA] font-sans">
+<body>
 
-    <header class="bg-[#FF5722] text-white p-6 shadow-xl sticky top-0 z-50 flex justify-between items-center rounded-b-[35px]">
-        <h1 class="text-2xl font-black italic tracking-tighter">ग्राम <span id="admin-gate" class="cursor-pointer">शक्ति</span></h1>
-        <div id="status-tag" class="bg-white/20 px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest">Public App</div>
-    </header>
-
-    <div id="app" class="max-w-md mx-auto p-4">
-        
-        <div id="user-flow">
-            <div id="step-1" class="step-box">
-                <h2 class="text-center font-bold text-gray-300 text-[10px] uppercase mb-6 tracking-widest italic">पंजीकरण: चरण 1</h2>
-                <label class="label-tag">अपना राज्य चुनें</label>
-                <select id="s-state" onchange="loadDists()" class="input-style">
-                    <option value="">-- चुनें --</option>
-                    <option value="34">उत्तर प्रदेश</option><option value="29">राजस्थान</option>
-                    <option value="13">हरियाणा</option><option value="5">बिहार</option>
-                    <option value="20">मध्य प्रदेश</option><option value="28">पंजाब</option>
-                    <option value="12">गुजरात</option><option value="21">महाराष्ट्र</option>
-                </select>
-                <div id="dist-area" class="hidden">
-                    <label class="label-tag">अपना जिला चुनें</label>
-                    <select id="s-dist" class="input-style"></select>
-                    <button onclick="goStep(2)" class="btn-main italic">अगला चरण ❯</button>
+    <div id="home-page" class="min-h-screen">
+        <div class="bg-orange-600 h-[350px] rounded-b-[60px] p-8 flex flex-col items-center justify-center text-white text-center shadow-2xl">
+            <h1 class="text-5xl font-black italic tracking-tighter mb-2" id="main-logo">ग्राम शक्ति</h1>
+            <p class="text-orange-100 text-xs font-bold uppercase tracking-widest">विकसित भारत की डिजिटल पहचान</p>
+            <div class="mt-8 flex gap-4">
+                <div class="bg-white/20 p-4 rounded-3xl border border-white/30 text-center">
+                    <div class="text-2xl font-black">10+</div>
+                    <div class="text-[8px] uppercase font-bold">राज्य</div>
                 </div>
-            </div>
-
-            <div id="step-2" class="step-box hidden">
-                <button onclick="goStep(1)" class="text-orange-600 font-bold text-xs mb-4">❮ वापस</button>
-                <label class="label-tag">तहसील लिखें</label>
-                <input type="text" id="i-tehsil" placeholder="तहसील का नाम" class="input-style">
-                <label class="label-tag">पंचायत का नाम</label>
-                <input type="text" id="i-panchayat" placeholder="ग्राम पंचायत" class="input-style">
-                <label class="label-tag">गाँव का नाम</label>
-                <input type="text" id="i-village" placeholder="गाँव का नाम" class="input-style">
-                <button onclick="goStep(3)" class="btn-main italic">अगला चरण ❯</button>
-            </div>
-
-            <div id="step-3" class="step-box hidden">
-                <button onclick="goStep(2)" class="text-orange-600 font-bold text-xs mb-4">❮ वापस</button>
-                <label class="label-tag">काम और बायोडाटा</label>
-                <select id="i-cat" class="input-style">
-                    <option>मिस्त्री</option><option>बिजलीवाला</option><option>नलसाज</option><option>मजदूर</option><option>पेंटर</option>
-                </select>
-                <input type="text" id="w-name" placeholder="वर्कर का नाम" class="input-style">
-                <input type="number" id="w-phone" placeholder="मोबाइल नंबर" class="input-style">
-                <button onclick="finalSubmit()" class="w-full bg-green-600 text-white py-5 rounded-2xl font-black shadow-2xl">क्लाउड में सेव करें ✅</button>
+                <div class="bg-white/20 p-4 rounded-3xl border border-white/30 text-center">
+                    <div class="text-2xl font-black">24/7</div>
+                    <div class="text-[8px] uppercase font-bold">सपोर्ट</div>
+                </div>
             </div>
         </div>
 
-        <div id="admin-section" class="hidden">
-            <div id="admin-login" class="step-box admin-theme">
-                <h2 class="text-xl font-black text-orange-500 mb-6 uppercase">Admin Portal</h2>
-                <input type="password" id="admin-pass" placeholder="एक्सेस कोड डालें" class="input-style bg-slate-800 border-slate-700 text-white">
-                <button onclick="loginAdmin()" class="btn-main">प्रवेश करें ❯</button>
-            </div>
-
-            <div id="admin-dash" class="hidden space-y-4 pb-20">
-                <div class="step-box admin-theme border-l-4 border-orange-500">
-                    <h2 id="adm-name-disp" class="text-lg font-black uppercase text-orange-400">---</h2>
-                    <p id="adm-area-disp" class="text-[10px] text-slate-400 font-bold">AREA: ---</p>
-                    <div class="flex gap-2 mt-4">
-                        <button onclick="downloadReport()" class="bg-blue-600 px-3 py-2 rounded-lg text-[10px] font-bold uppercase">रिपोर्ट डाउनलोड (Excel)</button>
-                        <button onclick="location.reload()" class="bg-red-900 px-3 py-2 rounded-lg text-[10px] font-bold uppercase">Logout</button>
+        <div class="p-6 -mt-16">
+            <div class="glass-card p-8 border border-gray-100">
+                <h2 class="text-2xl font-black text-gray-800 mb-6 border-b-4 border-orange-500 inline-block">भारत के लिए बेहतर क्यों? 🇮🇳</h2>
+                <div class="space-y-6 text-sm">
+                    <div class="flex gap-4">
+                        <div class="bg-orange-100 p-3 rounded-2xl text-xl">🚜</div>
+                        <div><h3 class="font-black">गाँव की आत्मनिर्भरता</h3><p class="text-gray-500">बिचौलियों को हटाकर वर्कर और ग्राहक को सीधे जोड़ना।</p></div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="bg-red-100 p-3 rounded-2xl text-xl">🛡️</div>
+                        <div><h3 class="font-black">रेड मार्क सुरक्षा</h3><p class="text-gray-500">गलत लोगों की तुरंत पहचान और सिस्टम से बाहर करने की सुविधा।</p></div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="bg-blue-100 p-3 rounded-2xl text-xl">📱</div>
+                        <div><h3 class="font-black">डिजिटल रिकॉर्ड</h3><p class="text-gray-500">हर पंचायत और जिले का कुशल डेटा अब एक क्लिक पर।</p></div>
                     </div>
                 </div>
-
-                <div id="super-admin-tools" class="step-box admin-theme hidden">
-                    <h3 class="text-sm font-black text-green-500 mb-4 border-b border-slate-700 pb-2 uppercase">नया हेड नियुक्त करें</h3>
-                    <input type="text" id="n-adm-name" placeholder="हेड का नाम" class="input-style bg-slate-800 text-xs h-10">
-                    <select id="n-adm-role" class="input-style bg-slate-800 text-xs h-10">
-                        <option value="STATE">State Head (राज्य प्रमुख)</option>
-                        <option value="DISTRICT">District Head (जिला प्रमुख)</option>
-                    </select>
-                    <input type="text" id="n-adm-area" placeholder="राज्य या जिला का नाम" class="input-style bg-slate-800 text-xs h-10">
-                    <input type="text" id="n-adm-pass" placeholder="नया पासवर्ड बनाएँ" class="input-style bg-slate-800 text-xs h-10">
-                    <button onclick="createNewAdmin()" class="bg-orange-600 w-full py-3 rounded-xl font-black text-xs">ज्वाइन करवाएं +</button>
-                </div>
-
-                <div id="report-list" class="space-y-3">
-                    <p class="text-center text-slate-500 text-xs italic">डेटा लोड हो रहा है...</p>
-                </div>
+                <button onclick="startFlow()" class="btn-orange w-full text-white py-5 rounded-3xl font-black text-xl shadow-xl mt-10 uppercase italic">काम शुरू करें ❯</button>
             </div>
         </div>
     </div>
 
+    <div id="user-flow" class="hidden p-6">
+        <header class="flex justify-between items-center mb-8">
+            <button onclick="location.reload()" class="text-orange-600 font-black text-xs uppercase">❮ मुख्य पेज</button>
+            <div class="text-gray-400 font-black text-[10px] uppercase tracking-widest">पंजीकरण</div>
+        </header>
+
+        <div id="reg-step-1" class="glass-card p-6">
+            <label class="text-[10px] font-black text-gray-400 uppercase mb-2 block">राज्य चुनें</label>
+            <select id="state-sel" onchange="loadDists()" class="input-field">
+                <option value="">-- चुनें --</option>
+                <option value="34">उत्तर प्रदेश</option><option value="29">राजस्थान</option><option value="13">हरियाणा</option>
+            </select>
+            <div id="dist-area" class="hidden">
+                <label class="text-[10px] font-black text-gray-400 uppercase mb-2 block mt-4">जिला चुनें</label>
+                <select id="dist-sel" class="input-field"></select>
+                <button onclick="showStep(2)" class="btn-orange w-full text-white py-4 rounded-2xl font-black uppercase">अगला चरण ❯</button>
+            </div>
+        </div>
+        </div>
+
+    <div id="admin-portal" class="hidden bg-slate-900 min-h-screen p-6 text-white">
+        <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+            <div>
+                <h2 id="adm-title" class="text-xl font-black text-orange-500 italic">---</h2>
+                <p id="adm-area" class="text-[10px] text-slate-400 uppercase">क्षेत्र: ---</p>
+            </div>
+            <button onclick="location.reload()" class="bg-red-600 px-3 py-1 rounded-lg text-[10px] font-bold">LOGOUT</button>
+        </div>
+
+        <div id="super-tools" class="hidden mb-6 bg-slate-800 p-4 rounded-3xl">
+            <h3 class="text-xs font-black text-green-400 mb-4 uppercase">नया हेड जोड़ें (Add Admin)</h3>
+            <input type="text" id="n-adm-name" placeholder="नाम" class="input-field bg-slate-700 border-none text-white h-10 text-xs">
+            <select id="n-adm-role" class="input-field bg-slate-700 border-none text-white h-10 text-xs">
+                <option value="STATE">State Head</option><option value="DISTRICT">District Head</option>
+            </select>
+            <input type="text" id="n-adm-area" placeholder="इलाका (जैसे: राजस्थान)" class="input-field bg-slate-700 border-none text-white h-10 text-xs">
+            <input type="text" id="n-adm-pass" placeholder="पासवर्ड बनाएँ" class="input-field bg-slate-700 border-none text-white h-10 text-xs">
+            <button onclick="saveNewAdmin()" class="w-full bg-blue-600 py-3 rounded-xl font-bold text-xs uppercase">ज्वाइन करवाएं +</button>
+        </div>
+
+        <div id="report-list" class="space-y-4 pb-20">
+            </div>
+    </div>
+
     <script>
-        // FIREBASE SETUP (विकाश भाई, यहाँ अपनी Config पेस्ट करें)
-        // var firebaseConfig = { ... };
-        // firebase.initializeApp(firebaseConfig);
-        // var db = firebase.database();
-
-        // USER FLOW FUNCTIONS
-        async function loadDists() {
-            const sId = document.getElementById('s-state').value;
-            const dArea = document.getElementById('dist-area');
-            const dSelect = document.getElementById('s-dist');
-            dArea.classList.remove('hidden');
-            dSelect.innerHTML = '<option>जिलें लोड हो रहे हैं...</option>';
-            const res = await fetch(`https://cdn-api.co-vin.in/api/v2/admin/location/districts/${sId}`);
-            const data = await res.json();
-            dSelect.innerHTML = '<option value="">-- जिला चुनें --</option>';
-            data.districts.forEach(d => dSelect.innerHTML += `<option value="${d.district_name}">${d.district_name}</option>`);
-        }
-
-        function goStep(n) {
-            document.querySelectorAll('#user-flow > div').forEach(d => d.classList.add('hidden'));
-            document.getElementById('step-' + n).classList.remove('hidden');
-            window.scrollTo(0,0);
-        }
-
-        function finalSubmit() {
-            const w = {
-                state: document.getElementById('s-state').options[document.getElementById('s-state').selectedIndex].text,
-                dist: document.getElementById('s-dist').value,
-                tehsil: document.getElementById('i-tehsil').value,
-                panchayat: document.getElementById('i-panchayat').value,
-                village: document.getElementById('i-village').value,
-                category: document.getElementById('i-cat').value,
-                name: document.getElementById('w-name').value,
-                phone: document.getElementById('w-phone').value
-            };
-            if(!w.name || !w.phone) return alert("नाम और नंबर भरना अनिवार्य है!");
-            db.ref('workers').push(w);
-            alert("बधाई हो! " + w.name + " का डेटा सुरक्षित सेव हो गया है।");
-            location.reload();
-        }
-
-        // ADMIN LOGIC
+        // विकाश भाई का मास्टर पासवर्ड
+        const MASTER_PASS = "Vikas0627";
         let clickCount = 0;
-        document.getElementById('admin-gate').onclick = () => {
+
+        // एडमिन पोर्टल पर जाने का गुप्त रास्ता
+        document.getElementById('main-logo').onclick = () => {
             clickCount++;
             if(clickCount === 5) {
-                document.getElementById('user-flow').classList.add('hidden');
-                document.getElementById('admin-section').classList.remove('hidden');
+                let p = prompt("एडमिन पासवर्ड:");
+                if(p === MASTER_PASS) {
+                    renderAdminDashboard({name: "विकाश (Super Admin)", role: "SUPER", area: "ALL"});
+                } else {
+                    // Firebase में चेक करें
+                    checkOtherAdmins(p);
+                }
                 clickCount = 0;
             }
         };
 
-        async function loginAdmin() {
-            const pass = document.getElementById('admin-pass').value;
-            if(pass === "Vikas0627") {
-                renderDashboard({name: "विकाश भाई", role: "SUPER", area: "ALL"});
-                return;
-            }
-            const snap = await db.ref('admins/' + pass).once('value');
-            if(snap.val()) renderDashboard(snap.val()); else alert("एक्सेस मना है!");
+        function startFlow() {
+            document.getElementById('home-page').classList.add('hidden');
+            document.getElementById('user-flow').classList.remove('hidden');
         }
 
-        function renderDashboard(adm) {
-            document.getElementById('admin-login').classList.add('hidden');
-            document.getElementById('admin-dash').classList.remove('hidden');
-            document.getElementById('adm-name-disp').innerText = adm.role + ": " + adm.name;
-            document.getElementById('adm-area-disp').innerText = "इलाका: " + adm.area;
-            if(adm.role === "SUPER") document.getElementById('super-admin-tools').classList.remove('hidden');
-
-            db.ref('workers').on('value', (s) => {
-                const list = document.getElementById('report-list');
-                list.innerHTML = "";
-                const workers = s.val();
-                for(let id in workers) {
-                    let w = workers[id];
-                    if(adm.role === "SUPER" || w.state === adm.area || w.dist === adm.area) {
-                        list.innerHTML += `<div class="card-worker">
-                            <div class="flex justify-between text-orange-400 font-black text-xs mb-1">
-                                <span>${w.dist}</span><span>${w.category}</span>
-                            </div>
-                            <div class="text-white font-bold">${w.name} - ${w.phone}</div>
-                            <div class="text-[9px] text-slate-500 mt-2 uppercase italic">${w.panchayat} | ${w.village}</div>
-                        </div>`;
-                    }
-                }
-            });
-        }
-
-        function createNewAdmin() {
-            const pass = document.getElementById('n-adm-pass').value;
-            const data = {
-                name: document.getElementById('n-adm-name').value,
-                role: document.getElementById('n-adm-role').value,
-                area: document.getElementById('n-adm-area').value
-            };
-            if(!pass || !data.name) return alert("सारी जानकारी भरें!");
-            db.ref('admins/' + pass).set(data);
-            alert("नया हेड ज्वाइन करवा दिया गया है!");
-        }
-
-        function downloadReport() {
-            db.ref('workers').once('value', (s) => {
-                const data = s.val();
-                let csv = "Name,Phone,State,District,Tehsil,Panchayat,Village,Category\n";
-                for(let id in data) {
-                    let w = data[id];
-                    csv += `${w.name},${w.phone},${w.state},${w.dist},${w.tehsil},${w.panchayat},${w.village},${w.category}\n`;
-                }
-                const blob = new Blob([csv], {type: 'text/csv'});
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.setAttribute('href', url);
-                a.setAttribute('download', 'Gram_Shakti_Report.csv');
-                a.click();
-            });
-        }
+        // ... बाकी के फंक्शन (loadDists, finalSubmit, renderAdminDashboard, redMarkSystem) यहाँ जोड़ें ...
     </script>
 </body>
 </html>
