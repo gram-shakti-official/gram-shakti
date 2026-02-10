@@ -3,202 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <title>ग्राम शक्ति - भारत के नंबर 1 गाँव के कुशल वर्कर और मिस्त्री</title>
-    <meta name="description" content="ग्राम शक्ति: अपने गाँव के भरोसेमंद मिस्त्री और वर्कर खोजें। डिजिटल भारत की नई पहचान।">
-    <meta name="keywords" content="Gram Shakti, ग्राम शक्ति, गाँव के मिस्त्री, गाँव के वर्कर, डिजिटल इंडिया, वर्कर लिस्ट">
-    
+    <title>ग्राम शक्ति | डिजिटल विलेज नेटवर्क</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap');
-        body { font-family: 'Poppins', sans-serif; background:#f0f4f8; user-select: none; } /* user-select: none से टेक्स्ट कॉपी नहीं होगा */
-        .card { background: white; padding: 20px; border-radius: 30px; margin-bottom: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
-        .hidden { display: none !important; }
-        .red-mark { border: 3px solid #ff4d4d !important; background: #fff5f5 !important; }
-        .input-style { @apply w-full p-4 rounded-2xl border-2 border-gray-100 bg-gray-50 font-bold focus:border-orange-500 outline-none mb-4; }
-        .btn-main { @apply w-full bg-orange-600 text-white py-4 rounded-2xl font-black text-lg shadow-xl active:scale-95 uppercase italic; }
+        body { font-family: 'Hind', sans-serif; background-color: #f3f4f6; }
+        .card { border-radius: 40px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); }
+        .input-style { 
+            width: 100%; padding: 15px; margin-bottom: 15px; 
+            border-radius: 15px; border: 1px solid #ddd; outline: none;
+        }
+        .btn-main {
+            width: 100%; padding: 15px; border-radius: 15px;
+            background: #ea580c; color: white; font-weight: bold;
+            text-transform: uppercase; transition: 0.3s;
+        }
+        .btn-main:active { transform: scale(0.95); }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="max-w-md mx-auto p-4">
+<body>
 
-    <header class="text-center py-6">
-        <h1 id="main-logo" class="text-4xl font-black text-orange-600 italic cursor-pointer">ग्राम शक्ति</h1>
-        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Digital Village Network</p>
+    <header class="text-center py-10">
+        <h1 class="text-6xl font-black text-orange-600 italic tracking-tight">
+            ग्राम शक्<span id="admin-trigger" class="cursor-pointer">ति</span>
+        </h1>
+        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-[5px] mt-2">
+            DIGITAL VILLAGE NETWORK
+        </p>
     </header>
 
-    <div id="search-box" class="mb-6 sticky top-2 z-50">
-        <input type="text" id="mainSearch" onkeyup="filterWorkers()" placeholder="नाम या गाँव से खोजें..." class="w-full p-4 rounded-2xl border-none shadow-2xl outline-none focus:ring-2 focus:ring-orange-500">
-    </div>
-
-    <div id="home-screen">
-        <div class="card bg-orange-600 text-white p-8 mb-6 shadow-2xl">
-            <h2 class="text-2xl font-black mb-4 italic text-center">भारत के लिए बेहतर क्यों? 🇮🇳</h2>
-            <div class="space-y-3 text-[11px] opacity-90">
-                <p>✅ <b>आत्मनिर्भर गाँव:</b> सीधे वर्कर से संपर्क।</p>
-                <p>✅ <b>सुरक्षा:</b> रेड मार्क से गलत लोगों की पहचान।</p>
-                <p>✅ <b>डिजिटल इंडिया:</b> गाँव का हुनर अब ऑनलाइन।</p>
-            </div>
-            <button onclick="startApp()" class="mt-8 bg-white text-orange-600 w-full py-4 rounded-2xl font-black text-sm uppercase">रजिस्ट्रेशन शुरू करें ❯</button>
-        </div>
-    </div>
-
-    <div id="user-flow" class="hidden card">
-        <h2 class="font-black text-orange-600 mb-6 uppercase text-sm italic">नया वर्कर पंजीकरण</h2>
-        <div id="step-1">
-            <select id="sState" onchange="loadDists()" class="input-style">
-                <option value="">-- राज्य चुनें --</option>
-                <option value="34">उत्तर प्रदेश</option><option value="29">राजस्थान</option><option value="13">हरियाणा</option>
-            </select>
-            <div id="distArea" class="hidden">
-                <select id="sDist" class="input-style"></select>
-                <button onclick="goStep2()" class="btn-main text-sm">आगे बढ़ें</button>
-            </div>
-        </div>
-        <div id="step-2" class="hidden">
-            <input id="uName" placeholder="वर्कर का नाम" class="input-style">
-            <input id="uPhone" type="number" placeholder="मोबाइल नंबर" class="input-style">
-            <input id="uVillage" placeholder="गाँव/पंचायत" class="input-style">
-            <button onclick="saveUser()" class="btn-main">सेव करें ✅</button>
-        </div>
-    </div>
-
-    <div id="workerList" class="space-y-4"></div>
-
-    <div id="admin-portal" class="hidden card bg-slate-900 text-white min-h-[500px]">
-        <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
-            <h2 id="adm-title" class="font-black text-orange-500">ADMIN</h2>
-            <button onclick="location.reload()" class="bg-red-600 px-3 py-1 rounded-lg text-[10px] font-bold">Log out</button>
-        </div>
-        <div id="admin-data-list" class="space-y-3"></div>
-    </div>
-
-    <footer class="mt-10 text-[10px] text-gray-400 text-center pb-20">
-        <p>© 2026 ग्राम शक्ति - सुरक्षित स्वदेशी नेटवर्क</p>
-    </footer>
-
-<script>
-    // 🛡️ सुरक्षा: राइट क्लिक और F12 ब्लॉक
-    document.addEventListener('contextmenu', e => e.preventDefault());
-    document.onkeydown = e => { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false; };
-
-    // 🔥 Firebase Config (अपना डेटा यहाँ भरें)
-    const firebaseConfig = { apiKey: "YOUR_KEY", authDomain: "YOUR_ID", databaseURL: "YOUR_URL", projectId: "YOUR_ID" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    const MASTER_PASS = "Vikas0627";
-    let clicks = 0;
-
-    // एडमिन एंट्री (लोगो पर 5 क्लिक)
-    document.getElementById('main-logo').onclick = () => {
-        clicks++;
-        if(clicks === 5) {
-            let p = prompt("Security Key:");
-            if(p === MASTER_PASS) showAdmin({role:"SUPER", name:"विकाश"});
-            else checkOtherAdmins(p);
-            clicks = 0;
-        }
-    };
-
-    function startApp() {
-        document.getElementById('home-screen').classList.add('hidden');
-        document.getElementById('user-flow').classList.remove('hidden');
-    }
-
-    async function loadDists() {
-        const sId = document.getElementById('sState').value;
-        document.getElementById('distArea').classList.remove('hidden');
-        const res = await fetch(`https://cdn-api.co-vin.in/api/v2/admin/location/districts/${sId}`);
-        const data = await res.json();
-        const dSel = document.getElementById('sDist');
-        dSel.innerHTML = '<option value="">-- जिला चुनें --</option>';
-        data.districts.forEach(d => dSel.innerHTML += `<option value="${d.district_name}">${d.district_name}</option>`);
-    }
-
-    function goStep2() {
-        document.getElementById('step-1').classList.add('hidden');
-        document.getElementById('step-2').classList.remove('hidden');
-    }
-
-    function saveUser() {
-        const u = {
-            name: document.getElementById('uName').value,
-            phone: document.getElementById('uPhone').value,
-            village: document.getElementById('uVillage').value,
-            state: document.getElementById('sState').options[document.getElementById('sState').selectedIndex].text,
-            dist: document.getElementById('sDist').value,
-            red: false
-        };
-        db.ref("users").push(u);
-        alert("सुरक्षित सेव हुआ!");
-        location.reload();
-    }
-
-    function filterWorkers() {
-        let input = document.getElementById('mainSearch').value.toLowerCase();
-        let cards = document.getElementsByClassName('worker-card');
-        for (let i = 0; i < cards.length; i++) {
-            let text = cards[i].innerText.toLowerCase();
-            cards[i].style.display = text.includes(input) ? "" : "none";
-        }
-    }
-
-    db.ref("users").on("value", snap => {
-        const listDiv = document.getElementById('workerList');
-        listDiv.innerHTML = "";
-        snap.forEach(child => {
-            const d = child.val();
-            const id = child.key;
-            listDiv.innerHTML += `
-                <div class="card worker-card ${d.red ? 'red-mark' : ''}">
-                    <div class="flex justify-between text-[10px] font-bold mb-2">
-                        <span class="text-orange-500 uppercase">${d.dist}</span>
-                        <span class="${d.red ? 'text-red-600' : 'text-green-600'}">${d.red ? '⚠️ BLOCKED' : '⭐ VERIFIED'}</span>
-                    </div>
-                    <h3 class="text-xl font-black">${d.name}</h3>
-                    <p class="text-blue-600 font-bold">📞 ${d.phone}</p>
-                    <p class="text-[10px] text-gray-400 mt-1 italic">📍 ${d.village}, ${d.state}</p>
-                    <div class="mt-4 flex gap-2 pt-4 border-t">
-                        <button onclick="report('${id}')" class="flex-1 text-[10px] font-black text-red-500 uppercase">शिकायत</button>
-                        <button onclick="window.location.href='tel:${d.phone}'" class="flex-1 bg-green-500 text-white py-2 rounded-xl text-[10px] font-black uppercase text-center">कॉल करें</button>
-                    </div>
-                </div>`;
-        });
-    });
-
-    function report(id) {
-        let msg = prompt("शिकायत लिखें:");
-        if(msg) db.ref("users/"+id).update({ red: true, msg: msg });
-    }
-
-    function showAdmin(adm) {
-        document.getElementById('home-screen').classList.add('hidden');
-        document.getElementById('user-flow').classList.add('hidden');
-        document.getElementById('workerList').classList.add('hidden');
-        document.getElementById('admin-portal').classList.remove('hidden');
+    <main class="max-w-md mx-auto px-4">
         
-        db.ref("users").on("value", snap => {
-            const admList = document.getElementById('admin-data-list');
-            admList.innerHTML = "";
-            snap.forEach(s => {
-                const u = s.val();
-                admList.innerHTML += `<div class="bg-slate-800 p-3 rounded-xl text-xs flex justify-between">
-                    <span>${u.name} - ${u.dist}</span>
-                    <button onclick="deleteUser('${s.key}')" class="text-red-500">DEL</button>
-                </div>`;
+        <div id="home-screen">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-black text-slate-800">मेरे गाँव की शक्ति 🏡</h2>
+                <p class="text-gray-500 text-sm">मिस्त्री और वर्कर से सीधे जुड़ें</p>
+            </div>
+
+            <div class="card bg-orange-600 text-white p-8">
+                <div class="space-y-4 text-sm">
+                    <p>✅ <b>आत्मनिर्भर गाँव:</b> सीधे वर्कर से संपर्क।</p>
+                    <p>✅ <b>सुरक्षा:</b> गलत लोगों की पहचान।</p>
+                    <p>✅ <b>डिजिटल इंडिया:</b> गाँव का हुनर अब ऑनलाइन।</p>
+                </div>
+                <button onclick="startFlow()" class="mt-10 bg-white text-orange-600 btn-main">
+                    रजिस्ट्रेशन शुरू करें ❯
+                </button>
+            </div>
+        </div>
+
+        <div id="reg-flow" class="hidden card bg-white p-8">
+            <h3 id="step-title" class="text-orange-600 font-bold mb-6 italic">स्टेप 1: अपना क्षेत्र चुनें</h3>
+            
+            <div id="step-1">
+                <select id="sState" onchange="loadDistricts()" class="input-style">
+                    <option value="">-- राज्य चुनें --</option>
+                    <option value="9">उत्तर प्रदेश</option>
+                    <option value="8">राजस्थान</option>
+                    <option value="6">हरियाणा</option>
+                    <option value="10">बिहार</option>
+                    <option value="23">मध्य प्रदेश</option>
+                    <option value="27">महाराष्ट्र</option>
+                    <option value="24">गुजरात</option>
+                    <option value="3">पंजाब</option>
+                    <option value="5">उत्तराखंड</option>
+                    <option value="22">छत्तीसगढ़</option>
+                </select>
+                <select id="sDist" class="input-style hidden" onchange="nextStep(2)"></select>
+            </div>
+
+            <div id="step-2" class="hidden">
+                <input id="uPanchayat" placeholder="अपनी पंचायत का नाम" class="input-style">
+                <input id="uVillage" placeholder="अपने गाँव का नाम" class="input-style">
+                <button onclick="nextStep(3)" class="btn-main">अगला स्टेप ❯</button>
+            </div>
+
+            <div id="step-3" class="hidden">
+                <input id="uName" placeholder="वर्कर का नाम" class="input-style">
+                <input id="uPhone" type="number" placeholder="मोबाइल नंबर" class="input-style">
+                <select id="uWork" class="input-style">
+                    <option value="">काम का प्रकार चुनें</option>
+                    <option value="Mistri">राजमिस्त्री</option>
+                    <option value="Plumber">प्लंबर</option>
+                    <option value="Electrician">इलेक्ट्रीशियन</option>
+                    <option value="Other">अन्य</option>
+                </select>
+                <button onclick="finalSubmit()" class="btn-main">सबमिट करें ✅</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // होम स्क्रीन से रजिस्ट्रेशन शुरू करना
+        function startFlow() {
+            document.getElementById('home-screen').classList.add('hidden');
+            document.getElementById('reg-flow').classList.remove('hidden');
+        }
+
+        // जिलों को लोड करना
+        async function loadDistricts() {
+            const sId = document.getElementById('sState').value;
+            const dSel = document.getElementById('sDist');
+            if(!sId) return;
+
+            dSel.classList.remove('hidden');
+            dSel.innerHTML = '<option>लोड हो रहा है...</option>';
+
+            const res = await fetch(`https://cdn-api.co-vin.in/api/v2/admin/location/districts/${sId}`);
+            const data = await res.json();
+            
+            dSel.innerHTML = '<option value="">-- जिला चुनें --</option>';
+            data.districts.forEach(d => {
+                dSel.innerHTML += `<option value="${d.district_name}">${d.district_name}</option>`;
             });
-        });
-    }
+        }
 
-    function deleteUser(id) { if(confirm("हटाएं?")) db.ref("users/"+id).remove(); }
+        // स्टेप्स बदलना
+        function nextStep(step) {
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.add('hidden');
+            document.getElementById('step-3').classList.add('hidden');
+            
+            document.getElementById('step-' + step).classList.remove('hidden');
+            document.getElementById('step-title').innerText = "स्टेप " + step + ": आगे की जानकारी भरें";
+        }
 
-    async function checkOtherAdmins(p) {
-        const s = await db.ref("admins/"+p).once('value');
-        if(s.val()) showAdmin(s.val()); else alert("एक्सेस मना है!");
-    }
-</script>
+        // फाइनल सबमिट (Firebase से जोड़ें)
+        function finalSubmit() {
+            const name = document.getElementById('uName').value;
+            if(name) {
+                alert("बधाई हो " + name + "! आपका पंजीकरण ग्राम शक्ति में हो गया है।");
+                location.reload();
+            } else {
+                alert("कृपया पूरी जानकारी भरें");
+            }
+        }
+
+        // 'ति' के पीछे छिपा एडमिन पैनल (5 क्लिक पर खुलेगा)
+        let clicks = 0;
+        document.getElementById('admin-trigger').onclick = () => {
+            clicks++;
+            if(clicks === 5) {
+                let pass = prompt("एडमिन सुरक्षा कोड डालें:");
+                if(pass === "Vikas0627") {
+                    alert("एडमिन पैनल खुल रहा है...");
+                    // यहाँ अपने एडमिन पेज का लिंक डाल सकते हैं
+                }
+                clicks = 0;
+            }
+            setTimeout(() => { clicks = 0; }, 2000);
+        };
+    </script>
 </body>
 </html>
