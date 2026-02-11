@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gram Shakti | Final App</title>
+    <title>Gram Shakti | 10 States & Admin Hierarchy</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -13,16 +13,22 @@
 
     <style>
         body { font-family: 'Hind', sans-serif; background-color: #f8fafc; }
-        .state-card { height: 110px; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 16px; color: white; font-weight: 700; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .state-card { height: 100px; cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 16px; color: white; font-weight: 700; transition: 0.3s; text-align: center; padding: 10px; font-size: 14px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .state-card:active { transform: scale(0.95); }
         
-        /* Gradients */
-        .grad-1 { background: linear-gradient(135deg, #FF512F, #DD2476); }
-        .grad-2 { background: linear-gradient(135deg, #4776E6, #8E54E9); }
-        .grad-3 { background: linear-gradient(135deg, #00b09b, #96c93d); }
-        .grad-4 { background: linear-gradient(135deg, #f857a6, #ff5858); }
-        
-        .admin-box { background: #fff; border: 1px solid #e2e8f0; border-left: 5px solid #1a1a1a; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        /* 10 Different Gradients */
+        .g1 { background: linear-gradient(135deg, #FF512F, #DD2476); }
+        .g2 { background: linear-gradient(135deg, #4776E6, #8E54E9); }
+        .g3 { background: linear-gradient(135deg, #00b09b, #96c93d); }
+        .g4 { background: linear-gradient(135deg, #f857a6, #ff5858); }
+        .g5 { background: linear-gradient(135deg, #1D2671, #C33764); }
+        .g6 { background: linear-gradient(135deg, #1fa2ff, #12d8fa); }
+        .g7 { background: linear-gradient(135deg, #f7971e, #ffd200); }
+        .g8 { background: linear-gradient(135deg, #606c88, #3f4c6b); }
+        .g9 { background: linear-gradient(135deg, #000428, #004e92); }
+        .g10 { background: linear-gradient(135deg, #7b4397, #dc2430); }
+
+        .admin-box { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 5px solid #1a1a1a; }
         input { border: 1px solid #e2e8f0; padding: 12px; border-radius: 10px; width: 100%; margin-top: 8px; outline: none; }
         .btn-main { background: #ea580c; color: white; padding: 12px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 15px; }
     </style>
@@ -47,7 +53,7 @@
             <span class="text-[10px] font-bold">Home</span>
         </button>
         <button class="flex flex-col items-center text-gray-300">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
             <span class="text-[10px] font-bold">Workers</span>
         </button>
     </nav>
@@ -69,7 +75,7 @@ const db = firebase.database();
 let selected = { state: "", district: "", panchayat: "", village: "" };
 let isAdminMode = false;
 
-// --- ADMIN HIDDEN ACCESS ---
+// Admin Password Trigger
 let timer;
 document.getElementById("adminLogo").addEventListener("mousedown", () => {
     timer = setTimeout(() => {
@@ -83,17 +89,24 @@ document.getElementById("adminLogo").addEventListener("mousedown", () => {
 });
 document.getElementById("adminLogo").addEventListener("mouseup", () => clearTimeout(timer));
 
-// --- 1. STATES VIEW ---
+// --- 1. 10 STATES VIEW ---
 function showStates() {
-    document.getElementById("app").innerHTML = `
-        <h2 class="text-2xl font-black mb-5 text-gray-800">Select State ${isAdminMode ? '(Admin)' : ''}</h2>
-        <div class="grid grid-cols-2 gap-4">
-            <div class="state-card grad-1" onclick="pickState('Uttar Pradesh')">Uttar Pradesh</div>
-            <div class="state-card grad-2" onclick="pickState('Bihar')">Bihar</div>
-            <div class="state-card grad-3" onclick="pickState('Madhya Pradesh')">Madhya Pradesh</div>
-            <div class="state-card grad-4" onclick="pickState('Rajasthan')">Rajasthan</div>
-        </div>
-    `;
+    const states = [
+        {n: 'Uttar Pradesh', c: 'g1'}, {n: 'Bihar', c: 'g2'}, 
+        {n: 'Madhya Pradesh', c: 'g3'}, {n: 'Rajasthan', c: 'g4'},
+        {n: 'Gujarat', c: 'g5'}, {n: 'Punjab', c: 'g6'}, 
+        {n: 'Haryana', c: 'g7'}, {n: 'Maharashtra', c: 'g8'},
+        {n: 'West Bengal', c: 'g9'}, {n: 'Karnataka', c: 'g10'}
+    ];
+
+    let html = `<h2 class="text-2xl font-black mb-5 text-gray-800">Select State ${isAdminMode ? '(Admin)' : ''}</h2>
+                <div class="grid grid-cols-2 gap-4 pb-10">`;
+    
+    states.forEach(st => {
+        html += `<div class="state-card ${st.c}" onclick="pickState('${st.n}')">${st.n}</div>`;
+    });
+    html += `</div>`;
+    document.getElementById("app").innerHTML = html;
 }
 
 function pickState(s) {
@@ -104,11 +117,10 @@ function pickState(s) {
 // --- 2. DISTRICT VIEW ---
 function showDistrictInp() {
     document.getElementById("app").innerHTML = `
-        <h2 class="text-xl font-bold mb-2">${selected.state}</h2>
-        <p class="text-sm text-gray-500 mb-4">Enter your district to continue</p>
+        <h2 class="text-xl font-bold mb-2 text-orange-600">${selected.state}</h2>
         <input id="dist" placeholder="District Name">
         <button onclick="pickDist()" class="btn-main">Next Step</button>
-        <button onclick="showStates()" class="w-full text-xs text-gray-400 mt-4 underline">Change State</button>
+        <button onclick="showStates()" class="w-full text-xs text-gray-400 mt-4 underline">Back</button>
     `;
 }
 
@@ -119,111 +131,123 @@ function pickDist() {
     if(isAdminMode) manageDistrictWorkers(); else showPanchayatInp();
 }
 
-// --- 3. ADMIN: STATE/DISTRICT CONTROL ---
+// --- 3. HIERARCHY ADMIN PANEL ---
 function manageStateAdmin() {
     document.getElementById("app").innerHTML = `
-        <h2 class="text-xl font-black mb-4 text-orange-600">${selected.state} Admin</h2>
-        <div class="admin-box">
-            <p class="text-xs font-bold text-gray-400 uppercase">State Head</p>
-            <div id="stHead">Loading...</div>
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-black text-orange-600">${selected.state} Panel</h2>
+            <button onclick="showStates()" class="text-xs font-bold text-gray-400 underline">EXIT</button>
         </div>
-        <p class="text-sm font-bold mb-2 uppercase text-gray-400">Manage Districts</p>
-        <input id="dist" placeholder="Type District Name to Enter">
-        <button onclick="pickDist()" class="btn-main bg-black">Open District Control</button>
-        <button onclick="showStates()" class="btn-main bg-gray-400">Back</button>
+        <div class="admin-box">
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">State Admin (Head)</p>
+            <div id="stHead" class="mt-2">Loading...</div>
+        </div>
+        <p class="text-sm font-bold mb-2 text-gray-500">MANAGE DISTRICTS</p>
+        <input id="dist" placeholder="Enter District to manage Workers">
+        <button onclick="pickDist()" class="btn-main bg-black">Open District Admin</button>
     `;
     
     db.ref("admins/states/" + selected.state).on("value", snap => {
         let name = snap.val() ? snap.val().name : "Not Appointed";
         document.getElementById("stHead").innerHTML = `
-            <p class="text-lg font-bold">${name}</p>
-            <button onclick="appoint('state')" class="text-blue-500 text-xs font-bold">Appoint New</button>
+            <div class="flex justify-between items-center">
+                <p class="text-lg font-bold">${name}</p>
+                <button onclick="appoint('state')" class="bg-gray-100 px-3 py-1 rounded text-xs font-bold">APPOINT</button>
+            </div>
         `;
     });
 }
 
 function manageDistrictWorkers() {
     document.getElementById("app").innerHTML = `
-        <h2 class="text-xl font-black mb-4 text-blue-600">${selected.district} Center</h2>
+        <h2 class="text-xl font-black mb-4 text-blue-600">${selected.district} Control</h2>
         <div class="admin-box border-l-blue-600">
-            <p class="text-xs font-bold text-gray-400 uppercase">District Head</p>
-            <div id="dsHead">Loading...</div>
+            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">District Admin (Local)</p>
+            <div id="dsHead" class="mt-2">Loading...</div>
         </div>
-        <div class="mt-6">
-            <h4 class="font-bold mb-3">Workers in this District</h4>
-            <div id="workList" class="space-y-3 text-sm">Loading...</div>
+        <div class="mt-8">
+            <h4 class="font-bold mb-4 flex items-center gap-2">
+                <span class="w-2 h-2 bg-red-500 rounded-full"></span> 
+                Active Workers List
+            </h4>
+            <div id="workList" class="space-y-3">Loading...</div>
         </div>
-        <button onclick="manageStateAdmin()" class="btn-main bg-gray-400">Back</button>
+        <button onclick="manageStateAdmin()" class="btn-main bg-gray-400 mt-10">Back to State</button>
     `;
     
     db.ref("admins/districts/" + selected.district).on("value", snap => {
         let name = snap.val() ? snap.val().name : "Not Appointed";
-        document.getElementById("dsHead").innerHTML = `<p class="font-bold">${name}</p><button onclick="appoint('dist')" class="text-blue-500 text-xs">Change</button>`;
+        document.getElementById("dsHead").innerHTML = `
+            <div class="flex justify-between items-center">
+                <p class="font-bold text-gray-800">${name}</p>
+                <button onclick="appoint('dist')" class="bg-gray-100 px-3 py-1 rounded text-xs font-bold">CHANGE</button>
+            </div>`;
     });
 
-    // लोड वर्कर्स
     db.ref("workers").once("value", snap => {
         let html = "";
         snap.forEach(w => {
             let data = w.val();
-            // सिम्पल चेक: अगर जिले का नाम डेटा में है
-            if(JSON.stringify(data.villages).includes(selected.district)) {
-                html += `<div class="flex justify-between p-3 bg-gray-50 rounded-lg">
-                    <span><b>${data.name}</b> (${data.work})</span>
-                    <button onclick="banWorker('${w.key}')" class="text-red-500 font-bold">BAN</button>
+            // Checking if worker belongs to this district
+            if(JSON.stringify(data.villages).toLowerCase().includes(selected.district.toLowerCase())) {
+                html += `
+                <div class="flex justify-between items-center p-4 bg-white border rounded-xl shadow-sm">
+                    <div>
+                        <p class="font-bold text-gray-800">${data.name}</p>
+                        <p class="text-xs text-gray-400">${data.work}</p>
+                    </div>
+                    <button onclick="banWorker('${w.key}')" class="bg-red-50 text-red-600 px-3 py-1 rounded-lg text-xs font-bold border border-red-100">BAN</button>
                 </div>`;
             }
         });
-        document.getElementById("workList").innerHTML = html || "No workers found.";
+        document.getElementById("workList").innerHTML = html || "<p class='text-center text-gray-400 text-xs italic py-10'>No workers registered in this district yet.</p>";
     });
 }
 
-// --- 4. ACTION FUNCTIONS ---
+// --- FUNCTIONS ---
 function appoint(type) {
-    let n = prompt("Enter Admin Name:");
+    let n = prompt("Enter Admin Full Name:");
     if(!n) return;
     let path = type === 'state' ? "admins/states/" + selected.state : "admins/districts/" + selected.district;
-    db.ref(path).set({ name: n });
+    db.ref(path).set({ name: n, date: Date.now() });
 }
 
 function banWorker(id) {
-    if(confirm("Is worker ko nikal dein?")) {
+    if(confirm("Confirm: Do you want to remove this worker from the app?")) {
         db.ref("workers/" + id).remove();
         manageDistrictWorkers();
     }
 }
 
-// --- USER FLOW: PANCHAYAT & VILLAGE (OLD LOGIC) ---
+// User steps
 function showPanchayatInp() {
     document.getElementById("app").innerHTML = `
-        <h2 class="text-xl font-bold mb-4">Panchayat</h2>
+        <h2 class="text-xl font-bold mb-4">${selected.district}</h2>
         <input id="panch" placeholder="Panchayat Name">
         <button onclick="selected.panchayat=document.getElementById('panch').value; showVillageInp()" class="btn-main">Next</button>
     `;
 }
-
 function showVillageInp() {
     document.getElementById("app").innerHTML = `
-        <h2 class="text-xl font-bold mb-4">Village</h2>
+        <h2 class="text-xl font-bold mb-4">Final Step</h2>
         <input id="vill" placeholder="Village Name">
-        <button onclick="selected.village=document.getElementById('vill').value; showOptions()" class="btn-main">Finish</button>
+        <button onclick="selected.village=document.getElementById('vill').value; showOptions()" class="btn-main">Save Village</button>
     `;
 }
-
 function showOptions() {
     document.getElementById("app").innerHTML = `
-        <div class="text-center mb-6">
-            <h2 class="text-2xl font-black">${selected.village}</h2>
-            <p class="text-gray-400 text-sm">${selected.district}, ${selected.state}</p>
+        <div class="text-center py-6">
+            <h2 class="text-3xl font-black text-gray-800">${selected.village}</h2>
+            <p class="text-gray-400 uppercase text-[10px] tracking-widest mt-1">${selected.district} • ${selected.state}</p>
         </div>
-        <button onclick="alert('Worker Form logic same as before')" class="btn-main bg-orange-600">Register as Worker</button>
-        <button onclick="alert('Find Worker logic same as before')" class="btn-main bg-white border-2 border-orange-600 !text-orange-600">Find Worker</button>
+        <div class="space-y-4">
+            <button onclick="alert('Worker Logic')" class="btn-main h-16 text-lg">I am a Worker</button>
+            <button onclick="alert('Find Logic')" class="btn-main bg-white border-2 border-orange-600 !text-orange-600 h-16 text-lg">Find a Worker</button>
+        </div>
     `;
 }
 
-// Initialize
 showStates();
 </script>
-
 </body>
 </html>
