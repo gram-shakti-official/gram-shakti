@@ -3,26 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gram Shakti | Admin & Registration</title>
-
+<title>Gram Shakti | Master System</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
-  body { background: linear-gradient(135deg,#ffedd5,#fde68a,#bbf7d0); font-family: sans-serif; min-height: 100-vh; }
-  .input-field { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; margin-top: 10px; outline: none; }
-  .btn-orange { width: 100%; padding: 16px; background: linear-gradient(90deg,#ea580c,#f97316); color: white; border-radius: 14px; font-weight: bold; margin-top: 20px; }
+  body { background: linear-gradient(135deg,#ffedd5,#fde68a,#bbf7d0); font-family: 'Hind', sans-serif; min-height: 100vh; }
+  .input-field { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #ddd; margin-top: 10px; outline: none; transition: 0.3s; }
+  .input-field:focus { border-color: #ea580c; box-shadow: 0 0 10px rgba(234, 88, 12, 0.2); }
+  .btn-orange { width: 100%; padding: 16px; background: linear-gradient(90deg,#ea580c,#f97316); color: white; border-radius: 14px; font-weight: bold; margin-top: 20px; cursor: pointer; }
   .state-card { background: #ea580c; color: white; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; cursor: pointer; }
-  .admin-card { background: white; padding: 10px; border-radius: 10px; margin-bottom: 10px; border-left: 5px solid #ea580c; }
+  .bad-comment { background: #fee2e2; border: 2px solid #ef4444; color: #b91c1c; animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 </style>
 </head>
 <body class="p-4 flex flex-col items-center">
 
-<div id="app-container" class="bg-white w-full max-w-md p-6 rounded-3xl shadow-2xl relative">
+<div id="app-container" class="bg-white w-full max-w-md p-6 rounded-3xl shadow-2xl relative mt-4 min-h-[500px]">
   </div>
 
+<div id="msgBox" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+  <div id="msgContent" class="bg-white p-8 rounded-3xl text-center w-full max-w-xs shadow-2xl"></div>
+</div>
+
 <script>
+/* 🔥 Firebase Setup */
 const firebaseConfig = {
   apiKey: "AIzaSyCuvev3-jwZwQu0_fHYyv2E2ovLny4LhRQ",
   authDomain: "gram-shakti-b135a.firebaseapp.com",
@@ -30,113 +37,138 @@ const firebaseConfig = {
   projectId: "gram-shakti-b135a"
 };
 firebase.initializeApp(firebaseConfig);
-const database = firebase.database();
+const db = firebase.database();
 
-let userData = { state: "", district: "", panchayat: "", village: "" };
+let userFlow = { state: "", district: "", panchayat: "", village: "" };
+const badWords = ["गाली", "f***" , "bad", "haram", "sala"]; // यहाँ अपनी लिस्ट बढ़ा सकते हैं
 
-// --- LOGO HOLD FOR ADMIN ---
-function addAdminTrigger() {
-  const logo = document.getElementById("adminLogo");
-  let timer;
-  logo.addEventListener("mousedown", () => {
-    timer = setTimeout(() => {
-      let p = prompt("Master Password:");
-      if(p === "Vikas0627.") showAdminPanel();
-    }, 3000);
-  });
-  logo.addEventListener("mouseup", () => clearTimeout(timer));
-}
-
-// 1. STATE STEP
-function showStateStep() {
-  const states = ['Uttar Pradesh', 'Bihar', 'Rajasthan', 'Madhya Pradesh', 'Haryana', 'Gujarat'];
+// --- 1. STATE SELECTION ---
+function showStates() {
+  const states = ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'];
+  
   let html = `<div class="flex justify-between items-center mb-6">
-                <div id="adminLogo" class="bg-orange-600 text-white w-10 h-10 flex items-center justify-center rounded-xl font-bold cursor-pointer">G</div>
+                <div id="adminLogo" class="bg-orange-600 text-white w-10 h-10 flex items-center justify-center rounded-xl font-bold cursor-pointer select-none shadow-lg">G</div>
                 <h2 class="text-xl font-black text-orange-600">राज्य चुनें</h2>
                 <div class="w-10"></div>
               </div>
-              <div class="grid grid-cols-2 gap-3">`;
-  states.forEach(s => { html += `<div class="state-card" onclick="selectState('${s}')">${s}</div>`; });
+              <div class="grid grid-cols-2 gap-3 h-[400px] overflow-y-auto pr-2">`;
+  states.forEach(s => { html += `<div class="state-card shadow-md" onclick="selectState('${s}')">${s}</div>`; });
   document.getElementById("app-container").innerHTML = html + `</div>`;
-  addAdminTrigger();
+  setupAdminHold();
 }
 
-function selectState(s) { userData.state = s; showDistrictStep(); }
+function selectState(s) { userFlow.state = s; showDistrictStep(); }
 
 function showDistrictStep() {
   document.getElementById("app-container").innerHTML = `
-    <h2 class="text-xl font-bold">जिला लिखें</h2>
-    <input id="distInp" class="input-field" placeholder="जिला...">
-    <button onclick="userData.district=document.getElementById('distInp').value; showVillageStep()" class="btn-orange">आगे बढ़ें</button>
+    <h2 class="text-xl font-bold text-gray-700">जिला का नाम</h2>
+    <input id="distInp" class="input-field" placeholder="जिला लिखें...">
+    <button onclick="userFlow.district=document.getElementById('distInp').value; showVillageStep()" class="btn-orange">आगे बढ़ें</button>
   `;
 }
 
 function showVillageStep() {
   document.getElementById("app-container").innerHTML = `
-    <h2 class="text-xl font-bold">गाँव लिखें</h2>
-    <input id="villInp" class="input-field" placeholder="गाँव...">
-    <button onclick="userData.village=document.getElementById('villInp').value; showForm()" class="btn-orange">शुरू करें</button>
+    <h2 class="text-xl font-bold text-gray-700">गाँव का नाम</h2>
+    <input id="villInp" class="input-field" placeholder="गाँव लिखें...">
+    <button onclick="userFlow.village=document.getElementById('villInp').value; showRegistration()" class="btn-orange">शुरू करें</button>
   `;
 }
 
-function showForm() {
+// --- 2. REGISTRATION FORM ---
+function showRegistration() {
   document.getElementById("app-container").innerHTML = `
-    <h2 class="text-2xl font-black text-orange-600">🌾 ग्राम शक्ति</h2>
-    <p class="text-gray-400 text-xs mb-4 uppercase font-bold">${userData.village} | ${userData.district}</p>
-    <input id="wname" class="input-field" placeholder="नाम">
-    <input id="wphone" class="input-field" placeholder="मोबाइल">
+    <h2 class="text-center text-3xl font-extrabold text-orange-600">🌾 ग्राम शक्ति</h2>
+    <p class="text-center text-gray-400 text-[10px] mb-4 uppercase font-bold tracking-widest">${userFlow.village} | ${userFlow.district}</p>
+    
+    <input id="wname" class="input-field" placeholder="पूरा नाम">
+    <input id="wphone" class="input-field" placeholder="मोबाइल नंबर">
     <select id="wwork" class="input-field">
-      <option>JCB Operator</option><option>Driver</option><option>Mistri</option><option>Dairy</option>
+      <option value="">काम चुनें</option>
+      <option>JCB Operator</option><option>Driver</option><option>Mistri</option><option>Dairy</option><option>Dukaan</option>
     </select>
-    <button onclick="finalSave()" id="sBtn" class="btn-orange">सुरक्षित करें</button>
+    
+    <button onclick="saveWorker()" class="btn-orange">डेटा सुरक्षित करें</button>
   `;
 }
 
-function finalSave() {
-  const n = document.getElementById("wname").value;
-  const p = document.getElementById("wphone").value;
+function saveWorker() {
+  const n = document.getElementById("wname").value.trim();
+  const p = document.getElementById("wphone").value.trim();
   const w = document.getElementById("wwork").value;
-  if(!n || !p) return alert("जानकारी भरें");
-  
-  database.ref("workers").push({
-    name: n, phone: p, work: w, 
-    loc: `${userData.state}/${userData.district}/${userData.village}`,
-    time: Date.now()
-  }).then(() => { alert("सफल!"); location.reload(); });
-}
+  if(!n || !p || !w) return alert("सब भरें!");
 
-// --- ADMIN PANEL VIEW ---
-function showAdminPanel() {
-  document.getElementById("app-container").innerHTML = `
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-bold text-red-600">Admin Panel</h2>
-      <button onclick="location.reload()" class="text-xs bg-gray-200 px-2 py-1 rounded">Logout</button>
-    </div>
-    <div id="adminList" class="max-h-[400px] overflow-y-auto">लोड हो रहा है...</div>
-  `;
-  
-  database.ref("workers").on("value", (snap) => {
-    let html = "";
-    snap.forEach(child => {
-      let d = child.val();
-      html += `
-        <div class="admin-card text-sm">
-          <p><b>${d.name}</b> (${d.work})</p>
-          <p>${d.phone} | ${d.loc}</p>
-          <button onclick="deleteWorker('${child.key}')" class="text-red-500 text-xs font-bold mt-1">डिलीट करें</button>
-        </div>`;
-    });
-    document.getElementById("adminList").innerHTML = html || "कोई डेटा नहीं है";
+  db.ref("workers").push({
+    name: n, phone: p, work: w,
+    path: `${userFlow.state}/${userFlow.district}/${userFlow.village}`,
+    rating: 5,
+    comments: [{ text: "नया पंजीकरण", user: "System", type: "normal" }],
+    time: Date.now()
+  }).then(() => {
+    document.getElementById("msgBox").classList.remove("hidden");
+    document.getElementById("msgContent").innerHTML = `
+      <div class="text-5xl mb-4">✅</div>
+      <h3 class="text-green-600 text-2xl font-bold">सफल पंजीकरण</h3>
+      <button onclick="location.reload()" class="mt-6 bg-green-600 text-white w-full py-3 rounded-xl">OK</button>
+    `;
   });
 }
 
-function deleteWorker(id) {
-  if(confirm("क्या आप इस वर्कर को हटाना चाहते हैं?")) {
-    database.ref("workers/" + id).remove();
-  }
+// --- 3. MASTER ADMIN PANEL ---
+function setupAdminHold() {
+  const logo = document.getElementById("adminLogo");
+  let timer;
+  logo.onmousedown = () => { timer = setTimeout(() => {
+    let p = prompt("Enter Master Password:");
+    if(p === "Vikas0627.") showAdminPanel();
+  }, 3000); };
+  logo.onmouseup = () => clearTimeout(timer);
 }
 
-showStateStep();
+function showAdminPanel() {
+  document.getElementById("app-container").innerHTML = `
+    <div class="flex justify-between items-center mb-4 border-b pb-2">
+      <h2 class="text-xl font-bold text-red-600">Master Panel</h2>
+      <button onclick="location.reload()" class="bg-gray-200 px-3 py-1 rounded-lg text-xs">Logout</button>
+    </div>
+    <div id="adminList" class="space-y-4 max-h-[500px] overflow-y-auto">लोड हो रहा है...</div>
+  `;
+
+  db.ref("workers").on("value", (snap) => {
+    let html = "";
+    snap.forEach(child => {
+      const data = child.val();
+      let commentHtml = "";
+      
+      // कमेंट चेकिंग (Highlight Bad Words)
+      if(data.comments) {
+        data.comments.forEach(c => {
+          const isBad = badWords.some(word => c.text.toLowerCase().includes(word));
+          commentHtml += `<p class="p-2 text-[10px] rounded mt-1 ${isBad ? 'bad-comment' : 'bg-gray-50'}">
+                            <b>${c.user}:</b> ${c.text} ${isBad ? '⚠️' : ''}
+                          </p>`;
+        });
+      }
+
+      html += `
+        <div class="p-4 border rounded-2xl bg-white shadow-sm border-l-4 border-orange-500">
+          <div class="flex justify-between">
+            <p class="font-bold text-gray-800">${data.name} <span class="text-orange-500">★${data.rating}</span></p>
+            <button onclick="deleteEntry('${child.key}')" class="text-red-500 text-xs">डिलीट</button>
+          </div>
+          <p class="text-xs text-gray-500">${data.path}</p>
+          <div class="mt-2">${commentHtml}</div>
+        </div>`;
+    });
+    document.getElementById("adminList").innerHTML = html || "कोई डेटा नहीं";
+  });
+}
+
+function deleteEntry(id) {
+  if(confirm("रवि भाई, क्या इसे सच में हटाना है?")) db.ref("workers/" + id).remove();
+}
+
+showStates();
 </script>
 </body>
 </html>
