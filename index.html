@@ -7,29 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Hind', sans-serif; background-color: #ffffff; margin: 0; padding: 0; }
-        
-        /* कार्ड्स के ऊपर काला ग्रेडिएंट ताकि टेक्स्ट सफेद में चमके */
+        body { font-family: 'Hind', sans-serif; background-color: #ffffff; margin: 0; }
         .card-overlay {
-            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, transparent 70%);
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, transparent 80%);
             border-radius: 14px;
         }
-        
-        /* कार्ड की फिक्स हाइट */
-        .state-card { height: 120px; cursor: pointer; position: relative; overflow: hidden; border-radius: 14px; }
-        .state-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
-        .state-card:active img { transform: scale(1.05); }
-        
-        /* मोबाइल नेविगेशन के लिए */
-        .nav-shadow { shadow: 0 -5px 15px rgba(0,0,0,0.08); }
+        .state-card { height: 125px; cursor: pointer; position: relative; overflow: hidden; border-radius: 14px; border: 1px solid #f1f5f9; }
+        .state-card img { width: 100%; height: 100%; object-fit: cover; }
         ::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen flex flex-col border-x border-gray-100">
+<body class="max-w-md mx-auto min-h-screen flex flex-col bg-white">
 
-    <header class="flex items-center justify-between px-5 py-4 bg-white sticky top-0 z-50">
+    <header class="flex items-center justify-between px-5 py-4 bg-white sticky top-0 z-50 border-b">
         <div class="flex items-center gap-3">
-            <div class="bg-orange-600 text-white w-10 h-10 flex items-center justify-center rounded-lg text-xl font-bold shadow-lg">G</div>
+            <div class="bg-orange-600 text-white w-10 h-10 flex items-center justify-center rounded-lg text-xl font-bold shadow-md">G</div>
             <div>
                 <h1 class="font-bold text-lg leading-tight text-gray-800">Gram Shakti</h1>
                 <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Empowering Villages</p>
@@ -44,97 +36,96 @@
 
     <div class="px-5 py-4">
         <h2 class="text-2xl font-black text-gray-900 tracking-tight">Select State</h2>
-        <p class="text-[13px] text-gray-500 mt-1 leading-tight font-medium">Choose your state to explore local villages, workers, and shops.</p>
+        <p class="text-[13px] text-gray-500 mt-1">Choose your state to explore local villages, workers, and shops.</p>
     </div>
 
     <main class="px-5 pb-32 flex-grow overflow-y-auto">
-        <div class="grid grid-cols-2 gap-3.5">
+        <div class="grid grid-cols-2 gap-4">
             
-            <div class="state-card shadow-md">
-                <img src="https://whc.unesco.org/uploads/thumbs/site_0252_0008-750-750-20151104113424.jpg" alt="UP">
+            <div class="state-card shadow-sm">
+                <img src="https://images.unsplash.com/photo-1564507592333-c60657451ddc?w=400" alt="UP">
                 <div class="absolute inset-0 card-overlay"></div>
-                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-[12px]">Uttar Pradesh</span>
+                <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs italic">Uttar Pradesh</span>
             </div>
 
-            <div class="state-card shadow-md">
-                <img src="https://tourism.bihar.gov.in/content/dam/bihar-tourism/images/destination/gaya/mahabodhi_temple/mahabodhi_temple_main_banner.jpg" alt="Bihar">
+            <div class="state-card shadow-sm">
+                <img src="https://images.unsplash.com/photo-1622151834677-70f982c9adef?w=400" alt="Bihar">
                 <div class="absolute inset-0 card-overlay"></div>
-                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-[12px]">Bihar</span>
+                <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs italic">Bihar</span>
             </div>
 
-            <div class="state-card shadow-md">
-                <img src="https://static.toiimg.com/photo/48197793.cms" alt="Rajasthan">
+            <div class="state-card shadow-sm">
+                <img src="https://images.unsplash.com/photo-1621350130634-916960f22784?w=400" alt="MP">
                 <div class="absolute inset-0 card-overlay"></div>
-                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-[12px]">Rajasthan</span>
+                <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs italic">Madhya Pradesh</span>
             </div>
 
-            <div class="state-card shadow-md">
-                <img src="https://www.mptourism.com/images/sanchi-stupa.jpg" alt="MP">
+            <div class="state-card shadow-sm">
+                <img src="https://images.unsplash.com/photo-1590050752117-23a9d7fc217c?w=400" alt="Gujarat">
                 <div class="absolute inset-0 card-overlay"></div>
-                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-[12px]">Madhya Pradesh</span>
+                <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs italic">Gujarat</span>
             </div>
 
-            <div class="state-card shadow-md">
-                <img src="https://images.pexels.com/photos/235925/pexels-photo-235925.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Haryana">
+            <div class="state-card shadow-sm">
+                <img src="https://images.unsplash.com/photo-1558431382-27e303142255?w=400" alt="West Bengal">
                 <div class="absolute inset-0 card-overlay"></div>
-                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-[12px]">Haryana</span>
+                <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs italic">West Bengal</span>
             </div>
 
-            <div class="state-card shadow-md">
-                <img src="https://images.pexels.com/photos/14352134/pexels-photo-14352134.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Punjab">
+            <div class="state-card shadow-sm">
+                <img src="https://images.unsplash.com/photo-1600100397608-f010e998797b?w=400" alt="Karnataka">
                 <div class="absolute inset-0 card-overlay"></div>
-                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-[12px]">Punjab</span>
+                <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs italic">Karnataka</span>
             </div>
 
-            <div class="state-card shadow-md">
-                <img src="https://images.pexels.com/photos/11140502/pexels-photo-11140502.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Maharashtra">
+            <div class="state-card shadow-sm">
+                <img src="https://images.unsplash.com/photo-1599661046289-e31887846eac?w=400" alt="Rajasthan">
                 <div class="absolute inset-0 card-overlay"></div>
-                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-[12px]">Maharashtra</span>
+                <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs italic">Rajasthan</span>
             </div>
 
-            <div class="state-card shadow-md">
-                <img src="https://www.gujarattourism.com/content/dam/gujarat-tourism/images/home_page/rann-of-kutch.jpg" alt="Gujarat">
+            <div class="state-card shadow-sm">
+                <img src="https://images.unsplash.com/photo-1610450949065-2f2249764510?w=400" alt="Punjab">
                 <div class="absolute inset-0 card-overlay"></div>
-                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-[12px]">Gujarat</span>
+                <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs italic">Punjab</span>
             </div>
 
-            <div class="state-card shadow-md">
-                <img src="https://images.pexels.com/photos/29272895/pexels-photo-29272895/free-photo-of-iconic-howrah-bridge-at-sunset-in-kolkata.jpeg?auto=compress&cs=tinysrgb&w=400" alt="West Bengal">
+            <div class="state-card shadow-sm">
+                <img src="https://images.unsplash.com/photo-1566552881560-0be862a7c445?w=400" alt="Maharashtra">
                 <div class="absolute inset-0 card-overlay"></div>
-                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-[12px]">West Bengal</span>
+                <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs italic">Maharashtra</span>
             </div>
 
-            <div class="state-card shadow-md">
-                <img src="https://www.karnatakatourism.org/wp-content/uploads/2020/05/mysore-palace-1.jpg" alt="Karnataka">
+            <div class="state-card shadow-sm">
+                <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400" alt="Haryana">
                 <div class="absolute inset-0 card-overlay"></div>
-                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-[12px]">Karnataka</span>
+                <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs italic">Haryana</span>
             </div>
+
         </div>
     </main>
 
     <div class="fixed bottom-24 right-6 z-50">
-        <div class="bg-orange-600 h-14 w-14 rounded-full shadow-2xl flex items-center justify-center relative border-[3px] border-white active:scale-90 transition-transform">
+        <div class="bg-orange-600 h-14 w-14 rounded-full shadow-2xl flex items-center justify-center border-4 border-white active:scale-90 transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
             </svg>
-            <span class="absolute -bottom-1 bg-white text-orange-600 text-[9px] font-black px-1.5 rounded-md border border-orange-200">Ramy</span>
             <div class="absolute top-0 right-0 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-100 flex justify-around py-3.5 shadow-nav-shadow z-50">
+    <nav class="fixed bottom-0 w-full max-w-md bg-white border-t flex justify-around py-3 shadow-lg z-50">
         <div class="flex flex-col items-center text-orange-600">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter">States</span>
+            <span class="text-[10px] font-bold mt-1 uppercase">States</span>
         </div>
         <div class="flex flex-col items-center text-gray-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            <span class="text-[10px] font-bold mt-1 uppercase tracking-tighter text-gray-400">Workers</span>
+            <span class="text-[10px] font-bold mt-1 uppercase">Workers</span>
         </div>
     </nav>
 
