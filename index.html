@@ -4,121 +4,137 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ग्राम शक्ति | Select State</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&display=swap" rel="stylesheet">
-
     <style>
-        body {
-            font-family: 'Hind', sans-serif;
-            background-color: #ffffff;
+        body { font-family: 'Hind', sans-serif; background-color: #ffffff; }
+        
+        /* कार्ड्स के ऊपर काला शेड (Gradient) */
+        .card-overlay {
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+            border-radius: 12px;
         }
-        .state-card {
-            position: relative;
-            overflow: hidden;
-            border-radius: 16px;
-            cursor: pointer;
-        }
-        .state-card::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 5%, transparent 60%);
-            border-radius: 16px;
-        }
-        .state-img {
-            height: 140px;
-            width: 100%;
-            object-fit: cover;
-            border-radius: 16px;
-        }
+        
+        .state-card { height: 115px; cursor: pointer; }
+        .state-card:active { transform: scale(0.96); transition: 0.1s; }
+        
+        /* स्क्रॉल छुपाने के लिए */
+        ::-webkit-scrollbar { display: none; }
     </style>
 </head>
+<body class="max-w-md mx-auto bg-white min-h-screen relative shadow-2xl overflow-x-hidden">
 
-<body class="max-w-md mx-auto min-h-screen flex flex-col bg-gray-50">
-
-<!-- HEADER -->
-<header class="flex items-center justify-between p-5 bg-white">
-    <div class="flex items-center gap-3">
-        <div class="bg-orange-600 text-white w-12 h-12 flex items-center justify-center rounded-xl text-2xl font-black shadow-lg">
-            G
+    <header class="flex items-center justify-between px-5 py-4 bg-white border-b sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="bg-orange-600 text-white w-10 h-10 flex items-center justify-center rounded-lg text-xl font-bold shadow-md">G</div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight text-gray-800">Gram Shakti</h1>
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Empowering Villages</p>
+            </div>
         </div>
-        <div>
-            <h1 class="font-bold text-xl text-gray-800">Gram Shakti</h1>
-            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                Empowering Villages
-            </p>
+        <button class="text-gray-400">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+        </button>
+    </header>
+
+    <div class="px-5 py-5">
+        <h2 class="text-2xl font-black text-[#1e293b] tracking-tight">Select State</h2>
+        <p class="text-[13px] text-gray-500 mt-1 leading-tight">Choose your state to explore local villages, workers, and shops.</p>
+    </div>
+
+    <main class="px-5 pb-32">
+        <div class="grid grid-cols-2 gap-3">
+            
+            <div class="relative state-card rounded-xl overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1564507592333-c60657451ddc?w=400" class="w-full h-full object-cover">
+                <div class="absolute inset-0 card-overlay"></div>
+                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-xs">Uttar Pradesh</span>
+            </div>
+
+            <div class="relative state-card rounded-xl overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1622151834677-70f982c9adef?w=400" class="w-full h-full object-cover">
+                <div class="absolute inset-0 card-overlay"></div>
+                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-xs">Bihar</span>
+            </div>
+
+            <div class="relative state-card rounded-xl overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1599661046289-e31887846eac?w=400" class="w-full h-full object-cover">
+                <div class="absolute inset-0 card-overlay"></div>
+                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-xs">Rajasthan</span>
+            </div>
+
+            <div class="relative state-card rounded-xl overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1626021679093-6058963f4f72?w=400" class="w-full h-full object-cover">
+                <div class="absolute inset-0 card-overlay"></div>
+                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-xs">Madhya Pradesh</span>
+            </div>
+
+            <div class="relative state-card rounded-xl overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=400" class="w-full h-full object-cover">
+                <div class="absolute inset-0 card-overlay"></div>
+                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-xs">Haryana</span>
+            </div>
+
+            <div class="relative state-card rounded-xl overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1610450949065-2f2249764510?w=400" class="w-full h-full object-cover">
+                <div class="absolute inset-0 card-overlay"></div>
+                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-xs">Punjab</span>
+            </div>
+
+            <div class="relative state-card rounded-xl overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1566552881560-0be862a7c445?w=400" class="w-full h-full object-cover">
+                <div class="absolute inset-0 card-overlay"></div>
+                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-xs">Maharashtra</span>
+            </div>
+
+            <div class="relative state-card rounded-xl overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1590050752117-23a9d7fc217c?w=400" class="w-full h-full object-cover">
+                <div class="absolute inset-0 card-overlay"></div>
+                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-xs">Gujarat</span>
+            </div>
+
+            <div class="relative state-card rounded-xl overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1558431382-27e303142255?w=400" class="w-full h-full object-cover">
+                <div class="absolute inset-0 card-overlay"></div>
+                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-xs">West Bengal</span>
+            </div>
+
+            <div class="relative state-card rounded-xl overflow-hidden shadow-sm">
+                <img src="https://images.unsplash.com/photo-1600100397608-f010e998797b?w=400" class="w-full h-full object-cover">
+                <div class="absolute inset-0 card-overlay"></div>
+                <span class="absolute bottom-2.5 left-3 z-10 text-white font-bold text-xs">Karnataka</span>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="fixed bottom-24 right-6 z-50">
+        <div class="bg-orange-600 h-14 w-14 rounded-full shadow-2xl flex items-center justify-center relative border-[3px] border-white cursor-pointer active:scale-90 transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+            <span class="absolute -bottom-1 bg-white text-orange-600 text-[9px] font-black px-1.5 rounded-md border border-orange-200">Ramy</span>
+            <div class="absolute top-0 right-0 h-4 w-4 bg-green-500 rounded-full border-2 border-white"></div>
         </div>
     </div>
-</header>
 
-<!-- TITLE -->
-<div class="px-6 py-4">
-    <h2 class="text-2xl font-black text-gray-800">Select State</h2>
-    <p class="text-sm text-gray-500 mt-1">
-        Choose your state to explore villages & workers
-    </p>
-</div>
-
-<!-- STATES GRID -->
-<main class="px-6 pb-32">
-    <div class="grid grid-cols-2 gap-4">
-
-        <div onclick="selectState('UP')" class="state-card shadow-lg active:scale-95 transition">
-            <img src="https://images.unsplash.com/photo-1564507592333-c60657451ddc?q=80&w=400" class="state-img">
-            <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-sm">
-                Uttar Pradesh
-            </span>
+    <nav class="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-100 flex justify-around py-3 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] z-50">
+        <div class="flex flex-col items-center text-orange-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="text-[10px] font-bold mt-0.5 uppercase tracking-tighter">States</span>
         </div>
-
-        <div onclick="selectState('BR')" class="state-card shadow-lg active:scale-95 transition">
-            <img src="https://images.unsplash.com/photo-1622151834677-70f982c9adef?q=80&w=400" class="state-img">
-            <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-sm">
-                Bihar
-            </span>
+        <div class="flex flex-col items-center text-gray-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <span class="text-[10px] font-bold mt-0.5 uppercase tracking-tighter text-gray-400">Workers</span>
         </div>
-
-        <div onclick="selectState('RJ')" class="state-card shadow-lg active:scale-95 transition">
-            <img src="https://images.unsplash.com/photo-1599661046289-e31887846eac?q=80&w=400" class="state-img">
-            <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-sm">
-                Rajasthan
-            </span>
-        </div>
-
-        <div onclick="selectState('MP')" class="state-card shadow-lg active:scale-95 transition">
-            <img src="https://images.unsplash.com/photo-1626021679093-6058963f4f72?q=80&w=400" class="state-img">
-            <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-sm">
-                Madhya Pradesh
-            </span>
-        </div>
-
-        <div onclick="selectState('HR')" class="state-card shadow-lg active:scale-95 transition">
-            <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=400" class="state-img">
-            <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-sm">
-                Haryana
-            </span>
-        </div>
-
-        <div onclick="selectState('PB')" class="state-card shadow-lg active:scale-95 transition">
-            <img src="https://images.unsplash.com/photo-1610450949065-2f2249764510?q=80&w=400" class="state-img">
-            <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-sm">
-                Punjab
-            </span>
-        </div>
-
-    </div>
-</main>
-
-<!-- SCRIPT -->
-<script>
-    function selectState(stateCode) {
-        console.log("State selected:", stateCode);
-        // next page redirect:
-        // window.location.href = "district.html?state=" + stateCode;
-        alert("Selected State: " + stateCode);
-    }
-</script>
+    </nav>
 
 </body>
 </html>
