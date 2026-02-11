@@ -3,63 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gram Shakti | Firebase UI</title>
-    
+    <title>Gram Shakti | Admin Hierarchy</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body { font-family: 'Hind', sans-serif; background-color: #ffffff; margin: 0; }
-        .card-overlay {
-            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, transparent 80%);
-            border-radius: 14px;
-        }
-        .state-card { height: 120px; cursor: pointer; position: relative; overflow: hidden; border-radius: 14px; border: 1px solid #f1f5f9; }
-        .state-card img { width: 100%; height: 100%; object-fit: cover; }
-        .nav-shadow { box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
-        ::-webkit-scrollbar { display: none; }
-        input { border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; }
+        body { font-family: 'Hind', sans-serif; background: #f8fafc; }
+        .admin-card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #ea580c; shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .btn-red { background: #ef4444; color: white; padding: 5px 10px; border-radius: 6px; font-size: 12px; }
+        .btn-green { background: #22c55e; color: white; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; }
+        .state-btn { background: linear-gradient(135deg, #1e293b, #334155); color: white; padding: 15px; border-radius: 12px; text-align: center; font-weight: bold; cursor: pointer; }
     </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen flex flex-col bg-white">
+<body class="max-w-md mx-auto min-h-screen bg-white">
 
-    <header class="flex items-center justify-between px-5 py-4 bg-white sticky top-0 z-50 border-b">
+    <header class="flex items-center justify-between px-6 py-5 border-b bg-white sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <div class="bg-orange-600 text-white w-10 h-10 flex items-center justify-center rounded-lg text-xl font-bold shadow-md">G</div>
+            <div id="adminLogo" class="bg-orange-600 text-white w-10 h-10 flex items-center justify-center rounded-xl text-xl font-bold cursor-pointer select-none shadow-lg shadow-orange-200">G</div>
             <div>
-                <h1 class="font-bold text-lg leading-tight text-gray-800">Gram Shakti</h1>
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Empowering Villages</p>
+                <h1 class="font-bold text-lg text-gray-800">Gram Shakti</h1>
+                <p id="adminStatusText" class="text-[10px] text-gray-400 font-bold uppercase">Admin Panel Locked</p>
             </div>
         </div>
-        <button class="text-gray-400">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-            </svg>
-        </button>
     </header>
 
-    <div id="app" class="flex-grow"></div>
-
-    <nav class="fixed bottom-0 w-full max-w-md bg-white border-t flex justify-around py-3 nav-shadow z-50">
-        <div class="flex flex-col items-center text-orange-600" onclick="loadState()">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            </svg>
-            <span class="text-[10px] font-bold mt-1 uppercase">States</span>
-        </div>
-        <div class="flex flex-col items-center text-gray-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-            <span class="text-[10px] font-bold mt-1 uppercase">Workers</span>
-        </div>
-    </nav>
+    <div id="app" class="p-6"></div>
 
 <script>
-/* 🔴 Firebase Configuration (आपका दिया हुआ डेटा) */
+/* Firebase Config */
 const firebaseConfig = {
   apiKey: "AIzaSyCuvev3-jwZwQu0_fHYyv2E2ovLny4LhRQ",
   authDomain: "gram-shakti-b135a.firebaseapp.com",
@@ -67,152 +40,144 @@ const firebaseConfig = {
   storageBucket: "gram-shakti-b135a.firebasestorage.app",
   messagingSenderId: "340909973482",
   appId: "1:340909973482:web:c562cb3dd591b78de21c93",
-  databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com" // ध्यान दें: यहाँ अपना Realtime DB URL डालें
+  databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com"
 };
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let selectedPath = {};
+let currentRole = "USER"; // ROLES: MAIN_ADMIN, STATE_ADMIN, DIST_ADMIN, USER
 
-loadState();
+// --- Secret Admin Access ---
+let pressTimer;
+document.getElementById("adminLogo").addEventListener('mousedown', () => {
+    pressTimer = window.setTimeout(() => {
+        let pass = prompt("Enter Secret Key:");
+        if(pass === "main786") { 
+            currentRole = "MAIN_ADMIN";
+            document.getElementById("adminStatusText").innerText = "Main Admin Mode";
+            loadStatePanel();
+        }
+    }, 2000); 
+});
+document.getElementById("adminLogo").addEventListener('mouseup', () => clearTimeout(pressTimer));
 
-/* ---------- STATE (UI Grid) ---------- */
-function loadState(){
-  document.getElementById("app").innerHTML = `
-    <div class="px-5 py-4">
-        <h2 class="text-2xl font-black text-gray-900 tracking-tight">Select State</h2>
-        <p class="text-[13px] text-gray-500 mt-1 mb-4">Choose your state to proceed.</p>
-        
-        <div class="grid grid-cols-2 gap-4 pb-20">
-            ${createStateCard('Uttar Pradesh', 'https://images.unsplash.com/photo-1564507592333-c60657451ddc?w=400')}
-            ${createStateCard('Bihar', 'https://images.unsplash.com/photo-1622151834677-70f982c9adef?w=400')}
-            ${createStateCard('Madhya Pradesh', 'https://images.unsplash.com/photo-1621350130634-916960f22784?w=400')}
-            ${createStateCard('Gujarat', 'https://images.unsplash.com/photo-1590050752117-23a9d7fc217c?w=400')}
-            ${createStateCard('Rajasthan', 'https://images.unsplash.com/photo-1599661046289-e31887846eac?w=400')}
-            ${createStateCard('Punjab', 'https://images.unsplash.com/photo-1610450949065-2f2249764510?w=400')}
-            ${createStateCard('West Bengal', 'https://images.unsplash.com/photo-1558431382-27e303142255?w=400')}
-            ${createStateCard('Karnataka', 'https://images.unsplash.com/photo-1600100397608-f010e998797b?w=400')}
-        </div>
+// 1. राज्य लेवल का पैनल (Main Admin के लिए)
+function loadStatePanel(){
+    document.getElementById("app").innerHTML = `
+    <h2 class="text-xl font-black mb-4 text-gray-800">Control State Admins</h2>
+    <div class="grid gap-3">
+        <div class="state-btn" onclick="manageState('Uttar Pradesh')">Uttar Pradesh</div>
+        <div class="state-btn" onclick="manageState('Bihar')">Bihar</div>
     </div>`;
 }
 
-function createStateCard(name, img) {
-    return `
-    <div class="state-card shadow-sm" onclick="saveState('${name}')">
-        <img src="${img}" alt="${name}">
-        <div class="absolute inset-0 card-overlay"></div>
-        <span class="absolute bottom-3 left-3 z-10 text-white font-bold text-xs">${name}</span>
+// 2. राज्य के अंदर जिला एडमिन को मैनेज करना
+function manageState(stateName){
+    selectedPath.state = stateName;
+    document.getElementById("app").innerHTML = `
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-orange-600">${stateName} Panel</h3>
+        <button onclick="loadStatePanel()" class="text-xs underline text-gray-500">Back</button>
+    </div>
+    
+    <div class="admin-card">
+        <p class="text-xs font-bold text-gray-400 mb-2 uppercase">Appoint State Head</p>
+        <div id="stateAdminInfo">Checking...</div>
+    </div>
+
+    <h4 class="font-bold text-sm mb-3">Districts in ${stateName}</h4>
+    <div id="distList" class="space-y-2">
+        <input id="newDist" class="border p-2 w-full rounded" placeholder="Add District Name">
+        <button onclick="goToDistrict()" class="btn-green">Manage District</button>
     </div>`;
-}
 
-function saveState(val){
-  selectedPath.state = val;
-  loadDistrict();
-}
-
-/* ---------- DISTRICT ---------- */
-function loadDistrict(){
-  document.getElementById("app").innerHTML = `
-  <div class="p-6">
-    <h3 class="text-xl font-bold mb-2">जिला (District) जोड़ें</h3>
-    <p class="text-sm text-gray-500 mb-4">Selected State: ${selectedPath.state}</p>
-    <input id="district" placeholder="District का नाम लिखें">
-    <button onclick="saveDistrict()" class="w-full bg-orange-600 text-white p-3 rounded-lg mt-4 font-bold">Next</button>
-  </div>`;
-}
-function saveDistrict(){
-  selectedPath.district = document.getElementById("district").value;
-  loadPanchayat();
-}
-
-/* ---------- PANCHAYAT ---------- */
-function loadPanchayat(){
-  document.getElementById("app").innerHTML = `
-  <div class="p-6">
-    <h3 class="text-xl font-bold mb-2">पंचायत जोड़ें</h3>
-    <input id="panchayat" placeholder="Panchayat का नाम">
-    <button onclick="savePanchayat()" class="w-full bg-orange-600 text-white p-3 rounded-lg mt-4 font-bold">Next</button>
-  </div>`;
-}
-function savePanchayat(){
-  selectedPath.panchayat = document.getElementById("panchayat").value;
-  loadVillage();
-}
-
-/* ---------- VILLAGE ---------- */
-function loadVillage(){
-  document.getElementById("app").innerHTML = `
-  <div class="p-6">
-    <h3 class="text-xl font-bold mb-2">गाँव जोड़ें</h3>
-    <input id="village" placeholder="Village का नाम">
-    <button onclick="saveVillage()" class="w-full bg-orange-600 text-white p-3 rounded-lg mt-4 font-bold">Save & Continue</button>
-  </div>`;
-}
-function saveVillage(){
-  selectedPath.village = document.getElementById("village").value;
-  showOptions();
-}
-
-/* ---------- OPTIONS ---------- */
-function showOptions(){
-  document.getElementById("app").innerHTML = `
-  <div class="p-6 flex flex-col gap-4">
-    <h3 class="text-lg font-bold">आपका गाँव: ${selectedPath.village}</h3>
-    <button onclick="workerForm()" class="bg-blue-600 text-white p-4 rounded-xl font-bold">🧑‍🔧 Worker (काम ढूँढें)</button>
-    <button onclick="customerView()" class="bg-green-600 text-white p-4 rounded-xl font-bold">🧍 Customer (Worker ढूँढें)</button>
-  </div>`;
-}
-
-/* ---------- WORKER FORM ---------- */
-function workerForm(){
-  document.getElementById("app").innerHTML = `
-  <div class="p-6">
-    <h3 class="text-xl font-bold mb-4">Worker की जानकारी</h3>
-    <input id="wname" placeholder="आपका नाम">
-    <input id="work" placeholder="काम (जैसे: Electrician)">
-    <input id="villages" placeholder="काम के गाँव (comma लगायें)">
-    <button onclick="saveWorker()" class="w-full bg-orange-600 text-white p-3 rounded-lg mt-4 font-bold">Save Worker</button>
-  </div>`;
-}
-
-function saveWorker(){
-  let id = Date.now();
-  let vList = document.getElementById("villages").value.split(",");
-  let villageObj = {};
-  vList.forEach(v=>{
-    let path = selectedPath.state+"/"+selectedPath.district+"/"+selectedPath.panchayat+"/"+v.trim();
-    villageObj[path.replace(/\./g, '_')]=true; // Firebase paths shouldn't have dots
-  });
-
-  db.ref("workers/"+id).set({
-    name: document.getElementById("wname").value,
-    work: document.getElementById("work").value,
-    villages: villageObj
-  });
-  alert("Worker Saved Successfully!");
-  showOptions();
-}
-
-/* ---------- CUSTOMER VIEW ---------- */
-function customerView(){
-  document.getElementById("app").innerHTML = `<div class="p-6"><h3 class="text-xl font-bold mb-4">Workers in ${selectedPath.village}</h3><div id="list" class="space-y-3"></div></div>`;
-  let currentVillagePath = (selectedPath.state+"/"+selectedPath.district+"/"+selectedPath.panchayat+"/"+selectedPath.village).replace(/\./g, '_');
-
-  db.ref("workers").once("value",snap=>{
-    snap.forEach(w=>{
-      let data = w.val();
-      if(data.villages && data.villages[currentVillagePath]){
-        document.getElementById("list").innerHTML += `
-        <div class="p-4 border-l-4 border-green-500 bg-white shadow-sm rounded-r-lg">
-          <b class="text-lg">${data.name}</b><br>
-          <span class="text-gray-600">काम: ${data.work}</span>
-        </div>`;
-      }
+    // राज्य के मुखिया को लोड करें
+    db.ref("stateAdmins/" + stateName).on("value", snap => {
+        let data = snap.val();
+        let infoDiv = document.getElementById("stateAdminInfo");
+        if(data) {
+            infoDiv.innerHTML = `<b>Name:</b> ${data.name} <br> <button onclick="removeStateAdmin('${stateName}')" class="btn-red mt-2">Dismiss Admin</button>`;
+        } else {
+            infoDiv.innerHTML = `<input id="stName" class="border p-1 w-full text-sm mb-2" placeholder="Admin Name">
+                                 <button onclick="saveStateAdmin('${stateName}')" class="text-xs bg-black text-white px-3 py-1 rounded">Appoint</button>`;
+        }
     });
-  });
 }
-</script>
 
+// 3. जिला लेवल का पैनल (State Admin या Main Admin के लिए)
+function goToDistrict(){
+    let dist = document.getElementById("newDist").value;
+    if(!dist) return;
+    selectedPath.district = dist;
+    
+    document.getElementById("app").innerHTML = `
+    <h3 class="font-bold text-blue-600 mb-4">${selectedPath.district} Control</h3>
+    
+    <div class="admin-card border-l-blue-600">
+        <p class="text-xs font-bold text-gray-400 mb-2 uppercase">District Admin</p>
+        <div id="distAdminInfo">Checking...</div>
+    </div>
+
+    <div class="admin-card border-l-green-600">
+        <p class="text-xs font-bold text-gray-400 mb-2 uppercase">Workers List</p>
+        <div id="workersList" class="text-xs space-y-3">Loading Workers...</div>
+    </div>
+    <button onclick="manageState('${selectedPath.state}')" class="w-full text-gray-400 text-sm mt-4">Back to State</button>`;
+
+    // जिले के मुखिया को लोड करें
+    db.ref("distAdmins/" + selectedPath.district).on("value", snap => {
+        let data = snap.val();
+        let dInfo = document.getElementById("distAdminInfo");
+        if(data) {
+            dInfo.innerHTML = `<b>Admin:</b> ${data.name} <br> <button onclick="removeDistAdmin('${selectedPath.district}')" class="btn-red mt-2">Remove</button>`;
+        } else {
+            dInfo.innerHTML = `<input id="dsName" class="border p-1 w-full text-sm mb-2" placeholder="District Head Name">
+                               <button onclick="saveDistAdmin('${selectedPath.district}')" class="text-xs bg-black text-white px-3 py-1 rounded">Assign</button>`;
+        }
+    });
+
+    // वर्कर्स को कंट्रोल करें
+    loadWorkersForAdmin();
+}
+
+// 4. वर्कर्स को हटाना (Rating और Mistake के आधार पर)
+function loadWorkersForAdmin(){
+    db.ref("workers").once("value", snap => {
+        let html = "";
+        snap.forEach(wSnap => {
+            let w = wSnap.val();
+            let pathKey = (selectedPath.state + "/" + selectedPath.district).replace(/\s/g, '');
+            // चेक करें कि वर्कर इस जिले का है
+            if(JSON.stringify(w.villages).includes(selectedPath.district)){
+                html += `
+                <div class="flex justify-between items-center border-b pb-2">
+                    <div>
+                        <p class="font-bold">${w.name}</p>
+                        <p class="text-gray-400">${w.work}</p>
+                    </div>
+                    <button onclick="deleteWorker('${wSnap.key}')" class="btn-red">Ban Worker</button>
+                </div>`;
+            }
+        });
+        document.getElementById("workersList").innerHTML = html || "No workers found in this district.";
+    });
+}
+
+/* Helper Functions */
+function saveStateAdmin(st) { db.ref("stateAdmins/"+st).set({name: document.getElementById("stName").value}); }
+function removeStateAdmin(st) { if(confirm("State Admin hata dein?")) db.ref("stateAdmins/"+st).remove(); }
+function saveDistAdmin(ds) { db.ref("distAdmins/"+ds).set({name: document.getElementById("dsName").value}); }
+function removeDistAdmin(ds) { if(confirm("District Admin hata dein?")) db.ref("distAdmins/"+ds).remove(); }
+function deleteWorker(id) { if(confirm("Is worker ko app se permanent nikal dein?")) db.ref("workers/"+id).remove(); goToDistrict(); }
+
+// शुरू में आम यूजर का स्टेट लोड करें
+function loadUserApp() { 
+    // यहाँ आपका पुराना यूजर वाला कोड लोड होगा
+    loadStatePanel(); 
+}
+
+</script>
 </body>
 </html>
