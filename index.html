@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gram Shakti | Premium Web Design</title>
+<title>Gram Shakti | Fixed Admin</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -27,117 +27,40 @@
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-    animation: fadeIn 0.8s ease-out;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
   }
   .input-field {
-    width: 100%;
-    padding: 14px;
-    border-radius: 12px;
-    border: 1px solid #e0e0e0;
-    margin-top: 10px;
-    outline: none;
-    transition: all 0.3s ease;
-    font-size: 16px;
-  }
-  .input-field:focus {
-    border-color: #f97316;
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+    width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #e0e0e0;
+    margin-top: 10px; outline: none; font-size: 16px;
   }
   .btn-primary {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(90deg, #f97316, #ea580c);
-    color: white;
-    border-radius: 14px;
-    font-size: 18px;
-    font-weight: 700;
-    margin-top: 25px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
-  }
-  .btn-primary:hover {
-    opacity: 0.9;
-    transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(249, 115, 22, 0.5);
-  }
-  .btn-primary:active {
-    transform: translateY(0);
-    box-shadow: 0 6px 15px rgba(249, 115, 22, 0.3);
+    width: 100%; padding: 16px; background: linear-gradient(90deg, #f97316, #ea580c);
+    color: white; border-radius: 14px; font-size: 18px; font-weight: 700;
+    margin-top: 25px; cursor: pointer; box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
   }
   .state-grid-item {
-    background: #fff;
-    border: 1px solid #f97316;
-    color: #f97316;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    font-weight: 600;
-    cursor: pointer;
-    font-size: 15px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    background: #fff; border: 1px solid #f97316; color: #f97316;
+    padding: 15px; border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer;
   }
-  .state-grid-item:hover {
-    background: #fdf2e9;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
-  }
-  .highlight-danger {
-    background: #fee2e2;
-    border-left: 4px solid #ef4444;
-    color: #ef4444;
-    padding: 10px;
-    border-radius: 8px;
-    margin-top: 8px;
-    animation: flashRed 1s infinite alternate;
-  }
-  @keyframes flashRed {
-    from { opacity: 0.8; }
-    to { opacity: 1; transform: scale(1.01); }
-  }
-  .header-logo {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 700;
-    color: #f97316;
-    font-size: 2.2rem;
-    line-height: 1;
-  }
-  /* Neela G Logo Style */
+  /* Neela G Logo Fix */
   #adminLogo {
-    background: #2563eb; /* Blue Color */
-    color: white;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    user-select: none;
-    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
-    transition: transform 0.2s;
+    background: #2563eb; color: white; width: 48px; height: 48px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: bold; cursor: pointer; 
+    user-select: none; -webkit-user-select: none;
+    touch-action: manipulation; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
   }
-  #adminLogo:active { transform: scale(0.9); }
+  .header-logo { font-family: 'Poppins', sans-serif; font-weight: 700; color: #f97316; font-size: 2.2rem; }
 </style>
 </head>
 <body>
 
-<div id="app-container" class="app-card">
-  </div>
+<div id="app-container" class="app-card"></div>
 
 <div id="msgBox" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
   <div id="msgContent" class="bg-white p-8 rounded-3xl text-center w-full max-w-xs shadow-2xl"></div>
 </div>
 
 <script>
-/* 🔥 Firebase Setup */
 const firebaseConfig = {
   apiKey: "AIzaSyCuvev3-jwZwQu0_fHYyv2E2ovLny4LhRQ",
   authDomain: "gram-shakti-b135a.firebaseapp.com",
@@ -148,18 +71,9 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let userFlow = { state: "", district: "", panchayat: "", village: "" };
-const badWords = ["गाली", "sala", "haram", "pagal", "bad", "foul", "chutiya", "bhenchod"];
 
-// --- 1. राज्य चयन ---
 function showStates() {
-  const states = [
-    'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 
-    'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 
-    'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 
-    'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 
-    'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 
-    'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
-  ];
+  const states = ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'];
   
   let html = `
     <div class="flex items-center justify-between mb-8">
@@ -167,169 +81,127 @@ function showStates() {
       <h1 class="header-logo">ग्राम शक्ति</h1>
       <div class="w-12"></div>
     </div>
-    <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">अपना राज्य चुनें</h2>
     <div class="grid grid-cols-2 gap-4 h-[350px] overflow-y-auto pr-2">`;
-  states.forEach(s => { html += `<div class="state-grid-item" onclick="selectState('${s}')">${s}</div>`; });
+  states.forEach(s => { html += `<div class="state-grid-item" onclick="userFlow.state='${s}'; showDistrictStep()">${s}</div>`; });
   document.getElementById("app-container").innerHTML = html + `</div>`;
-  setupAdminHold();
-}
+  
+  // ADMIN HOLD LOGIC (FIXED)
+  const logo = document.getElementById("adminLogo");
+  let timer;
 
-function selectState(s) { userFlow.state = s; showDistrictStep(); }
+  const start = (e) => {
+    e.preventDefault();
+    timer = setTimeout(() => {
+      let p = prompt("Master Password:");
+      if(p === "Vikas0627.") showAdminPanel();
+    }, 3000);
+  };
+  const end = () => clearTimeout(timer);
+
+  logo.addEventListener("mousedown", start);
+  logo.addEventListener("touchstart", start);
+  logo.addEventListener("mouseup", end);
+  logo.addEventListener("mouseleave", end);
+  logo.addEventListener("touchend", end);
+}
 
 function showDistrictStep() {
   document.getElementById("app-container").innerHTML = `
     <h1 class="header-logo text-center mb-6">ग्राम शक्ति</h1>
-    <h2 class="text-xl font-semibold text-gray-800 mb-2">जिला का नाम लिखें</h2>
-    <p class="text-sm text-gray-500 mb-6">${userFlow.state}</p>
-    <input id="distInp" class="input-field" placeholder="जिला लिखें...">
-    <button onclick="saveDistrict()" class="btn-primary">आगे बढ़ें</button>
+    <h2 class="text-xl font-semibold mb-2">जिला लिखें</h2>
+    <input id="distInp" class="input-field" placeholder="जिला...">
+    <button onclick="userFlow.district=document.getElementById('distInp').value; showPanchayatStep()" class="btn-primary">आगे बढ़ें</button>
   `;
-}
-function saveDistrict() {
-  const val = document.getElementById("distInp").value.trim();
-  if(!val) return showMessage('error', "जिला लिखें!");
-  userFlow.district = val;
-  showPanchayatStep();
 }
 
 function showPanchayatStep() {
   document.getElementById("app-container").innerHTML = `
     <h1 class="header-logo text-center mb-6">ग्राम शक्ति</h1>
-    <h2 class="text-xl font-semibold text-gray-800 mb-2">पंचायत लिखें</h2>
-    <p class="text-sm text-gray-500 mb-6">${userFlow.district}</p>
     <input id="panchInp" class="input-field" placeholder="पंचायत लिखें...">
-    <button onclick="savePanchayat()" class="btn-primary">आगे बढ़ें</button>
+    <button onclick="userFlow.panchayat=document.getElementById('panchInp').value; showVillageStep()" class="btn-primary">आगे बढ़ें</button>
   `;
-}
-function savePanchayat() {
-  const val = document.getElementById("panchInp").value.trim();
-  if(!val) return showMessage('error', "पंचायत लिखें!");
-  userFlow.panchayat = val;
-  showVillageStep();
 }
 
 function showVillageStep() {
   document.getElementById("app-container").innerHTML = `
     <h1 class="header-logo text-center mb-6">ग्राम शक्ति</h1>
-    <h2 class="text-xl font-semibold text-gray-800 mb-2">गाँव का नाम लिखें</h2>
     <input id="villInp" class="input-field" placeholder="गाँव लिखें...">
-    <button onclick="saveVillage()" class="btn-primary">शुरू करें</button>
+    <button onclick="userFlow.village=document.getElementById('villInp').value; showOptions()" class="btn-primary">शुरू करें</button>
   `;
-}
-function saveVillage() {
-  const val = document.getElementById("villInp").value.trim();
-  if(!val) return showMessage('error', "गाँव लिखें!");
-  userFlow.village = val;
-  showOptions();
 }
 
 function showOptions() {
   document.getElementById("app-container").innerHTML = `
     <h1 class="header-logo text-center mb-6">ग्राम शक्ति</h1>
-    <p class="text-center text-gray-500 text-sm mb-8">${userFlow.village}, ${userFlow.panchayat}</p>
-    <button onclick="showRegistration()" class="btn-primary">🤝 मैं ग्राम साथी हूँ</button>
-    <button onclick="showCustomerView()" class="btn-primary !bg-white !text-f97316 border border-f97316 mt-4 shadow-sm">🔍 सेवा ढूंढें</button>
+    <button onclick="showRegistration()" class="btn-primary">🤝 पंजीकरण</button>
+    <button onclick="showCustomerView()" class="btn-primary !bg-white !text-f97316 border border-f97316 mt-4">🔍 सेवा ढूंढें</button>
   `;
 }
 
 function showRegistration() {
   document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-6">ग्राम शक्ति</h1>
-    <input id="wname" class="input-field" placeholder="पूरा नाम">
-    <input id="wphone" class="input-field" placeholder="मोबाइल नंबर" type="tel">
+    <h1 class="header-logo text-center mb-6">पंजीकरण</h1>
+    <input id="wname" class="input-field" placeholder="नाम">
+    <input id="wphone" class="input-field" placeholder="मोबाइल">
     <select id="wwork" class="input-field">
       <option value="">काम चुनें</option>
-      <optgroup label="भारी मशीनरी"><option>JCB Operator</option><option>Tractor Driver</option></optgroup>
-      <optgroup label="मिस्त्री & कारीगर"><option>राजमिस्त्री</option><option>इलेक्ट्रीशियन</option></optgroup>
-      <optgroup label="दुकान & सेवाएं"><option>किराना दुकान</option><option>दूध डेयरी</option></optgroup>
-      <optgroup label="छोटी सेवाएं"><option>मजदूर</option><option>नाई</option></optgroup>
+      <option>JCB Operator</option><option>मिस्त्री</option><option>मजदूर</option>
     </select>
-    <button onclick="saveWorker()" class="btn-primary">पंजीकरण करें</button>
+    <button onclick="saveWorker()" class="btn-primary">सुरक्षित करें</button>
   `;
 }
 
 function saveWorker() {
-  const n = document.getElementById("wname").value.trim();
-  const p = document.getElementById("wphone").value.trim();
+  const n = document.getElementById("wname").value;
+  const p = document.getElementById("wphone").value;
   const w = document.getElementById("wwork").value;
-  if(!n || !p || !w) return showMessage('error', "पूरी जानकारी भरें!");
-
   db.ref("workers").push({
     name: n, phone: p, work: w,
-    location: `${userFlow.state}/${userFlow.district}/${userFlow.panchayat}/${userFlow.village}`,
-    rating: 5, comments: [], time: Date.now()
-  }).then(() => {
-    showMessage('success', "पंजीकरण सफल!");
-    showOptions();
-  });
+    location: `${userFlow.state}/${userFlow.district}/${userFlow.panchayat}/${userFlow.village}`
+  }).then(() => { alert("सफल!"); showOptions(); });
 }
 
 function showCustomerView() {
   document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-6">ग्राम शक्ति</h1>
-    <div id="workerList" class="space-y-4 max-h-[350px] overflow-y-auto pr-2">लोड हो रहा है...</div>
-    <button onclick="showOptions()" class="btn-primary !bg-white !text-f97316 border border-f97316 mt-6 shadow-sm">पीछे जाएँ</button>
+    <h1 class="header-logo text-center mb-6">सेवाएं</h1>
+    <div id="workerList" class="space-y-4"></div>
+    <button onclick="showOptions()" class="mt-6 underline text-gray-400 w-full text-center">पीछे जाएँ</button>
   `;
   const currentPath = `${userFlow.state}/${userFlow.district}/${userFlow.panchayat}/${userFlow.village}`;
-  db.ref("workers").on("value", (snapshot) => {
+  db.ref("workers").on("value", (snap) => {
     let html = "";
-    snapshot.forEach((child) => {
-      const w = child.val();
-      if (w.location === currentPath) {
-        html += `<div class="p-4 bg-white rounded-xl shadow-md border-l-4 border-f97316 flex justify-between items-center">
-                   <div><p class="font-bold">${w.name}</p><p class="text-f97316 text-sm">${w.work}</p></div>
-                   <a href="tel:${w.phone}" class="bg-green-500 text-white p-2 rounded-full shadow-lg">📞</a>
+    snap.forEach(c => {
+      const w = c.val();
+      if(w.location === currentPath) {
+        html += `<div class="p-4 border rounded-xl flex justify-between items-center shadow-sm">
+                   <div><p class="font-bold">${w.name}</p><p class="text-sm text-f97316">${w.work}</p></div>
+                   <a href="tel:${w.phone}" class="bg-green-500 text-white p-2 rounded-full">📞</a>
                  </div>`;
       }
     });
-    document.getElementById("workerList").innerHTML = html || "कोई सेवा नहीं मिली";
+    document.getElementById("workerList").innerHTML = html || "कोई नहीं मिला";
   });
-}
-
-// --- एडमिन पैनल (G लोगो के पीछे) ---
-function setupAdminHold() {
-  const logo = document.getElementById("adminLogo");
-  let timer;
-  logo.onmousedown = () => { timer = setTimeout(() => {
-    let p = prompt("Master Password:");
-    if(p === "Vikas0627.") showAdminPanel();
-  }, 3000); };
-  logo.onmouseup = () => clearTimeout(timer);
 }
 
 function showAdminPanel() {
   document.getElementById("app-container").innerHTML = `
     <div class="flex justify-between items-center mb-6 border-b pb-2">
-      <h2 class="text-2xl font-bold text-red-600">एडमिन पैनल</h2>
-      <button onclick="location.reload()" class="bg-gray-100 px-3 py-1 rounded-lg text-sm">बंद करें</button>
+      <h2 class="text-2xl font-bold text-red-600">Admin</h2>
+      <button onclick="location.reload()" class="text-sm bg-gray-100 px-2 py-1 rounded">Logout</button>
     </div>
-    <div id="adminWorkerList" class="space-y-4 max-h-[400px] overflow-y-auto">लोड हो रहा है...</div>
+    <div id="adminList" class="space-y-4 h-[400px] overflow-y-auto"></div>
   `;
   db.ref("workers").on("value", (snap) => {
     let html = "";
-    snap.forEach(child => {
-      const data = child.val();
-      html += `<div class="p-4 bg-white rounded-xl shadow-md border-l-4 border-f97316 flex justify-between">
-                 <div><p class="font-bold">${data.name}</p><p class="text-xs text-gray-500">${data.location}</p></div>
-                 <button onclick="deleteEntry('${child.key}')" class="bg-red-500 text-white px-3 py-1 rounded text-xs">Delete</button>
+    snap.forEach(c => {
+      const data = c.val();
+      html += `<div class="p-3 border rounded shadow-sm flex justify-between items-center">
+                 <p class="text-sm font-bold">${data.name}</p>
+                 <button onclick="db.ref('workers/${c.key}').remove()" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Delete</button>
                </div>`;
     });
-    document.getElementById("adminWorkerList").innerHTML = html || "डेटा नहीं है";
+    document.getElementById("adminList").innerHTML = html || "डेटा नहीं है";
   });
-}
-
-function deleteEntry(id) {
-  if(confirm("डिलीट करें?")) db.ref("workers/" + id).remove();
-}
-
-function showMessage(type, message) {
-  const msgContent = document.getElementById("msgContent");
-  msgContent.innerHTML = `
-    <div class="text-5xl mb-4">${type === 'success' ? '✅' : '❌'}</div>
-    <h3 class="text-xl font-bold">${message}</h3>
-    <button onclick="document.getElementById('msgBox').classList.add('hidden')" class="mt-6 bg-orange-600 text-white w-full py-2 rounded-xl">OK</button>
-  `;
-  document.getElementById("msgBox").classList.remove("hidden");
 }
 
 showStates();
