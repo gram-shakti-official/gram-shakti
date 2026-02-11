@@ -165,7 +165,11 @@ function workerForm(){
         <optgroup label="अन्य"><option value="Driver">कार/ऑटो ड्राइवर</option><option value="Pandit ji">पंडित जी</option><option value="Halwai">हलवाई</option></optgroup>
     </select>
     <input id="villages" placeholder="काम के गाँव (गाँव1, गाँव2)">
-    <button onclick="saveWorker()" class="btn-main">अभी जुड़ें</button>
+    <button onclick="// पुराने catch को हटाकर इसे डालें
+.catch((error) => {
+    console.log(error);
+    alert("गड़बड़ ये है: " + error.message);
+});" class="btn-main">अभी जुड़ें</button>
   `;
 }
 
