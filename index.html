@@ -1,216 +1,175 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ग्राम शक्ति | डिजिटल विलेज नेटवर्क</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Hind', sans-serif; background-color: #f1f5f9; color: #1e293b; }
-        .card { border-radius: 35px; background: white; padding: 25px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-        .input-style { width: 100%; padding: 14px; border-radius: 15px; border: 2px solid #e2e8f0; margin-top: 10px; font-weight: bold; outline: none; }
-        .btn-orange { background: #ea580c; color: white; width: 100%; padding: 15px; border-radius: 15px; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        .btn-orange:active { transform: scale(0.96); }
-        .hidden { display: none; }
-        .label-tag { font-size: 13px; color: #ea580c; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        .tab-btn { flex: 1; padding: 12px; font-weight: bold; border-radius: 15px; }
-        .active-tab { background: #ea580c; color: white; }
-        .worker-card { border-left: 6px solid #ea580c; padding: 15px; background: #fff; border-radius: 15px; margin-bottom: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
-    </style>
-</head>
-<body>
+// --- 1. FIREBASE SETUP (अपनी डिटेल्स यहाँ भरें) ---
+const firebaseConfig = { 
+    apiKey: "YOUR_API_KEY", 
+    databaseURL: "YOUR_DB_URL", 
+    projectId: "YOUR_PROJECT_ID" 
+};
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
 
-    <header class="text-center py-10">
-        <h1 class="text-6xl font-black text-orange-600 italic tracking-tight">ग्राम शक्ति</h1>
-        <p class="text-[10px] text-gray-400 tracking-[5px] font-bold uppercase mt-2">National Village Chain Network</p>
-    </header>
+// --- 2. DISTRICT DATA (Fixed List) ---
+const distData = {
+    "UP": ["आगरा", "अलीगढ़", "प्रयागराज", "अम्बेडकर नगर", "अमेठी", "अमरोहा", "औरैया", "अयोध्या", "आज़मगढ़", "बागपत", "बहराइच", "बलिया", "बलरामपुर", "बांदा", "बाराबंकी", "बरेली", "बस्ती", "भदोही", "बिजनौर", "बदायूं", "बुलंदशहर", "चंदौली", "चित्रकूट", "देवरिया", "एटा", "इटावा", "फ़र्रुख़ाबाद", "फ़तेहपुर", "फ़िरोज़ाबाद", "गौतम बुद्ध नगर", "गाज़ियाबाद", "गाज़ीपुर", "गोंडा", "गोरखपुर", "हमीरपुर", "हापुड़", "हरदोई", "हाथरस", "जालौन", "जौनपुर", "झांसी", "कन्नौज", "कानपुर देहात", "कानपुर नगर", "कासगंज", "कौशाम्बी", "कुशीनगर", "लखीमपुर खीरी", "ललितपुर", "लखनऊ", "महराजगंज", "महोबा", "मैनपुरी", "मथुरा", "मऊ", "मेरठ", "मिर्ज़ापुर", "मुरादाबाद", "मुज़फ्फरनगर", "पीलीभीत", "प्रतापगढ़", "रायबरेली", "रामपुर", "सहारनपुर", "संभल", "संत कबीर नगर", "शाहजहाँपुर", "शामली", "श्रावस्ती", "सिद्धार्थनगर", "सीतापुर", "सोनभद्र", "सुल्तानपुर", "उन्नाव", "वाराणसी"],
+    "RJ": ["अजमेर", "अलवर", "बांसवाड़ा", "बारां", "बाड़मेर", "भरतपुर", "भीलवाड़ा", "बीकानेर", "बूंदी", "चित्तौड़गढ़", "चूरू", "दौसा", "धौलपुर", "डूंगरपुर", "हनुमानगढ़", "जयपुर", "जैसलमेर", "जालौर", "झालावाड़", "झुंझुनू", "जोधपुर", "करौली", "कोटा", "नागौर", "पाली", "प्रतापगढ़", "राजसमंद", "सवाई माधोपुर", "सीकर", "सिरोही", "श्री गंगानगर", "टोंक", "उदयपुर", "ब्यावर", "केकड़ी", "सांचौर", "कोटपुतली", "फलोदी", "बालोतरा"],
+    "MP": ["अगर मालवा", "अलीराजपुर", "अनूपपुर", "अशोकनगर", "बालाघाट", "बड़वानी", "बैतूल", "भिंड", "भोपाल", "बुरहानपुर", "छतरपुर", "छिंदवाड़ा", "दमोह", "दतिया", "देवास", "धार", "डिंडौरी", "गुना", "ग्वालियर", "हरदा", "नर्मदापुरम", "इंदौर", "जबलपुर", "झाबुआ", "कटनी", "खंडवा", "खरगोन", "मैहर", "मंडला", "मंदसौर", "मुरैना", "नरसिंहपुर", "नीमच", "निवाड़ी", "पांढुर्ना", "पन्ना", "रायसेन", "राजगढ़", "रतलाम", "रीवा", "सागर", "सतना", "सिवनी", "शहडोल", "शाजापुर", "श्योपुर", "शिवपुरी", "सीधी", "सिंगरौली", "टीकमगढ़", "उज्जैन", "उमरिया", "विदिशा", "मऊगंज"],
+    "BR": ["अररिया", "अरवल", "औरंगाबाद", "बांका", "बेगूसराय", "भागलपुर", "भोजपुर", "बक्सर", "दरभंगा", "पूर्वी चंपारण", "गया", "गोपालगंज", "जमुई", "जहानाबाद", "कैमूर", "कटिहार", "खगड़िया", "किशनगंज", "लखीसराय", "मधेपुरा", "मधुबनी", "मुंगेर", "मुजफ्फरपुर", "नालंदा", "नवादा", "पटना", "पूर्णिया", "रोहतास", "सहरसा", "समस्तीपुर", "सारण", "शेखपुरा", "शिवहर", "सीतामढ़ी", "सिवान", "सुपौल", "वैशाली", "पश्चिमी चंपारण"],
+    "CG": ["बालोद", "बलौदाबाज़ार", "बलरामपुर", "बस्तर", "बेमेतरा", "बीजापुर", "बिलासपुर", "दंतेवाड़ा", "धमतरी", "दुर्ग", "गरियाबंद", "जांजगीर-चांपा", "जशपुर", "कबीरधाम", "कांकेर", "कोंडागांव", "कोरबा", "कोरिया", "महासमुंद", "मुंगेली", "नारायणपुर", "रायगढ़", "रायपुर", "राजनांदगांव", "सुकमा", "सूरजपुर", "सरगुजा", "मोहला-मानपुर", "सक्ती", "सारंगढ़-बिलाईगढ़"],
+    "MH": ["अहमदनगर", "अकोला", "अमरावती", "छत्रपति संभाजीनगर", "बीड", "भंडारा", "बुलढाणा", "चंद्रपुर", "धुले", "गढ़चिरोली", "गोंदिया", "हिंगोली", "जलगांव", "जलना", "कोल्हापुर", "लातूर", "मुंबई", "नागपुर", "नांदेड़", "नासिक", "धाराशिव", "पालघर", "परभणी", "पुणे", "रायगढ़", "रत्नागिरी", "सांगली", "सातारा", "सिंधुदुर्ग", "सोलापुर", "ठाणे", "वर्धा", "वाशिम", "यवतमाल"],
+    "GJ": ["अहमदाबाद", "अमरेली", "आनंद", "अरावली", "बनासकांठा", "भरूच", "भावनगर", "बोटाद", "दाहोद", "डांग", "द्वारका", "गांधीनगर", "जामनगर", "जूनागढ़", "कच्छ", "खेड़ा", "मेहसाणा", "मोरबी", "नर्मदा", "नवसारी", "पंचमहल", "पाटन", "पोरबंदर", "राजकोट", "साबरकांठा", "सूरत", "सुरेंद्रनगर", "तापी", "वडोदरा", "वलसाड"],
+    "PB": ["अमृतसर", "बरनाला", "बठिंडा", "फ़रीदकोट", "फ़तेहगढ़ साहिब", "फ़ाज़िल्का", "फ़िरोज़पुर", "गुरदासपुर", "होशियारपुर", "जालंधर", "कपूरथला", "लुधियाना", "मानसा", "मोगा", "पठानकोट", "पटियाला", "रूपनगर", "संगरूर", "तरनतारन", "मोहाली", "नवांशहर"],
+    "HR": ["अंबाला", "भिवानी", "फरीदाबाद", "फतेहाबाद", "गुरुग्राम", "हिसार", "झज्जर", "जींड", "कैथल", "करनाल", "कुरुक्षेत्र", "महेंद्रगढ़", "पलवल", "पंचकूला", "पानीपत", "रेवाड़ी", "रोहतक", "सिरसा", "सोनीपत", "यमुनानगर"],
+    "UK": ["अल्मोड़ा", "बागेश्वर", "चमोली", "चंपावत", "देहरादून", "हरिद्वार", "नैनीताल", "पौड़ी", "पिथौरागढ़", "रुद्रप्रयाग", "टिहरी", "उधम सिंह नगर", "उत्तरकाशी"]
+};
 
-    <main class="max-w-md mx-auto px-4 pb-20">
-        
-        <div id="section-location">
-            <div class="card">
-                <label class="label-tag">1. अपना क्षेत्र चुनें</label>
-                <select id="sState" onchange="loadDistricts()" class="input-style">
-                    <option value="">-- राज्य चुनें --</option>
-                    <option value="UP">उत्तर प्रदेश</option>
-                    <option value="RJ">राजस्थान</option>
-                    <option value="MP">मध्य प्रदेश</option>
-                    <option value="BR">बिहार</option>
-                    <option value="CG">छत्तीसगढ़</option>
-                    <option value="MH">महाराष्ट्र</option>
-                    <option value="GJ">गुजरात</option>
-                    <option value="PB">पंजाब</option>
-                    <option value="HR">हरियाणा</option>
-                    <option value="UK">उत्तराखंड</option>
-                </select>
-                <select id="sDist" onchange="fetchPanchayats()" class="input-style hidden"></select>
-            </div>
+// --- 3. HELPER FUNCTIONS ---
 
-            <div id="box-panchayat" class="card hidden">
-                <label class="label-tag">2. पंचायत चुनें या नई जोड़ें</label>
-                <select id="sPanchayat" onchange="togglePInput()" class="input-style"></select>
-                <input id="newPanchayat" type="text" placeholder="पंचायत का नाम लिखें..." class="input-style hidden">
-                <button onclick="fetchVillages()" class="btn-orange">गाँव देखें ❯</button>
-            </div>
+function resetBelow(level) {
+    if(level <= 1) { 
+        document.getElementById('sDist').classList.add('hidden'); 
+        document.getElementById('sDist').innerHTML = ''; 
+    }
+    if(level <= 2) { 
+        document.getElementById('box-panchayat').classList.add('hidden'); 
+        document.getElementById('newPanchayat').classList.add('hidden'); 
+    }
+    if(level <= 3) { 
+        document.getElementById('box-gaon').classList.add('hidden'); 
+        document.getElementById('newGaon').classList.add('hidden'); 
+    }
+}
 
-            <div id="box-gaon" class="card hidden">
-                <label class="label-tag">3. गाँव चुनें या नया जोड़ें</label>
-                <select id="sGaon" onchange="toggleGInput()" class="input-style"></select>
-                <input id="newGaon" type="text" placeholder="गाँव का नाम लिखें..." class="input-style hidden">
-                <button onclick="enterPortal()" class="btn-orange bg-blue-700">नेटवर्क में प्रवेश करें ❯</button>
-            </div>
-        </div>
+// --- 4. CORE LOGIC ---
 
-        <div id="section-portal" class="hidden">
-            <div class="flex gap-2 mb-6">
-                <button id="tabW" onclick="switchMode('worker')" class="tab-btn active-tab">मैं वर्कर हूँ</button>
-                <button id="tabC" onclick="switchMode('customer')" class="tab-btn bg-white">मैं ग्राहक हूँ</button>
-            </div>
+function loadDistricts() {
+    const s = document.getElementById('sState').value;
+    resetBelow(1);
+    const ds = document.getElementById('sDist');
+    if(s && distData[s]) {
+        ds.innerHTML = '<option value="">-- जिला चुनें --</option>';
+        distData[s].forEach(d => ds.innerHTML += `<option value="${d}">${d}</option>`);
+        ds.classList.remove('hidden');
+    }
+}
 
-            <div id="mode-worker" class="card">
-                <h2 class="text-xl font-bold text-center mb-4">वर्कर रजिस्ट्रेशन</h2>
-                <input id="wName" placeholder="आपका नाम" class="input-style">
-                <select id="wSkill" class="input-style">
-                    <option value="">-- क्या काम करते हैं? --</option>
-                    <option>राज मिस्त्री</option>
-                    <option>लेबर / मजदूर</option>
-                    <option>प्लंबर (Plumber)</option>
-                    <option>इलेक्ट्रीशियन</option>
-                    <option>बढ़ई (Carpenter)</option>
-                    <option>ट्रैक्टर / ड्राइवर</option>
-                    <option>पेंटर</option>
-                    <option>अन्य</option>
-                </select>
-                <input id="wPhone" type="number" placeholder="मोबाइल नंबर" class="input-style">
-                <button onclick="saveWorker()" id="saveBtn" class="btn-orange">नाम जोड़ें ✅</button>
-            </div>
+function fetchPanchayats() {
+    const state = document.getElementById('sState').value;
+    const dist = document.getElementById('sDist').value;
+    resetBelow(2);
+    if(!dist) return;
 
-            <div id="mode-customer" class="hidden">
-                <div id="worker-list">
-                    </div>
-            </div>
+    const ps = document.getElementById('sPanchayat');
+    ps.innerHTML = '<option value="">-- पंचायत चुनें --</option><option value="NEW">+ नई पंचायत जोड़ें</option>';
+    document.getElementById('box-panchayat').classList.remove('hidden');
 
-            <button onclick="location.reload()" class="w-full text-gray-400 font-bold mt-4">← स्थान बदलें</button>
-        </div>
-    </main>
+    db.ref(`v2_chain/${state}/${dist}`).once('value', (snap) => {
+        if(snap.exists()) snap.forEach(c => ps.innerHTML += `<option value="${c.key}">${c.key}</option>`);
+    });
+}
 
-    <script>
-        // --- 1. FIREBASE SETUP ---
-        const firebaseConfig = { 
-            apiKey: "YOUR_API_KEY", 
-            databaseURL: "YOUR_DB_URL", 
-            projectId: "YOUR_PROJECT_ID" 
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+function togglePInput() {
+    const val = document.getElementById('sPanchayat').value;
+    document.getElementById('newPanchayat').classList.toggle('hidden', val !== 'NEW');
+    resetBelow(3);
+}
 
-        // --- 2. DISTRICT DATA (10 STATES) ---
-        const distData = {
-            "UP": ["आगरा", "अलीगढ़", "प्रयागराज", "अम्बेडकर नगर", "अमेठी", "अमरोहा", "औरैया", "अयोध्या", "आज़मगढ़", "बागपत", "बहराइच", "बलिया", "बलरामपुर", "बांदा", "बाराबंकी", "बरेली", "बस्ती", "भदोही", "बिजनौर", "बदायूं", "बुलंदशहर", "चंदौली", "चित्रकूट", "देवरिया", "एटा", "इटावा", "फ़र्रुख़ाबाद", "फ़तेहपुर", "फ़िरोज़ाबाद", "गौतम बुद्ध नगर", "गाज़ियाबाद", "गाज़ीपुर", "गोंडा", "गोरखपुर", "हमीरपुर", "हापुड़", "हरदोई", "हाथरस", "जालौन", "जौनपुर", "झांसी", "कन्नौज", "कानपुर देहात", "कानपुर नगर", "कासगंज", "कौशाम्बी", "कुशीनगर", "लखीमपुर खीरी", "ललितपुर", "लखनऊ", "महराजगंज", "महोबा", "मैनपुरी", "मथुरा", "मऊ", "मेरठ", "मिर्ज़ापुर", "मुरादाबाद", "मुज़फ्फरनगर", "पीलीभीत", "प्रतापगढ़", "रायबरेली", "रामपुर", "सहारनपुर", "संभल", "संत कबीर नगर", "शाहजहाँपुर", "शामली", "श्रावस्ती", "सिद्धार्थनगर", "सीतापुर", "सोनभद्र", "सुल्तानपुर", "उन्नाव", "वाराणसी"],
-            "RJ": ["अजमेर", "अलवर", "बांसवाड़ा", "बारां", "बाड़मेर", "भरतपुर", "भीलवाड़ा", "बीकानेर", "बूंदी", "चित्तौड़गढ़", "चूरू", "दौसा", "धौलपुर", "डूंगरपुर", "हनुमानगढ़", "जयपुर", "जैसलमेर", "जालौर", "झालावाड़", "झुंझुनू", "जोधपुर", "करौली", "कोटा", "नागौर", "पाली", "प्रतापगढ़", "राजसमंद", "सवाई माधोपुर", "सीकर", "सिरोही", "श्री गंगानगर", "टोंक", "उदयपुर", "ब्यावर", "केकड़ी", "सांचौर", "कोटपुतली", "फलोदी", "बालोतरा"],
-            "MP": ["अगर मालवा", "अलीराजपुर", "अनूपपुर", "अशोकनगर", "बालाघाट", "बड़वानी", "बैतूल", "भिंड", "भोपाल", "बुरहानपुर", "छतरपुर", "छिंदवाड़ा", "दमोह", "दतिया", "देवास", "धार", "डिंडौरी", "गुना", "ग्वालियर", "हरदा", "नर्मदापुरम", "इंदौर", "जबलपुर", "झाबुआ", "कटनी", "खंडवा", "खरगोन", "मैहर", "मंडला", "मंदसौर", "मुरैना", "नरसिंहपुर", "नीमच", "निवाड़ी", "पांढुर्ना", "पन्ना", "रायसेन", "राजगढ़", "रतलाम", "रीवा", "सागर", "सतना", "सिवनी", "शहडोल", "शाजापुर", "श्योपुर", "शिवपुरी", "सीधी", "सिंगरौली", "टीकमगढ़", "उज्जैन", "उमरिया", "विदिशा", "मऊगंज"],
-            "BR": ["अररिया", "अरवल", "औरंगाबाद", "बांका", "बेगूसराय", "भागलपुर", "भोजपुर", "बक्सर", "दरभंगा", "पूर्वी चंपारण", "गया", "गोपालगंज", "जमुई", "जहानाबाद", "कैमूर", "कटिहार", "खगड़िया", "किशनगंज", "लखीसराय", "मधेपुरा", "मधुबनी", "मुंगेर", "मुजफ्फरपुर", "नालंदा", "नवादा", "पटना", "पूर्णिया", "रोहतास", "सहरसा", "समस्तीपुर", "सारण", "शेखपुरा", "शिवहर", "सीतामढ़ी", "सिवान", "सुपौल", "वैशाली", "पश्चिमी चंपारण"],
-            "CG": ["बालोद", "बलौदाबाज़ार", "बलरामपुर", "बस्तर", "बेमेतरा", "बीजापुर", "बिलासपुर", "दंतेवाड़ा", "धमतरी", "दुर्ग", "गरियाबंद", "जांजगीर-चांपा", "जशपुर", "कबीरधाम", "कांकेर", "कोंडागांव", "कोरबा", "कोरिया", "महासमुंद", "मुंगेली", "नारायणपुर", "रायगढ़", "रायपुर", "राजनांदगांव", "सुकमा", "सूरजपुर", "सरगुजा", "मोहला-मानपुर", "सक्ती", "सारंगढ़-बिलाईगढ़"],
-            "MH": ["अहमदनगर", "अकोला", "अमरावती", "छत्रपति संभाजीनगर", "बीड", "भंडारा", "बुलढाणा", "चंद्रपुर", "धुले", "गढ़चिरोली", "गोंदिया", "हिंगोली", "जलगांव", "जलना", "कोल्हापुर", "लातूर", "मुंबई", "नागपुर", "नांदेड़", "नासिक", "धाराशिव", "पालघर", "परभणी", "पुणे", "रायगढ़", "रत्नागिरी", "सांगली", "सातारा", "सिंधुदुर्ग", "सोलापुर", "ठाणे", "वर्धा", "वाशिम", "यवतमाल"],
-            "GJ": ["अहमदाबाद", "अमरेली", "आनंद", "अरावली", "बनासकांठा", "भरूच", "भावनगर", "बोटाद", "दाहोद", "डांग", "द्वारका", "गांधीनगर", "जामनगर", "जूनागढ़", "कच्छ", "खेड़ा", "मेहसाणा", "मोरबी", "नर्मदा", "नवसारी", "पंचमहल", "पाटन", "पोरबंदर", "राजकोट", "साबरकांठा", "सूरत", "सुरेंद्रनगर", "तापी", "वडोदरा", "वलसाड"],
-            "PB": ["अमृतसर", "बरनाला", "बठिंडा", "फ़रीदकोट", "फ़तेहगढ़ साहिब", "फ़ाज़िल्का", "फ़िरोज़पुर", "गुरदासपुर", "होशियारपुर", "जालंधर", "कपूरथला", "लुधियाना", "मानसा", "मोगा", "पठानकोट", "पटियाला", "रूपनगर", "संगरूर", "तरनतारन", "मोहाली", "नवांशहर"],
-            "HR": ["अंबाला", "भिवानी", "फरीदाबाद", "फतेहाबाद", "गुरुग्राम", "हिसार", "झज्जर", "जींड", "कैथल", "करनाल", "कुरुक्षेत्र", "महेंद्रगढ़", "पलवल", "पंचकूला", "पानीपत", "रेवाड़ी", "रोहतक", "सिरसा", "सोनीपत", "यमुनानगर"],
-            "UK": ["अल्मोड़ा", "बागेश्वर", "चमोली", "चंपावत", "देहरादून", "हरिद्वार", "नैनीताल", "पौड़ी", "पिथौरागढ़", "रुद्रप्रयाग", "टिहरी", "उधम सिंह नगर", "उत्तरकाशी"]
-        };
+function fetchVillages() {
+    const state = document.getElementById('sState').value;
+    const dist = document.getElementById('sDist').value;
+    let pan = document.getElementById('sPanchayat').value === 'NEW' ? document.getElementById('newPanchayat').value.trim() : document.getElementById('sPanchayat').value;
+    
+    if(!pan) return alert("पंचायत का नाम चुनें या लिखें");
+    resetBelow(3);
 
-        // --- 3. LOGIC ---
+    const gs = document.getElementById('sGaon');
+    gs.innerHTML = '<option value="">-- गाँव चुनें --</option><option value="NEW">+ नया गाँव जोड़ें</option>';
+    document.getElementById('box-gaon').classList.remove('hidden');
 
-        function loadDistricts() {
-            const s = document.getElementById('sState').value;
-            const ds = document.getElementById('sDist');
-            ds.innerHTML = '<option value="">-- जिला चुनें --</option>';
-            if(distData[s]) {
-                distData[s].forEach(d => ds.innerHTML += `<option value="${d}">${d}</option>`);
-                ds.classList.remove('hidden');
-            }
-        }
+    db.ref(`v2_chain/${state}/${dist}/${pan}`).once('value', (snap) => {
+        if(snap.exists()) snap.forEach(c => gs.innerHTML += `<option value="${c.key}">${c.key}</option>`);
+    });
+}
 
-        function fetchPanchayats() {
-            const state = document.getElementById('sState').value, dist = document.getElementById('sDist').value;
-            const ps = document.getElementById('sPanchayat');
-            ps.innerHTML = '<option value="NEW">+ नई पंचायत जोड़ें</option>';
-            document.getElementById('box-panchayat').classList.remove('hidden');
-            db.ref(`v2_chain/${state}/${dist}`).once('value', (snap) => {
-                if(snap.exists()) snap.forEach(c => ps.innerHTML += `<option value="${c.key}">${c.key}</option>`);
+function toggleGInput() {
+    document.getElementById('newGaon').classList.toggle('hidden', document.getElementById('sGaon').value !== 'NEW');
+}
+
+function enterPortal() {
+    const gaon = document.getElementById('sGaon').value === 'NEW' ? document.getElementById('newGaon').value.trim() : document.getElementById('sGaon').value;
+    if(!gaon) return alert("गाँव का नाम चुनें या लिखें");
+
+    document.getElementById('section-location').classList.add('hidden');
+    document.getElementById('section-portal').classList.remove('hidden');
+    switchMode('worker');
+}
+
+function switchMode(mode) {
+    const isW = mode === 'worker';
+    document.getElementById('mode-worker').classList.toggle('hidden', !isW);
+    document.getElementById('mode-customer').classList.toggle('hidden', isW);
+    document.getElementById('tabW').className = isW ? 'tab-btn active-tab' : 'tab-btn bg-white';
+    document.getElementById('tabC').className = isW ? 'tab-btn bg-white' : 'tab-btn active-tab';
+    if(!isW) loadList();
+}
+
+function saveWorker() {
+    const state = document.getElementById('sState').value;
+    const dist = document.getElementById('sDist').value;
+    const pan = document.getElementById('sPanchayat').value === 'NEW' ? document.getElementById('newPanchayat').value.trim() : document.getElementById('sPanchayat').value;
+    const gaon = document.getElementById('sGaon').value === 'NEW' ? document.getElementById('newGaon').value.trim() : document.getElementById('sGaon').value;
+    
+    const name = document.getElementById('wName').value.trim();
+    const skill = document.getElementById('wSkill').value;
+    const phone = document.getElementById('wPhone').value.trim();
+
+    if(!name || !skill || phone.length < 10) return alert("कृपया नाम, काम और 10 अंकों का मोबाइल नंबर सही भरें");
+
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    btn.innerText = "सेव हो रहा है...";
+
+    db.ref(`v2_chain/${state}/${dist}/${pan}/${gaon}/workers`).push({
+        name: name,
+        skill: skill,
+        phone: phone,
+        timestamp: Date.now()
+    }).then(() => {
+        alert("आपका रजिस्ट्रेशन सफल रहा!");
+        document.getElementById('wName').value = '';
+        document.getElementById('wPhone').value = '';
+        btn.disabled = false;
+        btn.innerText = "नाम जोड़ें ✅";
+        switchMode('customer');
+    }).catch(err => {
+        alert("Error: " + err.message);
+        btn.disabled = false;
+    });
+}
+
+function loadList() {
+    const state = document.getElementById('sState').value;
+    const dist = document.getElementById('sDist').value;
+    const pan = document.getElementById('sPanchayat').value === 'NEW' ? document.getElementById('newPanchayat').value.trim() : document.getElementById('sPanchayat').value;
+    const gaon = document.getElementById('sGaon').value === 'NEW' ? document.getElementById('newGaon').value.trim() : document.getElementById('sGaon').value;
+    
+    const listDiv = document.getElementById('worker-list');
+    listDiv.innerHTML = "<p class='text-center p-4'>खोज रहे हैं...</p>";
+
+    db.ref(`v2_chain/${state}/${dist}/${pan}/${gaon}/workers`).on('value', (snap) => {
+        listDiv.innerHTML = "";
+        if(snap.exists()) {
+            snap.forEach(c => {
+                const w = c.val();
+                listDiv.innerHTML += `
+                    <div class="worker-card">
+                        <h4 class="text-xl font-bold">${w.name}</h4>
+                        <p class="text-orange-600 font-bold text-sm uppercase">${w.skill}</p>
+                        <a href="tel:${w.phone}" class="inline-block mt-2 font-bold text-blue-600 border border-blue-600 px-4 py-1 rounded-lg">📞 कॉल करें: ${w.phone}</a>
+                    </div>`;
             });
+        } else {
+            listDiv.innerHTML = "<p class='text-center text-gray-400 p-10'>इस गाँव में अभी कोई वर्कर नहीं है।</p>";
         }
-
-        function togglePInput() { document.getElementById('newPanchayat').classList.toggle('hidden', document.getElementById('sPanchayat').value !== 'NEW'); }
-
-        function fetchVillages() {
-            const state = document.getElementById('sState').value, dist = document.getElementById('sDist').value;
-            let pan = document.getElementById('sPanchayat').value === 'NEW' ? document.getElementById('newPanchayat').value : document.getElementById('sPanchayat').value;
-            if(!pan) return alert("पंचायत का नाम भरें");
-            const gs = document.getElementById('sGaon');
-            gs.innerHTML = '<option value="NEW">+ नया गाँव जोड़ें</option>';
-            document.getElementById('box-gaon').classList.remove('hidden');
-            db.ref(`v2_chain/${state}/${dist}/${pan}`).once('value', (snap) => {
-                if(snap.exists()) snap.forEach(c => gs.innerHTML += `<option value="${c.key}">${c.key}</option>`);
-            });
-        }
-
-        function toggleGInput() { document.getElementById('newGaon').classList.toggle('hidden', document.getElementById('sGaon').value !== 'NEW'); }
-
-        function enterPortal() {
-            document.getElementById('section-location').classList.add('hidden');
-            document.getElementById('section-portal').classList.remove('hidden');
-            switchMode('worker');
-        }
-
-        function switchMode(mode) {
-            const isW = mode === 'worker';
-            document.getElementById('mode-worker').classList.toggle('hidden', !isW);
-            document.getElementById('mode-customer').classList.toggle('hidden', isW);
-            document.getElementById('tabW').className = isW ? 'tab-btn active-tab' : 'tab-btn bg-white';
-            document.getElementById('tabC').className = isW ? 'tab-btn bg-white' : 'tab-btn active-tab';
-            if(!isW) loadList();
-        }
-
-        function saveWorker() {
-            const state = document.getElementById('sState').value, dist = document.getElementById('sDist').value;
-            let pan = document.getElementById('sPanchayat').value === 'NEW' ? document.getElementById('newPanchayat').value : document.getElementById('sPanchayat').value;
-            let gaon = document.getElementById('sGaon').value === 'NEW' ? document.getElementById('newGaon').value : document.getElementById('sGaon').value;
-            const name = document.getElementById('wName').value, skill = document.getElementById('wSkill').value, phone = document.getElementById('wPhone').value;
-
-            if(!name || !skill || phone.length < 10) return alert("सही जानकारी दें");
-            
-            document.getElementById('saveBtn').disabled = true;
-            db.ref(`v2_chain/${state}/${dist}/${pan}/${gaon}`).push({ name, skill, phone }).then(() => {
-                alert("नाम जुड़ गया!");
-                switchMode('customer');
-            });
-        }
-
-        function loadList() {
-            const state = document.getElementById('sState').value, dist = document.getElementById('sDist').value;
-            let pan = document.getElementById('sPanchayat').value === 'NEW' ? document.getElementById('newPanchayat').value : document.getElementById('sPanchayat').value;
-            let gaon = document.getElementById('sGaon').value === 'NEW' ? document.getElementById('newGaon').value : document.getElementById('sGaon').value;
-            
-            const listDiv = document.getElementById('worker-list');
-            listDiv.innerHTML = "लोड हो रहा है...";
-            db.ref(`v2_chain/${state}/${dist}/${pan}/${gaon}`).once('value', (snap) => {
-                listDiv.innerHTML = "";
-                if(snap.exists()) {
-                    snap.forEach(c => {
-                        const w = c.val();
-                        listDiv.innerHTML += `
-                            <div class="worker-card">
-                                <h4 class="text-xl font-bold">${w.name}</h4>
-                                <p class="text-orange-600 font-bold text-sm uppercase">${w.skill}</p>
-                                <a href="tel:${w.phone}" class="inline-block mt-2 font-bold text-blue-600">📞 कॉल करें: ${w.phone}</a>
-                            </div>`;
-                    });
-                } else { listDiv.innerHTML = "<p class='text-center text-gray-400'>इस गाँव में अभी कोई वर्कर नहीं है।</p>"; }
-            });
-        }
-    </script>
-</body>
-</html>
+    });
+}
