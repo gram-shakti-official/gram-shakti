@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gram Shakti | Fixed Admin</title>
+
+<title>ग्राम शक्ति - गाँव की डिजिटल सेवा | Gram Shakti Official</title>
+<meta name="description" content="ग्राम शक्ति (Gram Shakti): आपके गाँव के सभी वर्कर्स, जेसीबी, मिस्त्री और मजदूरों को खोजने का सबसे बड़ा प्लेटफॉर्म।">
+
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -14,51 +17,43 @@
   body { 
     background: linear-gradient(to bottom right, #fdf4eb, #fffde7, #e0f2fe);
     font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px;
   }
   .app-card {
-    background: white;
-    width: 100%;
-    max-width: 480px;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    background: white; width: 100%; max-width: 480px; padding: 30px; border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1); z-index: 10;
   }
-  .input-field {
-    width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #e0e0e0;
-    margin-top: 10px; outline: none; font-size: 16px;
+  .ad-space {
+    width: 100%; max-width: 480px; background: rgba(0,0,0,0.05);
+    border: 1px dashed #ccc; margin: 10px 0; display: flex;
+    align-items: center; justify-content: center; color: #888;
+    font-size: 12px; border-radius: 10px; min-height: 60px;
   }
   .btn-primary {
     width: 100%; padding: 16px; background: linear-gradient(90deg, #f97316, #ea580c);
     color: white; border-radius: 14px; font-size: 18px; font-weight: 700;
-    margin-top: 25px; cursor: pointer; box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
+    margin-top: 15px; cursor: pointer; box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
   }
-  .state-grid-item {
-    background: #fff; border: 1px solid #f97316; color: #f97316;
-    padding: 15px; border-radius: 12px; text-align: center; font-weight: 600; cursor: pointer;
-  }
-  /* Neela G Logo Fix */
   #adminLogo {
-    background: #2563eb; color: white; width: 48px; height: 48px;
+    background: #2563eb; color: white; width: 44px; height: 44px;
     border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 24px; font-weight: bold; cursor: pointer; 
-    user-select: none; -webkit-user-select: none;
-    touch-action: manipulation; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    font-size: 22px; font-weight: bold; cursor: pointer; 
   }
-  .header-logo { font-family: 'Poppins', sans-serif; font-weight: 700; color: #f97316; font-size: 2.2rem; }
+  .header-logo { font-family: 'Poppins', sans-serif; font-weight: 700; color: #f97316; font-size: 2rem; }
 </style>
 </head>
 <body>
 
-<div id="app-container" class="app-card"></div>
+  <div class="ad-space" id="top-ad">
+    विज्ञापन के लिए जगह (Google AdSense Code Here)
+  </div>
 
-<div id="msgBox" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-  <div id="msgContent" class="bg-white p-8 rounded-3xl text-center w-full max-w-xs shadow-2xl"></div>
-</div>
+  <div id="app-container" class="app-card">
+    </div>
+
+  <div class="ad-space" id="bottom-ad">
+    विज्ञापन के लिए जगह (Google AdSense Code Here)
+  </div>
 
 <script>
 const firebaseConfig = {
@@ -74,133 +69,107 @@ let userFlow = { state: "", district: "", panchayat: "", village: "" };
 
 function showStates() {
   const states = ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'];
-  
   let html = `
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center justify-between mb-6">
       <div id="adminLogo">G</div>
       <h1 class="header-logo">ग्राम शक्ति</h1>
-      <div class="w-12"></div>
+      <div class="w-10"></div>
     </div>
-    <div class="grid grid-cols-2 gap-4 h-[350px] overflow-y-auto pr-2">`;
-  states.forEach(s => { html += `<div class="state-grid-item" onclick="userFlow.state='${s}'; showDistrictStep()">${s}</div>`; });
+    <div class="grid grid-cols-2 gap-3 h-[300px] overflow-y-auto pr-1">`;
+  states.forEach(s => { html += `<div onclick="userFlow.state='${s}'; showDistrictStep()" class="border border-orange-500 p-3 rounded-xl text-center text-orange-600 font-bold cursor-pointer hover:bg-orange-50">${s}</div>`; });
   document.getElementById("app-container").innerHTML = html + `</div>`;
   
-  // ADMIN HOLD LOGIC (FIXED)
+  // Admin Hold Logic
   const logo = document.getElementById("adminLogo");
   let timer;
-
-  const start = (e) => {
-    e.preventDefault();
-    timer = setTimeout(() => {
-      let p = prompt("Master Password:");
-      if(p === "Vikas0627.") showAdminPanel();
-    }, 3000);
-  };
-  const end = () => clearTimeout(timer);
-
-  logo.addEventListener("mousedown", start);
-  logo.addEventListener("touchstart", start);
-  logo.addEventListener("mouseup", end);
-  logo.addEventListener("mouseleave", end);
-  logo.addEventListener("touchend", end);
+  const start = () => { timer = setTimeout(() => { if(prompt("Pass:") === "Vikas0627.") showAdmin(); }, 3000); };
+  logo.addEventListener("mousedown", start); logo.addEventListener("touchstart", start);
+  logo.addEventListener("mouseup", () => clearTimeout(timer));
 }
 
 function showDistrictStep() {
   document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-6">ग्राम शक्ति</h1>
-    <h2 class="text-xl font-semibold mb-2">जिला लिखें</h2>
-    <input id="distInp" class="input-field" placeholder="जिला...">
+    <h1 class="header-logo text-center mb-4">ग्राम शक्ति</h1>
+    <input id="distInp" class="w-full p-4 border rounded-xl mb-4" placeholder="जिला लिखें...">
     <button onclick="userFlow.district=document.getElementById('distInp').value; showPanchayatStep()" class="btn-primary">आगे बढ़ें</button>
   `;
 }
 
 function showPanchayatStep() {
   document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-6">ग्राम शक्ति</h1>
-    <input id="panchInp" class="input-field" placeholder="पंचायत लिखें...">
+    <h1 class="header-logo text-center mb-4">ग्राम शक्ति</h1>
+    <input id="panchInp" class="w-full p-4 border rounded-xl mb-4" placeholder="पंचायत लिखें...">
     <button onclick="userFlow.panchayat=document.getElementById('panchInp').value; showVillageStep()" class="btn-primary">आगे बढ़ें</button>
   `;
 }
 
 function showVillageStep() {
   document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-6">ग्राम शक्ति</h1>
-    <input id="villInp" class="input-field" placeholder="गाँव लिखें...">
-    <button onclick="userFlow.village=document.getElementById('villInp').value; showOptions()" class="btn-primary">शुरू करें</button>
+    <h1 class="header-logo text-center mb-4">ग्राम शक्ति</h1>
+    <input id="villInp" class="w-full p-4 border rounded-xl mb-4" placeholder="गाँव लिखें...">
+    <button onclick="userFlow.village=document.getElementById('villInp').value; showOptions()" class="btn-primary">खोलें</button>
   `;
 }
 
 function showOptions() {
   document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-6">ग्राम शक्ति</h1>
-    <button onclick="showRegistration()" class="btn-primary">🤝 पंजीकरण</button>
-    <button onclick="showCustomerView()" class="btn-primary !bg-white !text-f97316 border border-f97316 mt-4">🔍 सेवा ढूंढें</button>
+    <h1 class="header-logo text-center mb-2">ग्राम शक्ति</h1>
+    <p class="text-center text-gray-400 text-xs mb-6">${userFlow.village} | ${userFlow.panchayat}</p>
+    <button onclick="showReg()" class="btn-primary">🤝 पंजीकरण</button>
+    <button onclick="showView()" class="btn-primary !bg-white !text-orange-600 border border-orange-600">🔍 सेवा खोजें</button>
   `;
 }
 
-function showRegistration() {
+function showReg() {
   document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-6">पंजीकरण</h1>
-    <input id="wname" class="input-field" placeholder="नाम">
-    <input id="wphone" class="input-field" placeholder="मोबाइल">
-    <select id="wwork" class="input-field">
+    <h1 class="header-logo text-center mb-4">रजिस्ट्रेशन</h1>
+    <input id="n" class="w-full p-3 border rounded-lg mb-2" placeholder="नाम">
+    <input id="p" class="w-full p-3 border rounded-lg mb-2" placeholder="मोबाइल">
+    <select id="w" class="w-full p-3 border rounded-lg mb-4">
       <option value="">काम चुनें</option>
-      <option>JCB Operator</option><option>मिस्त्री</option><option>मजदूर</option>
+      <optgroup label="भारी मशीनरी"><option>JCB Operator</option><option>Tractor</option></optgroup>
+      <optgroup label="कारीगर"><option>राजमिस्त्री</option><option>इलेक्ट्रीशियन</option></optgroup>
     </select>
-    <button onclick="saveWorker()" class="btn-primary">सुरक्षित करें</button>
+    <button onclick="save()" class="btn-primary">सेव करें</button>
   `;
 }
 
-function saveWorker() {
-  const n = document.getElementById("wname").value;
-  const p = document.getElementById("wphone").value;
-  const w = document.getElementById("wwork").value;
+function save() {
+  const name = document.getElementById("n").value;
+  const ph = document.getElementById("p").value;
+  const wk = document.getElementById("w").value;
   db.ref("workers").push({
-    name: n, phone: p, work: w,
+    name, phone: ph, work: wk,
     location: `${userFlow.state}/${userFlow.district}/${userFlow.panchayat}/${userFlow.village}`
   }).then(() => { alert("सफल!"); showOptions(); });
 }
 
-function showCustomerView() {
+function showView() {
   document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-6">सेवाएं</h1>
-    <div id="workerList" class="space-y-4"></div>
-    <button onclick="showOptions()" class="mt-6 underline text-gray-400 w-full text-center">पीछे जाएँ</button>
+    <h1 class="header-logo text-center mb-4">गाँव की शक्ति</h1>
+    <div id="list" class="space-y-3 max-h-[300px] overflow-y-auto"></div>
+    <button onclick="showOptions()" class="mt-4 text-gray-400 text-sm w-full">पीछे जाएँ</button>
   `;
-  const currentPath = `${userFlow.state}/${userFlow.district}/${userFlow.panchayat}/${userFlow.village}`;
-  db.ref("workers").on("value", (snap) => {
-    let html = "";
+  const path = `${userFlow.state}/${userFlow.district}/${userFlow.panchayat}/${userFlow.village}`;
+  db.ref("workers").on("value", snap => {
+    let h = "";
     snap.forEach(c => {
-      const w = c.val();
-      if(w.location === currentPath) {
-        html += `<div class="p-4 border rounded-xl flex justify-between items-center shadow-sm">
-                   <div><p class="font-bold">${w.name}</p><p class="text-sm text-f97316">${w.work}</p></div>
-                   <a href="tel:${w.phone}" class="bg-green-500 text-white p-2 rounded-full">📞</a>
-                 </div>`;
-      }
+      const d = c.val();
+      if(d.location === path) h += `<div class="p-3 border rounded-xl flex justify-between items-center shadow-sm">
+        <div><p class="font-bold">${d.name}</p><p class="text-orange-600 text-sm">${d.work}</p></div>
+        <a href="tel:${d.phone}" class="bg-green-500 text-white p-2 rounded-full">📞</a>
+      </div>`;
     });
-    document.getElementById("workerList").innerHTML = html || "कोई नहीं मिला";
+    document.getElementById("list").innerHTML = h || "कोई नहीं मिला";
   });
 }
 
-function showAdminPanel() {
-  document.getElementById("app-container").innerHTML = `
-    <div class="flex justify-between items-center mb-6 border-b pb-2">
-      <h2 class="text-2xl font-bold text-red-600">Admin</h2>
-      <button onclick="location.reload()" class="text-sm bg-gray-100 px-2 py-1 rounded">Logout</button>
-    </div>
-    <div id="adminList" class="space-y-4 h-[400px] overflow-y-auto"></div>
-  `;
-  db.ref("workers").on("value", (snap) => {
-    let html = "";
-    snap.forEach(c => {
-      const data = c.val();
-      html += `<div class="p-3 border rounded shadow-sm flex justify-between items-center">
-                 <p class="text-sm font-bold">${data.name}</p>
-                 <button onclick="db.ref('workers/${c.key}').remove()" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Delete</button>
-               </div>`;
-    });
-    document.getElementById("adminList").innerHTML = html || "डेटा नहीं है";
+function showAdmin() {
+  document.getElementById("app-container").innerHTML = `<h2 class="text-xl font-bold mb-4">Admin</h2><div id="al" class="space-y-2"></div>`;
+  db.ref("workers").on("value", snap => {
+    let h = "";
+    snap.forEach(c => { h += `<div class="p-2 border flex justify-between text-xs">${c.val().name} <button onclick="db.ref('workers/${c.key}').remove()" class="text-red-500">Del</button></div>`; });
+    document.getElementById("al").innerHTML = h;
   });
 }
 
