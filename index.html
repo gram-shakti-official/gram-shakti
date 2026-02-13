@@ -82,83 +82,97 @@
     </a>
 </div>
   
-<script>
-const firebaseConfig = {
-  apiKey: "AIzaSyCuvev3-jwZwQu0_fHYyv2E2ovLny4LhRQ",
-  authDomain: "gram-shakti-b135a.firebaseapp.com",
-  databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com",
-  projectId: "gram-shakti-b135a"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-let userFlow = { state: "", district: "", panchayat: "", village: "" };
-
-function showStates() {
-  const states = ['Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'];
-  let html = `
-    <div class="flex items-center justify-between mb-6">
-      <div id="adminLogo">G</div>
-      <h1 class="header-logo">ग्राम शक्ति</h1>
-      <div class="w-10"></div>
-    </div>
-    <div class="grid grid-cols-2 gap-3 h-[300px] overflow-y-auto pr-1">`;
-  states.forEach(s => { html += `<div onclick="userFlow.state='${s}'; showDistrictStep()" class="border border-orange-500 p-3 rounded-xl text-center text-orange-600 font-bold cursor-pointer hover:bg-orange-50">${s}</div>`; });
-  document.getElementById("app-container").innerHTML = html + `</div>`;
-  
-  // Admin Hold Logic
-  const logo = document.getElementById("adminLogo");
-  let timer;
-  const start = () => { timer = setTimeout(() => { if(prompt("Pass:") === "Vikas0627.") showAdmin(); }, 3000); };
-  logo.addEventListener("mousedown", start); logo.addEventListener("touchstart", start);
-  logo.addEventListener("mouseup", () => clearTimeout(timer));
+// 1. बैक बटन का दिमाग (नया फंक्शन)
+function goBack() {
+    if (document.getElementById('villSelect') || document.getElementById('villInp')) {
+        showPanchayatStep();
+    } else if (document.getElementById('panchSelect') || document.getElementById('panchInp')) {
+        showDistrictStep();
+    } else {
+        location.reload(); // शुरू में ले जाए
+    }
 }
 
+// 2. जिला चुनने वाला फंक्शन (Drop-down के साथ)
 function showDistrictStep() {
-  document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-4">ग्राम शक्ति</h1>
-    <input id="distInp" class="w-full p-4 border rounded-xl mb-4" placeholder="जिला लिखें...">
-    <button onclick="userFlow.district=document.getElementById('distInp').value; showPanchayatStep()" class="btn-primary">आगे बढ़ें</button>
-  `;
+    let container = document.getElementById('step-container');
+    container.innerHTML = `<h3>अपना जिला चुनें</h3>
+        <select id="distSelect" class="dropdown-select" onchange="userFlow.jila = this.value">
+            <option value="">-- पुराना जिला चुनें --</option>
+        </select>
+        <div class="add-new-btn" onclick="document.getElementById('distInp').style.display='block'; this.style.display='none'">+ मेरा जिला नया है (यहाँ लिखें)</div>
+        <input type="text" id="distInp" placeholder="नये जिले का नाम लिखें" style="display:none; width:85%; padding:10px; margin:10px auto; border-radius:8px; border:1px solid #ccc;">
+        <button onclick="saveDistrict()" class="btn">आगे बढ़ें</button>`;
+
+    firebase.database().ref('users/').once('value', (snapshot) => {
+        let distSet = new Set();
+        snapshot.forEach(child => { if(child.val().jila) distSet.add(child.val().jila); });
+        let select = document.getElementById('distSelect');
+        distSet.forEach(d => { select.innerHTML += `<option value="${d}">${d}</option>`; });
+    });
 }
 
+function saveDistrict() {
+    let inp = document.getElementById('distInp').value;
+    if(inp) userFlow.jila = inp; 
+    if(!userFlow.jila) { alert("कृपया जिला चुनें या लिखें"); return; }
+    showPanchayatStep();
+}
+
+// 3. पंचायत चुनने वाला फंक्शन
 function showPanchayatStep() {
-  document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-4">ग्राम शक्ति</h1>
-    <input id="panchInp" class="w-full p-4 border rounded-xl mb-4" placeholder="पंचायत लिखें...">
-    <button onclick="userFlow.panchayat=document.getElementById('panchInp').value; showVillageStep()" class="btn-primary">आगे बढ़ें</button>
-  `;
+    let container = document.getElementById('step-container');
+    container.innerHTML = `<h3>अपनी पंचायत चुनें</h3>
+        <select id="panchSelect" class="dropdown-select" onchange="userFlow.panchayat = this.value">
+            <option value="">-- पुरानी पंचायत चुनें --</option>
+        </select>
+        <div class="add-new-btn" onclick="document.getElementById('panchInp').style.display='block'; this.style.display='none'">+ मेरी पंचायत नई है (यहाँ लिखें)</div>
+        <input type="text" id="panchInp" placeholder="नयी पंचायत का नाम लिखें" style="display:none; width:85%; padding:10px; margin:10px auto; border-radius:8px; border:1px solid #ccc;">
+        <button onclick="savePanchayat()" class="btn">आगे बढ़ें</button>`;
+
+    firebase.database().ref('users/').once('value', (snapshot) => {
+        let panchSet = new Set();
+        snapshot.forEach(child => { 
+            if(child.val().jila === userFlow.jila && child.val().panchayat) panchSet.add(child.val().panchayat); 
+        });
+        let select = document.getElementById('panchSelect');
+        panchSet.forEach(p => { select.innerHTML += `<option value="${p}">${p}</option>`; });
+    });
 }
 
+function savePanchayat() {
+    let inp = document.getElementById('panchInp').value;
+    if(inp) userFlow.panchayat = inp;
+    if(!userFlow.panchayat) { alert("कृपया पंचायत चुनें या लिखें"); return; }
+    showVillageStep();
+}
+
+// 4. गाँव चुनने वाला फंक्शन
 function showVillageStep() {
-  document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-4">ग्राम शक्ति</h1>
-    <input id="villInp" class="w-full p-4 border rounded-xl mb-4" placeholder="गाँव लिखें...">
-    <button onclick="userFlow.village=document.getElementById('villInp').value; showOptions()" class="btn-primary">खोलें</button>
-  `;
+    let container = document.getElementById('step-container');
+    container.innerHTML = `<h3>अपना गाँव चुनें</h3>
+        <select id="villSelect" class="dropdown-select" onchange="userFlow.village = this.value">
+            <option value="">-- पुराना गाँव चुनें --</option>
+        </select>
+        <div class="add-new-btn" onclick="document.getElementById('villInp').style.display='block'; this.style.display='none'">+ मेरा गाँव नया है (यहाँ लिखें)</div>
+        <input type="text" id="villInp" placeholder="नये गाँव का नाम लिखें" style="display:none; width:85%; padding:10px; margin:10px auto; border-radius:8px; border:1px solid #ccc;">
+        <button onclick="saveVillage()" class="btn">डाटा सुरक्षित करें</button>`;
+
+    firebase.database().ref('users/').once('value', (snapshot) => {
+        let villSet = new Set();
+        snapshot.forEach(child => { 
+            if(child.val().panchayat === userFlow.panchayat && child.val().village) villSet.add(child.val().village); 
+        });
+        let select = document.getElementById('villSelect');
+        villSet.forEach(v => { select.innerHTML += `<option value="${v}">${v}</option>`; });
+    });
 }
 
-function showOptions() {
-  document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-2">ग्राम शक्ति</h1>
-    <p class="text-center text-gray-400 text-xs mb-6">${userFlow.village} | ${userFlow.panchayat}</p>
-    <button onclick="showReg()" class="btn-primary">🤝 पंजीकरण</button>
-    <button onclick="showView()" class="btn-primary !bg-white !text-orange-600 border border-orange-600">🔍 सेवा खोजें</button>
-  `;
-}
-
-function showReg() {
-  document.getElementById("app-container").innerHTML = `
-    <h1 class="header-logo text-center mb-4">रजिस्ट्रेशन</h1>
-    <input id="n" class="w-full p-3 border rounded-lg mb-2" placeholder="नाम">
-    <input id="p" class="w-full p-3 border rounded-lg mb-2" placeholder="मोबाइल">
-    <select id="w" class="w-full p-3 border rounded-lg mb-4">
-      <option value="">काम चुनें</option>
-      <optgroup label="भारी मशीनरी"><option>JCB Operator</option><option>Tractor</option></optgroup>
-      <optgroup label="कारीगर"><option>राजमिस्त्री</option><option>इलेक्ट्रीशियन</option></optgroup>
-    </select>
-    <button onclick="save()" class="btn-primary">सेव करें</button>
-  `;
+function saveVillage() {
+    let inp = document.getElementById('villInp').value;
+    if(inp) userFlow.village = inp;
+    if(!userFlow.village) { alert("कृपया गाँव चुनें या लिखें"); return; }
+    save(); // यह आपके असली सेव फंक्शन को कॉल करेगा
 }
 
 function save() {
