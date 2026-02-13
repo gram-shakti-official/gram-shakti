@@ -232,83 +232,177 @@ let userFlow = { state: '', jila: '', panchayat: '', village: '', role: '', serv
 // 2. बैक बटन का सबसे सटीक फंक्शन (Fix)
 function goBack() {
     if (document.getElementById('list-container')) { showServiceList(); }
-    else if (document.getElementById('reg-form')) { showServiceList(); }
-    else if (document.getElementById('service-list-page')) { showRoleSelection(); }
-    else if (document.getElementById('role-page')) { showVillageStep(); }
-    else if (document.getElementById('vill-page')) { showPanchayatStep(); }
-    else if (document.getElementById('panch-page')) { showDistrictStep(); }
-    else if (document.getElementById('dist-page')) { showStates(); }
-    else { location.reload(); }
+<script>
+// 1. Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyCuvev3-jwZwQuO_fHYyv2E2ovLny4Lh8Q",
+  authDomain: "gram-shakti-b135a.firebaseapp.com",
+  databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com",
+  projectId: "gram-shakti-b135a"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+let userFlow = { state: '', jila: '', panchayat: '', village: '', role: '', service: '', delCharge: '', serviceAreas: [] };
+
+// 2. Back Button
+function goBack() {
+    if (document.getElementById('list-container')) showServiceList();
+    else if (document.getElementById('reg-form')) showServiceList();
+    else if (document.getElementById('service-list-page')) showRoleSelection();
+    else if (document.getElementById('role-page')) showVillageStep();
+    else if (document.getElementById('vill-page')) showPanchayatStep();
+    else if (document.getElementById('panch-page')) showDistrictStep();
+    else if (document.getElementById('dist-page')) showStates();
+    else location.reload();
 }
 
-// 3. राज्य चयन (ID: dist-page के लिए)
+// 3. NAYA DESIGN: Rajya List (Side by Side Cards)
 function showStates() {
-    const states = ['Uttar Pradesh', 'Bihar', 'Rajasthan', 'Madhya Pradesh', 'Haryana', 'Uttarakhand', 'Jharkhand'];
-    let html = `<h1 style="text-align:center; color:#f97316;">ग्राम शक्ति</h1><div id="state-page" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; padding:15px;">`;
+    const states = [
+        {name: 'Uttar Pradesh', img: '🏠'}, {name: 'Bihar', img: '🌾'}, 
+        {name: 'Rajasthan', img: '🏰'}, {name: 'Madhya Pradesh', img: '🌳'}, 
+        {name: 'Haryana', img: '🥛'}, {name: 'Jharkhand', img: '⛏️'},
+        {name: 'Delhi', img: '🏛️'}, {name: 'Punjab', img: '🚜'}
+    ];
+    
+    let html = `
+        <div id="state-page" style="padding:15px; text-align:center;">
+            <h1 style="color:#f97316; font-size:32px; margin-bottom:5px;">ग्राम शक्ति</h1>
+            <p style="color:#666; margin-bottom:20px;">अपना राज्य चुनें</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">`;
+            
     states.forEach(s => {
-        html += `<div onclick="userFlow.state='${s}'; showDistrictStep()" style="background:white; border-bottom:4px solid #f97316; padding:20px; border-radius:15px; text-align:center; font-weight:bold; box-shadow:0 4px 10px rgba(0,0,0,0.1);">${s}</div>`;
+        html += `
+            <div onclick="userFlow.state='${s.name}'; showDistrictStep()" 
+                 style="background:white; padding:25px 10px; border-radius:20px; box-shadow:0 8px 15px rgba(0,0,0,0.1); border-bottom:5px solid #f97316; cursor:pointer; transition: 0.3s;">
+                <div style="font-size:30px; margin-bottom:10px;">${s.img}</div>
+                <div style="font-weight:bold; color:#333; font-size:16px;">${s.name}</div>
+            </div>`;
     });
-    document.getElementById('app-container').innerHTML = html + `</div>`;
+    
+    html += `</div></div>`;
+    document.getElementById('app-container').innerHTML = html;
 }
 
-// 4. जिला चयन (ID: dist-page)
+// 4. District Step
 function showDistrictStep() {
     let container = document.getElementById('app-container');
-    container.innerHTML = `<div id="dist-page" style="padding:15px;"><h3>जिला चुनें</h3><select id="distSelect" style="width:100%; padding:15px; border-radius:15px; border:2px solid #f97316; margin:15px 0;"></select><button onclick="saveDistrict()" style="width:100%; padding:15px; background:#f97316; color:white; border:none; border-radius:15px; font-weight:bold;">आगे बढ़ें</button></div>`;
+    container.innerHTML = `
+        <div id="dist-page" style="padding:15px;">
+            <h3 style="color:#f97316;">${userFlow.state} > जिला चुनें</h3>
+            <select id="distSelect" style="width:100%; padding:18px; border-radius:15px; border:2px solid #f97316; margin:20px 0; font-size:16px;"></select>
+            <div onclick="this.nextElementSibling.style.display='block'; this.style.display='none'" style="color:blue; margin-bottom:10px; cursor:pointer;">+ नया जिला जोड़ें</div>
+            <input type="text" id="distInp" placeholder="नया जिला लिखें" style="display:none; width:100%; padding:15px; border-radius:10px; border:1px solid #ccc; margin-bottom:15px;">
+            <button onclick="saveDistrict()" style="width:100%; padding:18px; background:#f97316; color:white; border:none; border-radius:15px; font-weight:bold; font-size:18px;">आगे बढ़ें</button>
+        </div>`;
+    
     db.ref('users/').once('value', (snap) => {
-        let set = new Set(); snap.forEach(c => { if(c.val().state === userFlow.state) set.add(c.val().jila); });
-        let sel = document.getElementById('distSelect'); sel.innerHTML = '<option value="">-- चुनें --</option>';
+        let set = new Set(); 
+        snap.forEach(c => { if(c.val().state === userFlow.state) set.add(c.val().jila); });
+        let sel = document.getElementById('distSelect');
+        sel.innerHTML = '<option value="">-- पुराना जिला चुनें --</option>';
         set.forEach(d => { if(d) sel.innerHTML += `<option value="${d}">${d}</option>`; });
     });
 }
-function saveDistrict() { userFlow.jila = document.getElementById('distSelect').value; if(!userFlow.jila) return; showPanchayatStep(); }
+function saveDistrict() { 
+    let inp = document.getElementById('distInp').value;
+    userFlow.jila = inp || document.getElementById('distSelect').value;
+    if(!userFlow.jila) { alert("कृपया जिला चुनें"); return; }
+    showPanchayatStep(); 
+}
 
-// 5. पंचायत चयन (ID: panch-page)
+// 5. Panchayat Step
 function showPanchayatStep() {
     let container = document.getElementById('app-container');
-    container.innerHTML = `<div id="panch-page" style="padding:15px;"><h3>पंचायत चुनें</h3><select id="panchSelect" style="width:100%; padding:15px; border-radius:15px; border:2px solid #f97316; margin:15px 0;"></select><button onclick="savePanchayat()" style="width:100%; padding:15px; background:#f97316; color:white; border:none; border-radius:15px; font-weight:bold;">आगे बढ़ें</button></div>`;
+    container.innerHTML = `
+        <div id="panch-page" style="padding:15px;">
+            <h3 style="color:#f97316;">${userFlow.jila} > पंचायत चुनें</h3>
+            <select id="panchSelect" style="width:100%; padding:18px; border-radius:15px; border:2px solid #f97316; margin:20px 0; font-size:16px;"></select>
+            <div onclick="this.nextElementSibling.style.display='block'; this.style.display='none'" style="color:blue; margin-bottom:10px; cursor:pointer;">+ नई पंचायत जोड़ें</div>
+            <input type="text" id="panchInp" placeholder="नई पंचायत लिखें" style="display:none; width:100%; padding:15px; border-radius:10px; border:1px solid #ccc; margin-bottom:15px;">
+            <button onclick="savePanchayat()" style="width:100%; padding:18px; background:#f97316; color:white; border:none; border-radius:15px; font-weight:bold; font-size:18px;">आगे बढ़ें</button>
+        </div>`;
+    
     db.ref('users/').once('value', (snap) => {
-        let set = new Set(); snap.forEach(c => { if(c.val().jila === userFlow.jila) set.add(c.val().panchayat); });
-        let sel = document.getElementById('panchSelect'); sel.innerHTML = '<option value="">-- चुनें --</option>';
+        let set = new Set();
+        snap.forEach(c => { if(c.val().jila === userFlow.jila) set.add(c.val().panchayat); });
+        let sel = document.getElementById('panchSelect');
+        sel.innerHTML = '<option value="">-- पुरानी पंचायत चुनें --</option>';
         set.forEach(p => { if(p) sel.innerHTML += `<option value="${p}">${p}</option>`; });
     });
 }
-function savePanchayat() { userFlow.panchayat = document.getElementById('panchSelect').value; if(!userFlow.panchayat) return; showVillageStep(); }
+function savePanchayat() { 
+    let inp = document.getElementById('panchInp').value;
+    userFlow.panchayat = inp || document.getElementById('panchSelect').value;
+    if(!userFlow.panchayat) { alert("कृपया पंचायत चुनें"); return; }
+    showVillageStep(); 
+}
 
-// 6. गाँव (ID: vill-page)
+// 6. Village Step
 function showVillageStep() {
     let container = document.getElementById('app-container');
-    container.innerHTML = `<div id="vill-page" style="padding:15px;"><h3>गाँव लिखें</h3><input type="text" id="villInp" placeholder="गाँव का नाम" style="width:100%; padding:15px; border-radius:15px; border:1px solid #ccc; margin-bottom:15px;"><button onclick="saveVillage()" style="width:100%; padding:15px; background:#f97316; color:white; border:none; border-radius:15px; font-weight:bold;">आगे बढ़ें</button></div>`;
+    container.innerHTML = `
+        <div id="vill-page" style="padding:15px;">
+            <h3 style="color:#f97316;">गाँव का नाम लिखें</h3>
+            <input type="text" id="villInp" placeholder="जैसे: शिवपुर" style="width:100%; padding:18px; border-radius:15px; border:1px solid #ccc; margin:20px 0; font-size:16px;">
+            <button onclick="saveVillage()" style="width:100%; padding:18px; background:#f97316; color:white; border:none; border-radius:15px; font-weight:bold; font-size:18px;">आगे बढ़ें</button>
+        </div>`;
 }
-function saveVillage() { userFlow.village = document.getElementById('villInp').value; if(!userFlow.village) return; showRoleSelection(); }
+function saveVillage() { 
+    userFlow.village = document.getElementById('villInp').value; 
+    if(!userFlow.village) { alert("गाँव का नाम लिखें"); return; }
+    showRoleSelection(); 
+}
 
-// 7. रोल (ID: role-page)
+// 7. Role Selection (Worker or Customer)
 function showRoleSelection() {
     let container = document.getElementById('app-container');
-    container.innerHTML = `<div id="role-page" style="padding:20px; text-align:center;"><h2>आप कौन हैं?</h2><div onclick="userFlow.role='worker'; showServiceList()" style="background:#2563eb; color:white; padding:25px; border-radius:20px; margin:15px 0; font-weight:bold; cursor:pointer;">मैं वर्कर/दुकानदार हूँ</div><div onclick="userFlow.role='customer'; showServiceList()" style="background:#16a34a; color:white; padding:25px; border-radius:20px; margin:15px 0; font-weight:bold; cursor:pointer;">मुझे सर्विस/सामान चाहिए</div></div>`;
+    container.innerHTML = `
+        <div id="role-page" style="padding:20px; text-align:center;">
+            <h2 style="color:#333; margin-bottom:30px;">आप कौन हैं?</h2>
+            <div onclick="userFlow.role='worker'; showServiceList()" 
+                 style="background:linear-gradient(135deg, #2563eb, #1e40af); color:white; padding:35px; border-radius:25px; margin-bottom:25px; font-size:22px; font-weight:bold; box-shadow:0 10px 20px rgba(37,99,235,0.3); cursor:pointer;">
+                 मैं वर्कर/दुकानदार हूँ
+            </div>
+            <div onclick="userFlow.role='customer'; showServiceList()" 
+                 style="background:linear-gradient(135deg, #16a34a, #15803d); color:white; padding:35px; border-radius:25px; font-size:22px; font-weight:bold; box-shadow:0 10px 20px rgba(22,163,74,0.3); cursor:pointer;">
+                 मुझे सामान/सर्विस चाहिए
+            </div>
+        </div>`;
 }
 
-// 8. सर्विस लिस्ट (ID: service-list-page)
+// 8. Service List
 function showServiceList() {
-    const services = ['डेयरी/दूध', 'किराना दुकान', 'मिस्त्री (मकान)', 'JCB मशीन', 'ट्रैक्टर', 'इलेक्ट्रीशियन', 'प्लम्बर', 'मज़दूर'];
-    let html = `<div id="service-list-page" style="padding:15px;"><h3>सेवा चुनें</h3><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">`;
+    const services = ['डेयरी/दूध', 'किराना दुकान', 'मिस्त्री (मकान)', 'JCB मशीन', 'ट्रैक्टर/ट्रॉली', 'प्लम्बर', 'इलेक्ट्रीशियन', 'मज़दूर', 'टेलर (दर्जी)'];
+    let html = `
+        <div id="service-list-page" style="padding:15px;">
+            <h3 style="margin-bottom:15px;">सेवा चुनें</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; max-height:450px; overflow-y:auto;">`;
+            
     services.forEach(s => {
-        html += `<div onclick="userFlow.service='${s}'; ${userFlow.role === 'worker' ? 'showRegistrationForm()' : 'showList()'}" style="background:#fff; border:1px solid #ddd; padding:15px; border-radius:12px; text-align:center; font-weight:bold; cursor:pointer;">${s}</div>`;
+        html += `
+            <div onclick="userFlow.service='${s}'; ${userFlow.role === 'worker' ? 'showRegistrationForm()' : 'showList()'}" 
+                 style="background:white; border:1px solid #ddd; padding:18px 10px; border-radius:15px; text-align:center; font-weight:bold; box-shadow:0 3px 6px rgba(0,0,0,0.05); cursor:pointer;">
+                 ${s}
+            </div>`;
     });
-    document.getElementById('app-container').innerHTML = html + `</div></div>`;
+    
+    html += `</div></div>`;
+    document.getElementById('app-container').innerHTML = html;
 }
 
-// 9. रजिस्ट्रेशन (ID: reg-form)
+// 9. Worker Registration Form
 function showRegistrationForm() {
     let isShop = (userFlow.service === 'डेयरी/दूध' || userFlow.service === 'किराना दुकान');
     document.getElementById('app-container').innerHTML = `
-        <div id="reg-form" style="padding:20px; background:#f4f4f4; border-radius:20px; margin:10px;">
-            <h3>${userFlow.service} रजिस्ट्रेशन</h3>
-            <input type="text" id="wName" placeholder="नाम/दुकान का नाम" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px;">
-            <input type="number" id="wPhone" placeholder="मोबाइल नंबर" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px;">
-            ${isShop ? `<input type="text" id="wCharge" placeholder="डिलीवरी चार्ज" style="width:100%; padding:15px; margin-bottom:10px; border-radius:10px;">` : ''}
-            <textarea id="wAreas" placeholder="अन्य गाँव (कोमा लगाकर)" style="width:100%; padding:10px; border-radius:10px;"></textarea>
-            <button onclick="finalRegister()" style="width:100%; padding:15px; background:#2563eb; color:white; border:none; border-radius:12px; margin-top:15px; font-weight:bold;">रजिस्टर करें</button>
+        <div id="reg-form" style="padding:20px; background:#f9fafb; border-radius:25px; margin:10px; box-shadow:0 5px 15px rgba(0,0,0,0.05);">
+            <h3 style="color:#2563eb; margin-bottom:20px;">${userFlow.service} रजिस्ट्रेशन</h3>
+            <input type="text" id="wName" placeholder="आपका/दुकान का नाम" style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:1px solid #ccc;">
+            <input type="number" id="wPhone" placeholder="मोबाइल नंबर" style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:1px solid #ccc;">
+            ${isShop ? `<input type="text" id="wCharge" placeholder="डिलीवरी चार्ज (जैसे: ₹20)" style="width:100%; padding:15px; margin-bottom:15px; border-radius:12px; border:1px solid #ccc; background:#fff9db;">` : ''}
+            <textarea id="wAreas" placeholder="अन्य गाँवों के नाम (कोमा , लगाकर लिखें)" style="width:100%; height:80px; padding:12px; border-radius:12px; border:1px solid #ccc; margin-bottom:20px;"></textarea>
+            <button onclick="finalRegister()" style="width:100%; padding:20px; background:#2563eb; color:white; border:none; border-radius:15px; font-weight:bold; font-size:18px;">रजिस्टर करें</button>
         </div>`;
 }
 
@@ -317,31 +411,48 @@ function finalRegister() {
     userFlow.workerPhone = document.getElementById('wPhone').value;
     userFlow.delCharge = document.getElementById('wCharge') ? document.getElementById('wCharge').value : 'NA';
     let areas = document.getElementById('wAreas').value;
-    userFlow.serviceAreas = areas.split(',').map(i => i.trim().toLowerCase());
+    
+    if(!userFlow.workerName || !userFlow.workerPhone) { alert("पूरी जानकारी भरें"); return; }
+    
+    userFlow.serviceAreas = areas.split(',').map(item => item.trim().toLowerCase());
     userFlow.serviceAreas.push(userFlow.village.toLowerCase());
-    db.ref('users/').push(userFlow).then(() => { alert("सफल!"); location.reload(); });
+
+    db.ref('users/').push(userFlow).then(() => {
+        alert("रजिस्ट्रेशन सफल रहा!");
+        location.reload();
+    });
 }
 
-// 10. वर्कर लिस्ट दिखाना (Fix: ID check)
+// 10. Show Workers List (Customer View)
 function showList() {
-    document.getElementById('app-container').innerHTML = `<div id="list-container" style="padding:15px;"><h3>उपलब्ध ${userFlow.service}</h3><div id="list-box">लोड हो रहा है...</div><button onclick="goBack()" style="width:100%; margin-top:20px; padding:10px; border-radius:10px;">वापस जाएँ</button></div>`;
+    document.getElementById('app-container').innerHTML = `
+        <div id="list-container" style="padding:15px;">
+            <h3 style="margin-bottom:15px;">उपलब्ध ${userFlow.service}</h3>
+            <div id="list-box">लोड हो रहा है...</div>
+            <button onclick="goBack()" style="width:100%; margin-top:20px; padding:15px; background:#666; color:white; border:none; border-radius:12px; font-weight:bold;">वापस जाएँ</button>
+        </div>`;
+        
     db.ref('users/').once('value', (snap) => {
         let html = ''; let found = false;
         let v = userFlow.village.toLowerCase();
         snap.forEach(child => {
             let d = child.val();
-            // यहाँ चेक कर रहे हैं कि क्या ग्राहक का गाँव वर्कर के एरिया में है
             if(d.role === 'worker' && d.service === userFlow.service && d.serviceAreas && d.serviceAreas.includes(v)) {
-                html += `<div style="background:white; padding:15px; border-radius:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 3px 6px rgba(0,0,0,0.1);">
-                            <div><b>${d.workerName}</b><br><small>चार्ज: ${d.delCharge}</small></div>
-                            <a href="tel:${d.workerPhone}" style="background:#16a34a; color:white; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none;">📞</a>
-                         </div>`;
+                html += `
+                    <div style="background:white; padding:20px; border-radius:20px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 5px 10px rgba(0,0,0,0.05); border-left:6px solid #16a34a;">
+                        <div>
+                            <div style="font-weight:bold; font-size:18px;">${d.workerName}</div>
+                            ${d.delCharge !== 'NA' ? `<div style="color:#d97706; font-size:13px; font-weight:bold;">🚚 चार्ज: ${d.delCharge}</div>` : ''}
+                        </div>
+                        <a href="tel:${d.workerPhone}" style="background:#16a34a; color:white; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:22px; box-shadow:0 4px 10px rgba(22,163,74,0.3);">📞</a>
+                    </div>`;
                 found = true;
             }
         });
-        document.getElementById('list-box').innerHTML = found ? html : "कोई नहीं मिला।";
+        document.getElementById('list-box').innerHTML = found ? html : `<p style="text-align:center; padding:40px; color:#999;">क्षमा करें, आपके गाँव में अभी कोई ${userFlow.service} नहीं है।</p>`;
     });
 }
 
+// Start App
 showStates();
 </script>
