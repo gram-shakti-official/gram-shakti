@@ -99,7 +99,7 @@ function goBack() {
     if (document.getElementById('list-container') || document.getElementById('reg-form')) showServiceList();
     else if (document.getElementById('service-list-page')) showRoleSelection();
     else if (document.getElementById('role-page')) showVillageStep();
-    else if (document.getElementById('vill-page')) showPanchayatStep();
+    else if (document.getElementById('vill-page')) showPanchayatStep(); // यहाँ सुधार किया है
     else if (document.getElementById('panch-page')) showDistrictStep();
     else if (document.getElementById('dist-page')) showStates();
     else location.reload();
@@ -188,15 +188,51 @@ function savePanchayat() {
     showVillageStep();
 }
 
-// 6. गाँव, रोल और सर्विस लिस्ट
+// 6. गाँव चयन (Firebase से ऑटो-लोड और नया जोड़ने का विकल्प)
 function showVillageStep() {
-    document.getElementById('app-container').innerHTML = `
+    let container = document.getElementById('app-container');
+    container.innerHTML = `
         <div id="vill-page" style="padding:20px;">
-            <h3>गाँव का नाम लिखें</h3>
-            <input type="text" id="villInp" placeholder="जैसे: शिवपुर" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ccc; margin:20px 0;">
-            <button onclick="userFlow.village=document.getElementById('villInp').value; if(!userFlow.village)return; showRoleSelection()" style="width:100%; padding:18px; background:#000; color:white; border-radius:15px; font-weight:bold;">आगे बढ़ें</button>
+            <h3 style="color:#f97316;">${userFlow.panchayat} > गाँव</h3>
+            <p style="margin-bottom:10px; font-weight:bold;">अपना गाँव चुनें या नया लिखें:</p>
+            
+            <select id="villSelect" style="width:100%; padding:15px; border-radius:12px; border:2px solid #f97316; margin-bottom:15px; font-size:16px;">
+                <option value="">-- पुराने गाँव चुनें --</option>
+            </select>
+
+            <div onclick="document.getElementById('villInp').style.display='block'; this.style.display='none'" 
+                 style="color:#2563eb; margin-bottom:15px; cursor:pointer; font-weight:bold;">
+                 + नया गाँव जोड़ें
+            </div>
+            
+            <input type="text" id="villInp" placeholder="यहाँ गाँव का नाम लिखें" 
+                   style="display:none; width:100%; padding:15px; border-radius:12px; border:1px solid #ccc; margin-bottom:15px;">
+
+            <button onclick="saveVillage()" 
+                    style="width:100%; padding:18px; background:#000; color:white; border:none; border-radius:15px; font-weight:bold; font-size:18px;">
+                    आगे बढ़ें
+            </button>
         </div>`;
+
+    // Firebase से गाँव लोड करना
+    db.ref('users/').once('value', snap => {
+        let set = new Set();
+        snap.forEach(c => { 
+            let d = c.val();
+            if(d.panchayat === userFlow.panchayat) { set.add(d.village); }
+        });
+        let sel = document.getElementById('villSelect');
+        set.forEach(v => { if(v) sel.innerHTML += `<option value="${v}">${v}</option>`; });
+    });
 }
+
+function saveVillage() {
+    let val = document.getElementById('villInp').value || document.getElementById('villSelect').value;
+    if(!val) { alert("गाँव चुनें या लिखें"); return; }
+    userFlow.village = val;
+    showRoleSelection();
+}
+
 
 function showRoleSelection() {
     document.getElementById('app-container').innerHTML = `
