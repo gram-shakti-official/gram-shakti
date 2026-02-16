@@ -1,326 +1,192 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ग्राम शक्ति - गाँव की डिजिटल सेवा</title>
 
-<title>ग्राम शक्ति - गाँव की डिजिटल सेवा | Gram Shakti Official</title>
-<meta name="description" content="ग्राम शक्ति (Gram Shakti): आपके गाँव के सभी वर्कर्स, जेसीबी, मिस्त्री और मजदूरों को खोजने का सबसे बड़ा प्लेटफॉर्म।">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
-
-<style>
-  body { 
-    background: linear-gradient(to bottom right, #fdf4eb, #fffde7, #e0f2fe);
-    font-family: 'Noto Sans Devanagari', 'Poppins', sans-serif;
-    min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px;
-  }
-  .app-card {
-    background: white; width: 100%; max-width: 480px; padding: 30px; border-radius: 20px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1); z-index: 10;
-  }
-  .ad-space {
-    width: 100%; max-width: 480px; background: rgba(0,0,0,0.05);
-    border: 1px dashed #ccc; margin: 10px 0; display: flex;
-    align-items: center; justify-content: center; color: #888;
-    font-size: 12px; border-radius: 10px; min-height: 60px;
-  }
-  .btn-primary {
-    width: 100%; padding: 16px; background: linear-gradient(90deg, #f97316, #ea580c);
-    color: white; border-radius: 14px; font-size: 18px; font-weight: 700;
-    margin-top: 15px; cursor: pointer; box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
-  }
-  #adminLogo {
-    background: #2563eb; color: white; width: 44px; height: 44px;
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 22px; font-weight: bold; cursor: pointer; 
-  }
-  .header-logo { font-family: 'Poppins', sans-serif; font-weight: 700; color: #f97316; font-size: 2rem; }
-.back-btn {
-    position: fixed;
-    top: 15px;
-    left: 10px;
-    background: #2563eb;
-    color: white;
-    padding: 8px 15px;
-    border-radius: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    font-size: 16px;
-    font-weight: bold;
-    z-index: 10000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    cursor: pointer;
-}
-
-</style>
+    <style>
+        body { 
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80');
+            background-size: cover; background-attachment: fixed;
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 20px;
+        }
+        .app-card {
+            background: rgba(255, 255, 255, 0.95); width: 100%; max-width: 480px; 
+            padding: 25px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+        }
+        .btn-main {
+            width: 100%; padding: 16px; background: #f97316; color: white; 
+            border-radius: 14px; font-size: 18px; font-weight: 700; cursor: pointer;
+            margin-top: 12px; transition: 0.3s; border: none;
+        }
+        .btn-main:active { transform: scale(0.98); }
+        input, select { 
+            width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; 
+            border: 1px solid #ddd; font-size: 16px;
+        }
+        .back-btn {
+            position: fixed; top: 15px; left: 15px; background: #2563eb; color: white;
+            padding: 8px 18px; border-radius: 20px; font-weight: bold; cursor: pointer; z-index: 100;
+        }
+        .list-item {
+            background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px;
+            border-left: 6px solid #f97316; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
-<button class="back-btn" onclick="goBack()">
-    &#8592; Back
-</button>
 
-  <div style="text-align: center; margin: 15px 0;">
-    <a href="https://github.com/gram-shakti-official/gram-shakti/releases/download/V1/gramshakti.apk">
-        <img src="1770902092682 (1).png" alt="Gram Shakti App" style="width: 100%; max-width: 480px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-    </a>
-</div>
+<button class="back-btn" id="backBtn" style="display:none;" onclick="location.reload()">← वापस</button>
 
-  <div id="app-container" class="app-card">
+<div class="app-card" id="main-container">
+    <div id="home-content">
+        <h1 style="color:#f97316; text-align:center; font-size:35px; font-weight:bold; margin-bottom:5px;">ग्राम शक्ति</h1>
+        <p style="text-align:center; color:#555; margin-bottom:25px;">गाँव का हुनर, शहर का बाज़ार</p>
+        
+        <button class="btn-main" onclick="showStateSelection()">🔎 सेवा या सामान खोजें</button>
+        <button class="btn-main" style="background:#1a1a1a;" onclick="showRegistration()">📢 अपना काम/दुकान जोड़ें</button>
+
+        <div style="margin-top:40px; padding:15px; background:#f0f9ff; border-radius:15px; text-align:center; border:1px solid #bae6fd;">
+            <p style="font-size:14px; color:#0369a1; font-weight:bold; margin-bottom:10px;">मदद या विज्ञापन के लिए संपर्क करें</p>
+            <button onclick="contactAdmin()" style="background:#25d366; color:white; width:100%; padding:12px; border-radius:10px; font-weight:bold; border:none; cursor:pointer;">
+                💬 व्हाट्सएप मेसेज भेजें
+            </button>
+        </div>
     </div>
-
-  <div style="text-align: center; margin: 15px 0;">
-    <a href="https://github.com/gram-shakti-official/gram-shakti/releases/download/V1/gramshakti.apk">
-        <img src="1770902092682 (2).png" alt="Install App" style="width: 100%; max-width: 480px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
-    </a>
 </div>
+
 <script>
-// 1. Firebase सेटअप
+// 1. Firebase कॉन्फ़िगरेशन
 const firebaseConfig = {
-  apiKey: "AIzaSyCuvev3-jwZwQuO_fHYyv2E2ovLny4Lh8Q",
-  authDomain: "gram-shakti-b135a.firebaseapp.com",
-  databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com",
-  projectId: "gram-shakti-b135a"
+    apiKey: "AIzaSyCuvev3-jwZwQuO_fHYyv2E2ovLny4Lh8Q",
+    authDomain: "gram-shakti-b135a.firebaseapp.com",
+    databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com",
+    projectId: "gram-shakti-b135a"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let userFlow = { state: '', jila: '', panchayat: '', village: '', role: '', service: '', delCharge: '', serviceAreas: [] };
+let userFlow = { state: '', jila: '', village: '', service: '' };
 
-// 2. बैक बटन - जो हर कदम पर साथ देगा
-function goBack() {
-    console.log("Back button clicked"); // इससे पता चलेगा बटन दब रहा है
-
-    // 1. अगर लिस्ट या रजिस्ट्रेशन फॉर्म पर हैं, तो सर्विस लिस्ट पर जाएँ
-    if (document.getElementById('list-container') || document.getElementById('reg-form')) {
-        showServiceList();
-    } 
-    // 2. अगर सर्विस लिस्ट पर हैं, तो रोल सिलेक्शन (Worker/Customer) पर जाएँ
-    else if (document.getElementById('service-list-page')) {
-        showRoleSelection();
-    } 
-    // 3. अगर रोल वाले पेज पर हैं, तो गाँव वाले पेज पर जाएँ
-    else if (document.getElementById('role-page')) {
-        showVillageStep();
-    } 
-    // 4. अगर गाँव वाले पेज पर हैं, तो पंचायत वाले पेज पर जाएँ
-    else if (document.getElementById('vill-page')) {
-        showPanchayatStep();
-    } 
-    // 5. अगर पंचायत वाले पेज पर हैं, तो जिला वाले पेज पर जाएँ
-    else if (document.getElementById('panch-page')) {
-        showDistrictStep();
-    } 
-    // 6. अगर जिला वाले पेज पर हैं, तो राज्यों (Home) पर जाएँ
-    else if (document.getElementById('dist-page')) {
-        showStates();
-    } 
-    // 7. अगर राज्यों वाले पेज पर हैं, तो ऐप रीलोड करें
-    else {
-        location.reload();
-    }
+// 2. सुरक्षित संपर्क फंक्शन (नंबर 9784499059 यहाँ है)
+function contactAdmin() {
+    const p = "919784499059";
+    const m = "नमस्ते रवि भाई, मैं ग्राम शक्ति ऐप से आया हूँ और मुझे सहायता चाहिए।";
+    window.open(`https://wa.me/${p}?text=${encodeURIComponent(m)}`, '_blank');
 }
 
-
-// 3. 10 राज्यों का शानदार Dual-Tone डिजाइन
-function showStates() {
-    const states = [
-        {name: 'Uttar Pradesh', em: '🏠'}, {name: 'Bihar', em: '🌾'}, 
-        {name: 'Rajasthan', em: '🏰'}, {name: 'Madhya Pradesh', em: '🌳'}, 
-        {name: 'Haryana', em: '🥛'}, {name: 'Jharkhand', em: '⛏️'},
-        {name: 'Uttarakhand', em: '🏔️'}, {name: 'Chhattisgarh', em: '🚜'},
-        {name: 'Punjab', em: '🌾'}, {name: 'Delhi', em: '🏛️'}
-    ];
-    
-    let html = `
-        <div id="state-page" style="padding:15px; text-align:center;">
-            <h1 style="color:#f97316; font-size:32px; margin-bottom:5px;">ग्राम शक्ति</h1>
-            <p style="margin-bottom:20px; font-weight:bold; color:#555;">अपना राज्य चुनें</p>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">`;
-            
+// 3. राज्य चयन
+function showStateSelection() {
+    document.getElementById('backBtn').style.display = 'block';
+    const states = ['Uttar Pradesh', 'Bihar', 'Rajasthan', 'Madhya Pradesh', 'Haryana'];
+    let html = `<h2 class="text-xl font-bold mb-4">राज्य चुनें:</h2>`;
     states.forEach(s => {
-        html += `
-            <div onclick="userFlow.state='${s.name}'; showDistrictStep()" 
-                 style="border-radius:15px; overflow:hidden; box-shadow:0 8px 15px rgba(0,0,0,0.1); cursor:pointer; background:white;">
-                <div style="background: #f97316; padding:25px; font-size:40px;">${s.em}</div>
-                <div style="background: #000000; color: white; padding:12px; font-weight:bold; font-size:14px;">${s.name}</div>
-            </div>`;
+        html += `<button class="btn-main" style="background:#333; margin-bottom:8px;" onclick="userFlow.state='${s}'; showLocationInput()">${s}</button>`;
     });
-    
-    html += `</div></div>`;
-    document.getElementById('app-container').innerHTML = html;
+    document.getElementById('main-container').innerHTML = html;
 }
 
-// 4. जिला चयन (Firebase से ऑटो-लोड)
-function showDistrictStep() {
-    let container = document.getElementById('app-container');
-    container.innerHTML = `
-        <div id="dist-page" style="padding:20px;">
-            <h3 style="color:#f97316;">${userFlow.state}</h3>
-            <p>जिला चुनें या नया लिखें:</p>
-            <select id="distSelect" style="width:100%; padding:15px; border-radius:12px; border:2px solid #f97316; margin:15px 0;">
-                <option value="">-- पुराने जिले --</option>
-            </select>
-            <input type="text" id="distInp" placeholder="+ नया जिला जोड़ें" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ccc;">
-            <button onclick="saveDistrict()" style="width:100%; padding:18px; background:#000; color:white; border:none; border-radius:15px; font-weight:bold; margin-top:20px;">आगे बढ़ें</button>
-        </div>`;
-    
-    db.ref('users/').once('value', snap => {
-        let set = new Set();
-        snap.forEach(c => { if(c.val().state === userFlow.state) set.add(c.val().jila); });
-        let sel = document.getElementById('distSelect');
-        set.forEach(d => { if(d) sel.innerHTML += `<option value="${d}">${d}</option>`; });
-    });
-}
-function saveDistrict() {
-    userFlow.jila = document.getElementById('distInp').value || document.getElementById('distSelect').value;
-    if(!userFlow.jila) { alert("जिला चुनें या लिखें"); return; }
-    showPanchayatStep();
+// 4. लोकेशन इनपुट (शहर/गाँव)
+function showLocationInput() {
+    document.getElementById('main-container').innerHTML = `
+        <h2 class="text-xl font-bold mb-2">${userFlow.state}</h2>
+        <p class="mb-4 text-gray-600">अपना जिला और गाँव/शहर भरें:</p>
+        <input type="text" id="jila" placeholder="जिला (जैसे: जयपुर)">
+        <input type="text" id="gaov" placeholder="गाँव या शहर (जैसे: रामपुरा)">
+        <button class="btn-main" onclick="saveLoc()">आगे बढ़ें</button>
+    `;
 }
 
-// 5. पंचायत चयन (Firebase से ऑटो-लोड)
-function showPanchayatStep() {
-    let container = document.getElementById('app-container');
-    container.innerHTML = `
-        <div id="panch-page" style="padding:20px;">
-            <h3 style="color:#f97316;">${userFlow.jila}</h3>
-            <p>पंचायत चुनें या नई लिखें:</p>
-            <select id="panchSelect" style="width:100%; padding:15px; border-radius:12px; border:2px solid #f97316; margin:15px 0;">
-                <option value="">-- पुरानी पंचायतें --</option>
-            </select>
-            <input type="text" id="panchInp" placeholder="+ नई पंचायत जोड़ें" style="width:100%; padding:15px; border-radius:12px; border:1px solid #ccc;">
-            <button onclick="savePanchayat()" style="width:100%; padding:18px; background:#000; color:white; border:none; border-radius:15px; font-weight:bold; margin-top:20px;">आगे बढ़ें</button>
-        </div>`;
+function saveLoc() {
+    userFlow.jila = document.getElementById('jila').value;
+    userFlow.village = document.getElementById('gaov').value;
+    if(!userFlow.jila || !userFlow.village) return alert("कृपया जानकारी भरें");
+    showCategorySelection();
+}
+
+// 5. कैटेगरी चुनाव
+function showCategorySelection() {
+    const cats = ['किराना/दुकान', 'डेयरी/दूध', 'मिस्त्री/वर्कर', 'ड्राइवर/गाड़ी', 'JCB/ट्रैक्टर'];
+    let html = `<h2 class="text-xl font-bold mb-4">क्या ढूँढ रहे हैं?</h2>`;
+    cats.forEach(c => {
+        html += `<button class="btn-main" style="background:white; color:#333; border:1px solid #ddd;" onclick="userFlow.service='${c}'; fetchResults()">${c}</button>`;
+    });
+    document.getElementById('main-container').innerHTML = html;
+}
+
+// 6. रिजल्ट्स (स्मार्ट फिल्टर के साथ)
+function fetchResults() {
+    document.getElementById('main-container').innerHTML = `<h2 class="font-bold mb-4">${userFlow.service} लिस्ट</h2><div id="result-list">खोज रहे हैं...</div>`;
     
     db.ref('users/').once('value', snap => {
-        let set = new Set();
-        snap.forEach(c => { if(c.val().jila === userFlow.jila) set.add(c.val().panchayat); });
-        let sel = document.getElementById('panchSelect');
-        set.forEach(p => { if(p) sel.innerHTML += `<option value="${p}">${p}</option>`; });
-    });
-}
-function savePanchayat() {
-    userFlow.panchayat = document.getElementById('panchInp').value || document.getElementById('panchSelect').value;
-    if(!userFlow.panchayat) { alert("पंचायत लिखें"); return; }
-    showVillageStep();
-}
-
-// 6. गाँव चयन (Firebase से ऑटो-लोड और नया जोड़ने का विकल्प)
-function showVillageStep() {
-    let container = document.getElementById('app-container');
-    container.innerHTML = `
-        <div id="vill-page" style="padding:20px;">
-            <h3 style="color:#f97316;">${userFlow.panchayat} > गाँव</h3>
-            <p style="margin-bottom:10px; font-weight:bold;">अपना गाँव चुनें या नया लिखें:</p>
-            
-            <select id="villSelect" style="width:100%; padding:15px; border-radius:12px; border:2px solid #f97316; margin-bottom:15px; font-size:16px;">
-                <option value="">-- पुराने गाँव चुनें --</option>
-            </select>
-
-            <div onclick="document.getElementById('villInp').style.display='block'; this.style.display='none'" 
-                 style="color:#2563eb; margin-bottom:15px; cursor:pointer; font-weight:bold;">
-                 + नया गाँव जोड़ें
-            </div>
-            
-            <input type="text" id="villInp" placeholder="यहाँ गाँव का नाम लिखें" 
-                   style="display:none; width:100%; padding:15px; border-radius:12px; border:1px solid #ccc; margin-bottom:15px;">
-
-            <button onclick="saveVillage()" 
-                    style="width:100%; padding:18px; background:#000; color:white; border:none; border-radius:15px; font-weight:bold; font-size:18px;">
-                    आगे बढ़ें
-            </button>
-        </div>`;
-
-    // Firebase से गाँव लोड करना
-    db.ref('users/').once('value', snap => {
-        let set = new Set();
-        snap.forEach(c => { 
-            let d = c.val();
-            if(d.panchayat === userFlow.panchayat) { set.add(d.village); }
-        });
-        let sel = document.getElementById('villSelect');
-        set.forEach(v => { if(v) sel.innerHTML += `<option value="${v}">${v}</option>`; });
-    });
-}
-
-function saveVillage() {
-    let val = document.getElementById('villInp').value || document.getElementById('villSelect').value;
-    if(!val) { alert("गाँव चुनें या लिखें"); return; }
-    userFlow.village = val;
-    showRoleSelection();
-}
-
-
-function showRoleSelection() {
-    document.getElementById('app-container').innerHTML = `
-        <div id="role-page" style="padding:25px; text-align:center;">
-            <div onclick="userFlow.role='worker'; showServiceList()" style="background:#2563eb; color:white; padding:30px; border-radius:20px; margin-bottom:20px; font-weight:bold; font-size:20px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">मैं वर्कर/दुकानदार हूँ</div>
-            <div onclick="userFlow.role='customer'; showServiceList()" style="background:#16a34a; color:white; padding:30px; border-radius:20px; font-weight:bold; font-size:20px; box-shadow:0 10px 20px rgba(0,0,0,0.1);">मुझे वर्कर चाहिए</div>
-        </div>`;
-}
-
-function showServiceList() {
-    const srv = ['डेयरी/दूध', 'किराना दुकान', 'मिस्त्री', 'JCB मशीन', 'ट्रैक्टर', 'इलेक्ट्रीशियन', 'मज़दूर', 'टेलर', 'मैकेनिक'];
-    let html = `<div id="service-list-page" style="padding:15px;"><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">`;
-    srv.forEach(s => {
-        html += `<div onclick="userFlow.service='${s}'; ${userFlow.role==='worker'?'showRegistrationForm()':'showList()'}" style="background:white; padding:20px; border-radius:15px; text-align:center; font-weight:bold; border-bottom:4px solid #000; box-shadow:0 4px 8px rgba(0,0,0,0.1); cursor:pointer;">${s}</div>`;
-    });
-    document.getElementById('app-container').innerHTML = html + `</div></div>`;
-}
-
-// 7. वर्कर रजिस्ट्रेशन (डिलीवरी चार्ज के साथ)
-function showRegistrationForm() {
-    let isShop = (userFlow.service === 'डेयरी/दूध' || userFlow.service === 'किराना दुकान');
-    document.getElementById('app-container').innerHTML = `
-        <div id="reg-form" style="padding:20px;">
-            <div style="background:white; border-radius:20px; box-shadow:0 10px 20px rgba(0,0,0,0.1); padding:20px;">
-                <h3 style="color:#2563eb;">${userFlow.service} रजिस्ट्रेशन</h3>
-                <input type="text" id="wName" placeholder="नाम / दुकान का नाम" style="width:100%; padding:15px; margin-bottom:12px; border-radius:10px; border:1px solid #ddd;">
-                <input type="number" id="wPhone" placeholder="मोबाइल नंबर" style="width:100%; padding:15px; margin-bottom:12px; border-radius:10px; border:1px solid #ddd;">
-                ${isShop ? `<input type="text" id="wCharge" placeholder="डिलीवरी चार्ज (जैसे ₹20)" style="width:100%; padding:15px; margin-bottom:12px; border-radius:10px; border:1px solid #ddd; background:#fff9db;">` : ''}
-                <textarea id="wAreas" placeholder="अन्य गाँवों के नाम (कोमा , लगाकर)" style="width:100%; height:70px; padding:12px; border-radius:10px; border:1px solid #ddd;"></textarea>
-                <button onclick="finalRegister()" style="width:100%; padding:18px; background:#000; color:white; border:none; border-radius:15px; font-weight:bold; margin-top:15px;">सबमिट करें</button>
-            </div>
-        </div>`;
-}
-
-function finalRegister() {
-    userFlow.workerName = document.getElementById('wName').value;
-    userFlow.workerPhone = document.getElementById('wPhone').value;
-    userFlow.delCharge = document.getElementById('wCharge') ? document.getElementById('wCharge').value : 'NA';
-    let areas = document.getElementById('wAreas').value;
-    if(!userFlow.workerName || !userFlow.workerPhone) { alert("नाम और नंबर भरें"); return; }
-    userFlow.serviceAreas = areas.split(',').map(i => i.trim().toLowerCase());
-    userFlow.serviceAreas.push(userFlow.village.toLowerCase());
-    db.ref('users/').push(userFlow).then(() => { alert("रजिस्ट्रेशन सफल!"); location.reload(); });
-}
-
-// 8. लिस्टिंग
-function showList() {
-    document.getElementById('app-container').innerHTML = `<div id="list-container" style="padding:15px;"><h3>${userFlow.service} लिस्ट</h3><div id="list-box">लोड हो रहा है...</div></div>`;
-    db.ref('users/').once('value', snap => {
-        let html = ''; let found = false;
-        let v = userFlow.village.toLowerCase();
+        let html = "";
+        let found = false;
         snap.forEach(child => {
             let d = child.val();
-            if(d.role === 'worker' && d.service === userFlow.service && d.serviceAreas && d.serviceAreas.includes(v)) {
-                html += `<div style="background:white; padding:15px; border-radius:15px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 5px 10px rgba(0,0,0,0.1); border-left:6px solid #16a34a;">
-                    <div><b>${d.workerName}</b><br><small>${d.delCharge!=='NA'?'🚚 चार्ज: '+d.delCharge : 'गाँव: '+d.village}</small></div>
-                    <a href="tel:${d.workerPhone}" style="background:#16a34a; color:white; width:45px; height:45px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none;">📞</a>
-                </div>`;
+            // स्मार्ट फिल्टर: अगर गाँव मैच हो या ड्राइवर शहर जाना चाहता हो
+            if(d.service === userFlow.service && (d.village === userFlow.village || d.workArea === 'city')) {
+                html += `
+                    <div class="list-item">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <b class="text-lg">${d.name || d.workerName}</b><br>
+                                <span class="text-sm text-gray-500">${d.village} (${d.jila})</span>
+                            </div>
+                            <a href="tel:${d.phone}" class="bg-green-600 text-white p-3 rounded-full">📞</a>
+                        </div>
+                        <div class="mt-2 text-sm">
+                            ${d.canDeliver ? '🚚 होम डिलीवरी उपलब्ध' : '🏠 दुकान पर सेवा'}
+                        </div>
+                    </div>`;
                 found = true;
             }
         });
-        document.getElementById('list-box').innerHTML = found ? html : "कोई नहीं मिला।";
+        document.getElementById('result-list').innerHTML = found ? html : "माफ़ करें, इस जगह अभी कोई उपलब्ध नहीं है।";
     });
 }
 
-// ऐप स्टार्ट
-showStates();
+// 7. रजिस्ट्रेशन (नया काम जोड़ने के लिए)
+function showRegistration() {
+    document.getElementById('backBtn').style.display = 'block';
+    document.getElementById('main-container').innerHTML = `
+        <h2 class="text-xl font-bold mb-4">अपना काम जोड़ें</h2>
+        <input type="text" id="regName" placeholder="आपका/दुकान का नाम">
+        <input type="tel" id="regPhone" placeholder="मोबाइल नंबर">
+        <input type="text" id="regGaov" placeholder="गाँव या शहर">
+        <select id="regService">
+            <option>किराना/दुकान</option><option>डेयरी/दूध</option>
+            <option>मिस्त्री/वर्कर</option><option>ड्राइवर/गाड़ी</option>
+        </select>
+        <p class="text-sm mt-2">क्या आप डिलीवरी देते हैं?</p>
+        <select id="regDel"><option value="false">नहीं</option><option value="true">हाँ</option></select>
+        <button class="btn-main" onclick="registerWorker()">रजिस्टर करें</button>
+    `;
+}
+
+function registerWorker() {
+    let data = {
+        name: document.getElementById('regName').value,
+        phone: document.getElementById('regPhone').value,
+        village: document.getElementById('regGaov').value,
+        service: document.getElementById('regService').value,
+        canDeliver: document.getElementById('regDel').value === 'true',
+        timestamp: Date.now()
+    };
+    if(!data.name || !data.phone) return alert("नाम और नंबर भरें");
+    db.ref('users/').push(data).then(() => {
+        alert("बधाई हो! आप ग्राम शक्ति से जुड़ चुके हैं।");
+        location.reload();
+    });
+}
 </script>
+</body>
+</html>
