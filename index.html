@@ -1,149 +1,171 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ग्राम शक्ति - डिजिटल सेवा</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Noto Sans Devanagari', sans-serif; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80'); background-size: cover; background-attachment: fixed; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 10px; }
-        .app-card { background: rgba(255, 255, 255, 0.95); width: 100%; max-width: 480px; padding: 20px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); backdrop-filter: blur(10px); margin: 10px 0; }
-        .ad-box { width: 100%; max-width: 480px; height: 80px; background: #fff; border-radius: 15px; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); border: 2px solid #f97316; cursor:pointer; }
-        .ad-box img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-main { width: 100%; padding: 15px; background: #f97316; color: white; border-radius: 14px; font-size: 18px; font-weight: 700; cursor: pointer; margin-top: 10px; border: none; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #ddd; color: #000; }
-        .list-item { background: white; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 6px solid #16a34a; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color: #333; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ग्राम शक्ति - डिजिटल रोजगार</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  body { 
+    background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80');
+    background-size: cover; background-attachment: fixed;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 10px;
+  }
+  .app-card { background: white; width: 100%; max-width: 450px; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+  .btn-main { width: 100%; padding: 14px; background: #f97316; color: white; border-radius: 10px; font-weight: bold; margin-bottom: 10px; cursor: pointer; border: none; font-size: 16px; }
+  input, select { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ccc; color: #000; }
+  .list-item { background: #f8fafc; padding: 15px; border-radius: 15px; margin-bottom: 10px; border-left: 6px solid #2563eb; }
+  .job-tag { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 5px; font-size: 12px; font-weight: bold; }
+</style>
 </head>
 <body>
 
-    <div class="ad-box" onclick="contactAdmin()">
-        <img src="1770902092682 (1).png" onerror="this.src='https://via.placeholder.com/480x80?text=Top+Advertisement'">
+  <div id="app-container" class="app-card">
+    <h1 class="text-3xl font-bold text-center text-orange-600 mb-2">ग्राम शक्ति</h1>
+    <p class="text-center text-sm text-gray-500 mb-6">गाँव से शहर तक, हर हाथ को काम</p>
+    
+    <div id="main-menu">
+        <button class="btn-main" onclick="startFlow('reg')">📢 काम या भर्ती (Job) जोड़ें</button>
+        <button class="btn-main" style="background:#000" onclick="startFlow('search')">🔎 नौकरी या वर्कर ढूँढें</button>
+        <button class="w-full text-center text-blue-600 mt-4 font-bold" onclick="window.open('https://wa.me/919784499059')">💬 एडमिन से संपर्क</button>
     </div>
 
-    <div class="app-card" id="main-container">
-        <div id="content-area">
-            <h1 class="text-3xl font-bold text-center text-orange-600">ग्राम शक्ति</h1>
-            <p class="text-center text-gray-600 mb-6">गाँव का हुनर, शहर का बाज़ार</p>
-            <button class="btn-main" onclick="showLocationStep('search')">🔎 वर्कर/सामान ढूँढें</button>
-            <button class="btn-main" style="background:#1a1a1a" onclick="showLocationStep('reg')">📢 अपना काम जोड़ें</button>
-            <button class="btn-main" style="background:#2563eb" onclick="contactAdmin()">💬 एडमिन से संपर्क</button>
-        </div>
-    </div>
-
-    <div class="ad-box" onclick="contactAdmin()">
-        <img src="1770902092682 (2).png" onerror="this.src='https://via.placeholder.com/480x80?text=Bottom+Advertisement'">
-    </div>
+    <div id="dynamic-area"></div>
+</div>
 
 <script>
+// Firebase Config
 const firebaseConfig = {
-    apiKey: "AIzaSyCuvev3-jwZwQuO_fHYyv2E2ovLny4Lh8Q",
-    authDomain: "gram-shakti-b135a.firebaseapp.com",
-    databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com",
-    projectId: "gram-shakti-b135a"
+  apiKey: "AIzaSyCuvev3-jwZwQuO_fHYyv2E2ovLny4Lh8Q",
+  authDomain: "gram-shakti-b135a.firebaseapp.com",
+  databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com",
+  projectId: "gram-shakti-b135a"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let temp = { mode: '', village: '', service: '' };
+let flow = { mode: '', type: '', name: '', phone: '', post: '', state: '', jila: '', village: '' };
 
-function contactAdmin() {
-    window.open(`https://wa.me/919784499059?text=नमस्ते रवि भाई, विज्ञापन के लिए संपर्क किया है।`, '_blank');
-}
-
-// Step 1: लोकेशन पूछना (यही गाँव डेटा फिल्टर करेगा)
-function showLocationStep(mode) {
-    temp.mode = mode;
-    document.getElementById('content-area').innerHTML = `
-        <h2 class="text-xl font-bold mb-4">लोकेशन भरें</h2>
-        <input type="text" id="vName" placeholder="अपने गाँव या शहर का नाम">
-        <button class="btn-main" onclick="saveLoc()">आगे बढ़ें</button>
-        <button class="mt-4 text-blue-600" onclick="location.reload()">← वापस</button>
-    `;
-}
-
-function saveLoc() {
-    temp.village = document.getElementById('vName').value.trim().toLowerCase();
-    if(!temp.village) return alert("गाँव का नाम लिखें");
-    showServiceStep();
-}
-
-// Step 2: सर्विस चुनना
-function showServiceStep() {
-    const services = ['मिस्त्री', 'इलेक्ट्रीशियन', 'JCB/ट्रैक्टर', 'डेयरी/दूध', 'किराना दुकान', 'मजदूर'];
-    let html = `<h2 class="text-xl font-bold mb-4">कैटेगरी चुनें</h2>`;
-    services.forEach(s => {
-        html += `<button class="btn-main" style="background:white; color:#333; border:1px solid #ddd" onclick="setService('${s}')">${s}</button>`;
-    });
-    document.getElementById('content-area').innerHTML = html;
-}
-
-function setService(s) {
-    temp.service = s;
-    if(temp.mode === 'search') fetchWorkers();
-    else showRegForm();
-}
-
-// Step 3: रजिस्ट्रेशन फॉर्म (डेटा सेव करने के लिए)
-function showRegForm() {
-    document.getElementById('content-area').innerHTML = `
-        <h2 class="text-xl font-bold mb-4">${temp.service} रजिस्ट्रेशन</h2>
-        <input type="text" id="wName" placeholder="आपका/दुकान का नाम">
-        <input type="tel" id="wPhone" placeholder="मोबाइल नंबर">
-        <select id="wDel"><option value="false">होम डिलीवरी नहीं</option><option value="true">होम डिलीवरी हाँ</option></select>
-        <button class="btn-main" onclick="saveToFirebase()">सेव करें</button>
-    `;
-}
-
-function saveToFirebase() {
-    let name = document.getElementById('wName').value;
-    let phone = document.getElementById('wPhone').value;
-    let del = document.getElementById('wDel').value;
-
-    if(!name || !phone) return alert("नाम और नंबर भरें");
-
-    db.ref('users/').push({
-        name: name,
-        phone: phone,
-        village: temp.village,
-        service: temp.service,
-        delivery: del,
-        role: 'worker'
-    }).then(() => {
-        alert("सफलतापूर्वक जुड़ गए!");
-        location.reload();
-    });
-}
-
-// Step 4: सर्च रिजल्ट्स (जो भरा गया है वही यहाँ दिखेगा)
-function fetchWorkers() {
-    document.getElementById('content-area').innerHTML = `<h2 class="text-xl font-bold mb-4">${temp.service} की लिस्ट</h2><div id="results">लोड हो रहा है...</div>`;
+function startFlow(mode) {
+    flow.mode = mode;
+    document.getElementById('main-menu').style.display = 'none';
     
+    if(mode === 'reg') {
+        document.getElementById('dynamic-area').innerHTML = `
+            <h2 class="font-bold mb-4 text-lg">आप कौन हैं?</h2>
+            <button class="btn-main" style="background:#2563eb" onclick="flow.type='Company'; showBasicInfo()">मैं कंपनी/ठेकेदार हूँ (नौकरी देनी है)</button>
+            <button class="btn-main" style="background:#16a34a" onclick="flow.type='Worker'; showBasicInfo()">मैं वर्कर हूँ (नौकरी चाहिए)</button>
+        `;
+    } else {
+        showStateStep();
+    }
+}
+
+function showBasicInfo() {
+    let title = flow.type === 'Company' ? "कंपनी/फर्म का नाम" : "आपका नाम";
+    let postLabel = flow.type === 'Company' ? "किस पद के लिए भर्ती है?" : "आप क्या काम करते हैं?";
+    
+    document.getElementById('dynamic-area').innerHTML = `
+        <h2 class="font-bold mb-3">जानकारी भरें</h2>
+        <label class="text-xs font-bold">${title}:</label>
+        <input type="text" id="name" placeholder="यहाँ लिखें...">
+        
+        <label class="text-xs font-bold">${postLabel}:</label>
+        <select id="post">
+            <option>मजदूर/हेल्पर</option>
+            <option>ड्राइवर (Ola/Uber/Private)</option>
+            <option>मिस्त्री/कारीगर</option>
+            <option>सुपरवाइजर/मैनेजर</option>
+            <option>मुनीम/अकाउंटेंट</option>
+            <option>सेल्समैन/मार्केटिंग</option>
+        </select>
+        
+        <label class="text-xs font-bold">मोबाइल नंबर:</label>
+        <input type="tel" id="phone" placeholder="9876543210">
+        
+        <button class="btn-main" onclick="saveBasic()">आगे बढ़ें (लोकेशन)</button>
+    `;
+}
+
+function saveBasic() {
+    flow.name = document.getElementById('name').value.trim();
+    flow.post = document.getElementById('post').value;
+    flow.phone = document.getElementById('phone').value.trim();
+    if(!flow.name || !flow.phone) return alert("कृपया जानकारी पूरी भरें!");
+    showStateStep();
+}
+
+function showStateStep() {
+    const states = ['Rajasthan', 'Uttar Pradesh', 'Bihar', 'Haryana', 'MP'];
+    let html = `<h2 class="font-bold mb-3">राज्य चुनें</h2>`;
+    states.forEach(s => {
+        html += `<button class="btn-main" style="background:#4b5563" onclick="flow.state='${s}'; showJilaStep()">${s}</button>`;
+    });
+    document.getElementById('dynamic-area').innerHTML = html;
+}
+
+function showJilaStep() {
+    document.getElementById('dynamic-area').innerHTML = `
+        <h2 class="font-bold mb-2">जिला लिखें:</h2>
+        <input type="text" id="jila" placeholder="जैसे: जयपुर">
+        <button class="btn-main" onclick="flow.jila=document.getElementById('jila').value.trim().toLowerCase(); showVillageStep()">आगे बढ़ें</button>
+    `;
+}
+
+function showVillageStep() {
+    document.getElementById('dynamic-area').innerHTML = `
+        <h2 class="font-bold mb-2">गाँव/शहर का नाम:</h2>
+        <input type="text" id="village" placeholder="जैसे: रामपुर">
+        <button class="btn-main" onclick="flow.village=document.getElementById('village').value.trim().toLowerCase(); finalize()">कन्फर्म करें</button>
+    `;
+}
+
+function finalize() {
+    if(flow.mode === 'reg') {
+        db.ref('users/').push(flow).then(() => {
+            alert("सफलतापूर्वक रजिस्टर हो गया!");
+            location.reload();
+        });
+    } else {
+        document.getElementById('dynamic-area').innerHTML = `
+            <h2 class="font-bold mb-3">आपको क्या ढूँढना है?</h2>
+            <select id="searchPost">
+                <option>मजदूर/हेल्पर</option><option>ड्राइवर (Ola/Uber/Private)</option>
+                <option>मिस्त्री/कारीगर</option><option>सुपरवाइजर/मैनेजर</option>
+            </select>
+            <button class="btn-main" onclick="flow.post=document.getElementById('searchPost').value; showResults()">रिजल्ट देखें</button>
+        `;
+    }
+}
+
+function showResults() {
+    document.getElementById('dynamic-area').innerHTML = `<p>खोज रहे हैं...</p>`;
     db.ref('users/').once('value', snap => {
-        let html = "";
-        let count = 0;
+        let html = ""; let found = false;
         snap.forEach(child => {
             let d = child.val();
-            // फिल्टर: गाँव और सर्विस दोनों मैच होनी चाहिए
-            if(d.village === temp.village && d.service === temp.service) {
+            if(d.village === flow.village && d.jila === flow.jila && d.post === flow.post) {
+                let badge = d.type === 'Company' ? 'नौकरी उपलब्ध' : 'वर्कर उपलब्ध';
                 html += `
                     <div class="list-item">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <b class="text-lg">${d.name}</b><br>
-                                <span class="text-sm">${d.delivery === 'true' ? '🚚 डिलीवरी उपलब्ध' : '🏠 दुकान पर'}</span>
-                            </div>
-                            <a href="tel:${d.phone}" class="bg-green-500 text-white p-2 rounded-full">📞</a>
+                        <div class="flex-1">
+                            <span class="job-tag">${badge}</span>
+                            <h3 class="font-bold text-lg mt-1">${d.name}</h3>
+                            <p class="text-sm text-gray-600">📍 ${d.village.toUpperCase()}, ${d.jila.toUpperCase()}</p>
+                            <p class="text-sm font-bold text-blue-600">पद: ${d.post}</p>
                         </div>
+                        <a href="tel:${d.phone}" class="bg-green-600 text-white p-3 rounded-full h-12 w-12 flex items-center justify-center">📞</a>
                     </div>`;
-                count++;
+                found = true;
             }
         });
-        document.getElementById('results').innerHTML = count > 0 ? html : "इस गाँव में अभी कोई उपलब्ध नहीं है।";
-        document.getElementById('content-area').innerHTML += `<button class="btn-main" style="background:#000" onclick="location.reload()">वापस</button>`;
+        document.getElementById('dynamic-area').innerHTML = (found ? html : "कोई रिकॉर्ड नहीं मिला।") + 
+        `<button class="btn-main mt-4" style="background:#000" onclick="location.reload()">वापस जाएँ</button>`;
     });
 }
 </script>
