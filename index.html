@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ग्राम शक्ति - अखिल भारतीय सेवा</title>
+<title>Gram Shakti - All India</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -17,29 +17,29 @@
   .btn-opt { padding: 16px; border-radius: 12px; font-weight: bold; text-align: center; color: white; cursor: pointer; margin-bottom: 12px; font-size: 16px; display: block; width: 100%; }
   .form-input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; background: #fff; color: #000; }
   label { font-weight: bold; font-size: 14px; color: #333; margin-bottom: 4px; display: block; }
+  .btn-submit { width: 100%; padding: 15px; background: #f97316; color: white; border-radius: 12px; font-weight: bold; font-size: 18px; }
 </style>
 </head>
 <body>
 
   <div class="ad-box" onclick="window.open('https://wa.me/919784499059')">
-      <img src="1770902092682 (1).png" onerror="this.src='https://via.placeholder.com/500x90?text=Top+Advertisement'">
+      <img src="1770902092682 (1).png" onerror="this.src='https://via.placeholder.com/500x90?text=Top+Ad'">
   </div>
 
   <div class="app-card">
     <h1 class="text-3xl font-bold text-orange-600 text-center mb-6 italic">ग्राम शक्ति</h1>
     
     <div id="menu-area">
-        <div class="btn-opt bg-blue-600" onclick="openFullForm('Worker')">👷 वर्कर / दुकानदार रजिस्ट्रेशन</div>
+        <div class="btn-opt bg-blue-600" onclick="openFullForm('Worker')">👷 वर्कर रजिस्ट्रेशन (फॉर्म)</div>
         <div class="btn-opt bg-purple-700" onclick="openFullForm('Company')">🏢 कंपनी / मालिक भर्ती</div>
         <div class="btn-opt bg-green-600" onclick="openSearchForm()">🔎 काम या वर्कर ढूँढें</div>
-        <button class="w-full text-blue-600 font-bold mt-4" onclick="window.open('https://wa.me/919784499059')">💬 एडमिन सहायता</button>
     </div>
 
     <div id="form-area"></div>
   </div>
 
   <div class="ad-box" onclick="window.open('https://wa.me/919784499059')">
-      <img src="1770902092682 (2).png" onerror="this.src='https://via.placeholder.com/500x90?text=Bottom+Advertisement'">
+      <img src="1770902092682 (2).png" onerror="this.src='https://via.placeholder.com/500x90?text=Bottom+Ad'">
   </div>
 
 <script>
@@ -53,23 +53,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// भारत के सभी राज्यों और UTs की लिस्ट
-const allStates = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", 
-    "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", 
-    "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", 
-    "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-    "Andaman and Nicobar Islands", "Chandigarh", "Dadra and Nagar Haveli and Daman and Diu", 
-    "Delhi", "Jammu and Kashmir", "Ladakh", "Lakshadweep", "Puducherry"
-];
+const allStates = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu and Kashmir"];
 
-const categories = [
-    "मजदूर (Labour)", "राजमिस्त्री (Mason)", "इलेक्ट्रिशियन", "प्लम्बर", "पेंटर", 
-    "टेलर (दर्जी)", "बढ़ई (Carpenter)", "लोहार", "मैकेनिक (गाड़ी)", 
-    "ड्राइवर (Personal)", "ड्राइवर (Taxi/Ola/Uber)", "JCB ऑपरेटर", "ट्रैक्टर ड्राइवर",
-    "किराना दुकान", "डेयरी/दूध", "सब्जी विक्रेता", "खाद-बीज भंडार", 
-    "सुपरवाइजर", "मुनीम/अकाउंटेंट", "कंप्यूटर ऑपरेटर", "सिक्योरिटी गार्ड", "टेंट हाउस"
-];
+const categories = ["मजदूर (Labour)", "राजमिस्त्री (Mason)", "इलेक्ट्रिशियन", "प्लम्बर", "पेंटर", "टेलर (दर्जी)", "बढ़ई (Carpenter)", "लोहार", "मैकेनिक (गाड़ी)", "ड्राइवर (Personal)", "ड्राइवर (Taxi/Ola/Uber)", "JCB ऑपरेटर", "ट्रैक्टर ड्राइवर", "किराना दुकान", "डेयरी/दूध", "सब्जी विक्रेता", "खाद-बीज भंडार", "सुपरवाइजर", "मुनीम/अकाउंटेंट", "कंप्यूटर ऑपरेटर", "सिक्योरिटी गार्ड", "टेंट हाउस"];
 
 function openFullForm(type) {
     document.getElementById('menu-area').style.display = 'none';
@@ -77,34 +63,20 @@ function openFullForm(type) {
     let catOptions = categories.map(c => `<option value="${c}">${c}</option>`).join('');
     
     document.getElementById('form-area').innerHTML = `
-        <h2 class="text-xl font-bold mb-4 text-center text-blue-800">${type === 'Worker' ? 'रजिस्ट्रेशन' : 'भर्ती'} फॉर्म</h2>
-        
-        <label>नाम:</label>
-        <input type="text" id="f_name" class="form-input" placeholder="पूरा नाम">
-        
-        <label>कैटेगरी:</label>
-        <select id="f_post" class="form-input">${catOptions}</select>
-
-        <label>मोबाइल नंबर:</label>
-        <input type="tel" id="f_phone" class="form-input" placeholder="0000000000">
-
-        <label>राज्य:</label>
-        <select id="f_state" class="form-input">${stateOptions}</select>
-
-        <label>जिला:</label>
-        <input type="text" id="f_jila" class="form-input" placeholder="जिला लिखें">
-
-        <label>पंचायत:</label>
-        <input type="text" id="f_pan" class="form-input" placeholder="पंचायत लिखें">
-
-        <label>गाँव:</label>
-        <input type="text" id="f_vill" class="form-input" placeholder="गाँव का नाम">
-
-        <button class="w-full p-4 bg-orange-600 text-white rounded-lg font-bold text-lg" onclick="saveData('${type}')">डेटा सुरक्षित करें ✅</button>
-        <button class="w-full text-gray-500 mt-4 font-bold" onclick="location.reload()">← वापस जाएँ</button>
+        <h2 class="text-xl font-bold mb-4 text-center text-blue-800">फॉर्म भरें</h2>
+        <label>नाम:</label><input type="text" id="f_name" class="form-input" placeholder="नाम">
+        <label>कैटेगरी:</label><select id="f_post" class="form-input">${catOptions}</select>
+        <label>मोबाइल नंबर:</label><input type="tel" id="f_phone" class="form-input" placeholder="नंबर">
+        <label>राज्य:</label><select id="f_state" class="form-input">${stateOptions}</select>
+        <label>जिला:</label><input type="text" id="f_jila" class="form-input" placeholder="जिला">
+        <label>पंचायत:</label><input type="text" id="f_pan" class="form-input" placeholder="पंचायत">
+        <label>गाँव:</label><input type="text" id="f_vill" class="form-input" placeholder="गाँव">
+        <button class="btn-submit" onclick="saveData('${type}')">डेटा सेव करें ✅</button>
+        <button class="w-full text-gray-500 mt-4 font-bold" onclick="location.reload()">← वापस</button>
     `;
 }
 
+// YAHI WALA FUNCTION HAI JO BADLA GAYA HAI (SUCCESS BUTTON KE LIYE)
 function saveData(type) {
     let d = {
         type: type,
@@ -116,8 +88,23 @@ function saveData(type) {
         panchayat: document.getElementById('f_pan').value.trim().toLowerCase(),
         village: document.getElementById('f_vill').value.trim().toLowerCase()
     };
-    if(!d.name || !d.phone || !d.jila || !d.village) return alert("नाम, नंबर, जिला और गाँव भरना ज़रूरी है!");
-    db.ref('users/').push(d).then(() => { alert("सफलतापूर्वक जुड़ गए!"); location.reload(); });
+
+    if(!d.name || !d.phone || !d.jila || !d.village) return alert("सब कुछ भरें!");
+
+    db.ref('users/').push(d).then(() => {
+        // Form ki jagah Success screen dikhayega
+        document.getElementById('form-area').innerHTML = `
+            <div class="text-center p-8">
+                <div class="bg-green-100 p-6 rounded-full inline-block mb-4">
+                    <span style="font-size: 50px;">✅</span>
+                </div>
+                <h2 class="text-2xl font-bold text-green-700 mb-6">सफलतापूर्वक जुड़ गए!</h2>
+                <button class="btn-submit" style="background: #16a34a; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2);" onclick="location.reload()">
+                    SUCCESS (ठीक है)
+                </button>
+            </div>
+        `;
+    });
 }
 
 function openSearchForm() {
@@ -127,16 +114,12 @@ function openSearchForm() {
     
     document.getElementById('form-area').innerHTML = `
         <h2 class="text-xl font-bold mb-4 text-center">सर्च करें</h2>
-        <label>क्या चाहिए?</label>
-        <select id="s_post" class="form-input">${catOptions}</select>
-        <label>राज्य:</label>
-        <select id="s_state" class="form-input">${stateOptions}</select>
-        <label>जिला:</label>
-        <input type="text" id="s_jila" class="form-input" placeholder="जिला लिखें">
-        <label>गाँव:</label>
-        <input type="text" id="s_vill" class="form-input" placeholder="गाँव लिखें">
-        <button class="w-full p-4 bg-black text-white rounded-lg font-bold" onclick="getResults()">खोजें 🔎</button>
-        <button class="w-full text-gray-500 mt-4 font-bold" onclick="location.reload()">← वापस जाएँ</button>
+        <label>क्या चाहिए?</label><select id="s_post" class="form-input">${catOptions}</select>
+        <label>राज्य:</label><select id="s_state" class="form-input">${stateOptions}</select>
+        <label>जिला:</label><input type="text" id="s_jila" class="form-input" placeholder="जिला">
+        <label>गाँव:</label><input type="text" id="s_vill" class="form-input" placeholder="गाँव">
+        <button class="btn-submit" style="background:black" onclick="getResults()">खोजें 🔎</button>
+        <button class="w-full text-gray-500 mt-4 font-bold" onclick="location.reload()">← वापस</button>
     `;
 }
 
@@ -153,18 +136,13 @@ function getResults() {
             let d = c.val();
             if(d.post === post && d.state === state && d.jila === jila && d.village === vill) {
                 html += `<div style="background:#fff; padding:15px; border-radius:15px; margin-bottom:10px; border-left:6px solid #f97316; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <div>
-                        <b class="text-lg">${d.name}</b><br>
-                        <small class="text-blue-600 font-bold">${d.post}</small><br>
-                        <small class="text-gray-500">${d.village.toUpperCase()}, ${d.jila.toUpperCase()}</small>
-                    </div>
-                    <a href="tel:${d.phone}" class="bg-green-600 text-white p-3 rounded-full shadow-lg">📞</a>
+                    <div><b class="text-lg">${d.name}</b><br><small class="text-blue-600 font-bold">${d.post}</small><br><small>${d.village.toUpperCase()}</small></div>
+                    <a href="tel:${d.phone}" class="bg-green-600 text-white p-3 rounded-full">📞</a>
                 </div>`;
                 found = true;
             }
         });
-        document.getElementById('form-area').innerHTML = (found ? html : "<p class='text-center p-4'>इस लोकेशन पर कोई नहीं मिला।</p>") + 
-        `<button class="w-full p-3 bg-gray-500 text-white rounded-lg mt-4 font-bold" onclick="location.reload()">नई खोज</button>`;
+        document.getElementById('form-area').innerHTML = (found ? html : "<p class='text-center p-4'>नहीं मिला।</p>") + `<button class="btn-submit mt-4" style="background:#666" onclick="location.reload()">नई खोज</button>`;
     });
 }
 </script>
