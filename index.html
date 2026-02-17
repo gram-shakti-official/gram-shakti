@@ -33,6 +33,8 @@
         <div class="btn-opt bg-blue-600" onclick="openFullForm('Worker')">👷 वर्कर रजिस्ट्रेशन (फॉर्म)</div>
         <div class="btn-opt bg-purple-700" onclick="openFullForm('Company')">🏢 कंपनी भर्ती</div>
         <div class="btn-opt bg-green-600" onclick="openSearchForm()">🔎 काम या वर्कर ढूँढें</div>
+    <div class="btn-opt bg-red-600 shadow-lg" onclick="shareApp()">📲 दोस्तों को शेयर करें</div>
+      
     </div>
 
     <div id="form-area"></div>
@@ -41,7 +43,6 @@
   <div class="ad-box" onclick="window.open('https://wa.me/919784499059')">
       <img src="1770902092682 (2).png" onerror="this.src='https://via.placeholder.com/500x90?text=Bottom+Ad'">
   </div>
-
 <script>
 // Firebase Config
 const firebaseConfig = {
@@ -144,6 +145,13 @@ function getResults() {
         });
         document.getElementById('form-area').innerHTML = (found ? html : "<p class='text-center p-4'>नहीं मिला।</p>") + `<button class="btn-submit mt-4" style="background:#666" onclick="location.reload()">नई खोज</button>`;
     });
+}
+function shareApp() {
+    // यहाँ आप अपना संदेश लिख सकते हैं जो व्हाट्सएप पर जाएगा
+    const text = "🚩 *ग्राम शक्ति - डिजिटल सेवा* 🚩\n\nअब गाँव में ही पायें मजदूर, ड्राइवर, मिस्त्री और कंपिनयों में नौकरी।\n\nअभी अपना फॉर्म भरने के लिए नीचे लिंक पर क्लिक करें: \n";
+    const url = window.location.href; // यह आपकी ऐप का लिंक अपने आप ले लेगा
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text + url)}`;
+    window.open(whatsappUrl, '_blank');
 }
 </script>
 </body>
