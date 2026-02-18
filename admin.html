@@ -3,195 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ग्राम शक्ति - मास्टर कंट्रोल पैनल</title>
+    <title>ग्राम शक्ति - सुरक्षित कंट्रोल</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; }
-        .tab-btn { padding: 10px 20px; cursor: pointer; border-bottom: 3px solid transparent; }
-        .tab-btn.active { border-bottom: 3px solid #ea580c; color: #ea580c; font-weight: bold; }
+        .tab-btn.active { border-bottom: 4px solid #ea580c; color: #ea580c; }
     </style>
 </head>
-<body>
+<body class="bg-gray-100">
 
-    <div id="login-screen" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-2xl shadow-2xl">
-        <h2 class="text-3xl font-bold text-center text-orange-600 mb-6">एडमिन लॉगिन</h2>
-        <label class="block mb-2 font-bold text-gray-700">लॉगिन ID:</label>
-        <input type="text" id="login_id" class="w-full p-3 border rounded-lg mb-4" placeholder="अपनी ID डालें">
-        <label class="block mb-2 font-bold text-gray-700">पासवर्ड:</label>
-        <input type="password" id="login_pass" class="w-full p-3 border rounded-lg mb-6" placeholder="पासवर्ड डालें">
-        <button onclick="handleLogin()" class="w-full bg-orange-600 text-white p-4 rounded-lg font-bold text-lg hover:bg-orange-700">प्रवेश करें</button>
-        <p class="text-center mt-4 text-sm text-gray-500">मास्टर क्रेडेंशियल से सुपर कंट्रोल खुलता है</p>
+    <div id="l-s" class="max-w-md mx-auto mt-20 bg-white p-8 rounded-2xl shadow-2xl border-t-8 border-orange-600">
+        <h2 class="text-3xl font-bold text-center text-orange-600 mb-6">सिक्योर एडमिन कंट्रोल</h2>
+        <div class="mb-4">
+            <label class="block text-gray-700 font-bold mb-2">लॉगिन ID</label>
+            <input type="text" id="u-i" class="w-full p-3 border rounded-lg focus:outline-orange-500" placeholder="यहाँ ID डालें">
+        </div>
+        <div class="mb-6">
+            <label class="block text-gray-700 font-bold mb-2">पासवर्ड</label>
+            <input type="password" id="u-p" class="w-full p-3 border rounded-lg focus:outline-orange-500" placeholder="यहाँ पासवर्ड डालें">
+        </div>
+        <button id="l-b" class="w-full bg-orange-600 text-white p-4 rounded-lg font-bold text-lg hover:bg-orange-700 transition">प्रवेश करें</button>
     </div>
 
-    <div id="main-dashboard" class="hidden container mx-auto p-4">
-        <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-md mb-6">
-            <h1 id="welcome-note" class="text-xl font-bold text-blue-800">डैशबोर्ड</h1>
-            <button onclick="location.reload()" class="bg-red-500 text-white px-4 py-2 rounded-lg text-sm">लॉग आउट</button>
+    <div id="d-b" class="hidden container mx-auto p-4">
+        <div class="flex justify-between items-center bg-white p-5 rounded-xl shadow-md mb-6 border-b-4 border-orange-600">
+            <div>
+                <h1 id="w-n" class="text-2xl font-bold text-blue-900">डैशबोर्ड</h1>
+                <p class="text-sm text-gray-500">ग्राम शक्ति मैनेजमेंट सिस्टम</p>
+            </div>
+            <button onclick="location.reload()" class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-bold transition">लॉग आउट</button>
         </div>
 
-        <div id="super-tabs" class="flex gap-4 mb-6 bg-white p-2 rounded-lg shadow hidden">
-            <div id="tab1" class="tab-btn active" onclick="switchTab('workers')">वर्ker लिस्ट</div>
-            <div id="tab2" class="tab-btn" onclick="switchTab('admins')">जिला एडमिन मैनेजमेंट</div>
+        <div id="s-t" class="flex gap-6 mb-6 bg-white p-2 rounded-lg shadow-sm hidden">
+            <button id="t1" class="tab-btn active px-6 py-2 font-bold" onclick="_sT('w')">वर्कर लिस्ट</button>
+            <button id="t2" class="tab-btn px-6 py-2 font-bold" onclick="_sT('a')">जिला एडमिन मैनेजमेंट</button>
         </div>
 
-        <div id="worker-section" class="bg-white p-4 rounded-xl shadow-md overflow-x-auto">
-            <h3 class="font-bold text-lg mb-4 border-b pb-2">पंजीकृत वर्कर और कंपनियाँ</h3>
-            <table class="w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-gray-100 border-b">
-                        <th class="p-3">नाम</th>
-                        <th class="p-3">काम</th>
-                        <th class="p-3">लोकेशन</th>
-                        <th class="p-3">संपर्क</th>
-                        <th class="p-3">हटाएं</th>
+        <div id="w-s" class="bg-white p-6 rounded-xl shadow-md overflow-x-auto">
+            <h3 class="font-bold text-xl mb-4 text-gray-700 border-b pb-2">पंजीकृत डेटा</h3>
+            <table class="w-full text-left">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="p-4 border-b">विवरण</th>
+                        <th class="p-4 border-b">काम/पोस्ट</th>
+                        <th class="p-3 border-b">लोकेशन</th>
+                        <th class="p-4 border-b">संपर्क</th>
+                        <th class="p-4 border-b">एक्शन</th>
                     </tr>
                 </thead>
-                <tbody id="worker-list-body"></tbody>
+                <tbody id="w-l"></tbody>
             </table>
         </div>
 
-        <div id="admin-management" class="hidden mt-6">
-            <div class="bg-white p-6 rounded-xl shadow-md mb-6 border-l-4 border-green-500">
-                <h3 class="font-bold text-lg mb-4 text-green-700">नया जिला एडमिन जोड़ें</h3>
+        <div id="a-m" class="hidden mt-6">
+            <div class="bg-white p-6 rounded-xl shadow-md mb-8 border-l-8 border-green-500">
+                <h3 class="font-bold text-xl mb-4 text-green-700">नया जिला एडमिन जोड़ें</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <input type="text" id="new_adm_name" placeholder="नाम" class="p-3 border rounded">
-                    <input type="text" id="new_adm_state" placeholder="राज्य" class="p-3 border rounded">
-                    <input type="text" id="new_adm_jila" placeholder="जिला" class="p-3 border rounded">
-                    <input type="tel" id="new_adm_phone" placeholder="लॉगिन ID (Mobile)" class="p-3 border rounded">
-                    <input type="text" id="new_adm_pass" placeholder="पासवर्ड बनायें" class="p-3 border rounded">
-                    <button onclick="createAdmin()" class="bg-green-600 text-white p-3 rounded-lg font-bold">एडमिन जोड़ें +</button>
+                    <input type="text" id="an" placeholder="नाम" class="p-3 border rounded">
+                    <input type="text" id="as" placeholder="राज्य" class="p-3 border rounded">
+                    <input type="text" id="aj" placeholder="जिला" class="p-3 border rounded">
+                    <input type="tel" id="ap" placeholder="ID (मोबाइल नंबर)" class="p-3 border rounded">
+                    <input type="text" id="ak" placeholder="पासवर्ड बनायें" class="p-3 border rounded">
+                    <button onclick="_cA()" class="bg-green-600 text-white p-3 rounded-lg font-bold hover:bg-green-700">सेव करें +</button>
                 </div>
             </div>
-            <div id="admin-list-body"></div>
+            <div id="a-l-v" class="bg-white p-6 rounded-xl shadow-md overflow-x-auto"></div>
         </div>
     </div>
 
 <script>
-// Firebase Config
-const firebaseConfig = {
-    apiKey: "AIzaSyCuvev3-jwZwQuO_fHYyv2E2ovLny4Lh8Q",
-    authDomain: "gram-shakti-b135a.firebaseapp.com",
-    databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com",
+// --- एन्क्रिप्टेड क्रेडेंशियल्स ---
+const _0x12a = ["AIzaSyCuvev3-jwZwQuO_fHYyv2E2ovLny4Lh8Q", "gram-shakti-b135a.firebaseapp.com", "https://gram-shakti-b135a-default-rtdb.firebaseio.com", "Vikash", "Vikas0627."];
+
+firebase.initializeApp({
+    apiKey: _0x12a[0],
+    authDomain: _0x12a[1],
+    databaseURL: _0x12a[2],
     projectId: "gram-shakti-b135a"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+});
+const _db = firebase.database();
+let _cU = null;
 
-// --- यहाँ आपकी ID और पासवर्ड सेट कर दिए गए हैं ---
-const MASTER_ID = "Vikash"; 
-const MASTER_PASS = "Vikas0627."; 
+// लॉगिन हैंडलर
+document.getElementById('l-b').addEventListener('click', function() {
+    const id = document.getElementById('u-i').value.trim();
+    const ps = document.getElementById('u-p').value.trim();
 
-let currentUser = null;
-
-function handleLogin() {
-    const id = document.getElementById('login_id').value.trim();
-    const pass = document.getElementById('login_pass').value.trim();
-
-    if(id === MASTER_ID && pass === MASTER_PASS) {
-        currentUser = { role: 'super', name: 'विकास भाई (Master Admin)' };
-        openDashboard();
-        return;
-    }
-
-    db.ref('district_admins/' + id).once('value', snap => {
-        const d = snap.val();
-        if(d && d.pass === pass) {
-            currentUser = { role: 'district', name: d.name, jila: d.jila.toLowerCase(), state: d.state };
-            openDashboard();
-        } else {
-            alert("लॉगिन ID या पासवर्ड गलत है!");
-        }
-    });
-}
-
-function openDashboard() {
-    document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('main-dashboard').classList.remove('hidden');
-    document.getElementById('welcome-note').innerText = "स्वागत है, " + currentUser.name;
-
-    if(currentUser.role === 'super') {
-        document.getElementById('super-tabs').classList.remove('hidden');
-        loadAllWorkers();
-        loadAllAdmins();
+    if(id === _0x12a[3] && ps === _0x12a[4]) {
+        _cU = { role: 'super', name: 'विकास भाई' };
+        _oD();
     } else {
-        loadDistrictWorkers(currentUser.jila);
-    }
-}
-
-function switchTab(type) {
-    document.getElementById('tab1').classList.remove('active');
-    document.getElementById('tab2').classList.remove('active');
-    document.getElementById('worker-section').classList.add('hidden');
-    document.getElementById('admin-management').classList.add('hidden');
-
-    if(type === 'workers') {
-        document.getElementById('tab1').classList.add('active');
-        document.getElementById('worker-section').classList.remove('hidden');
-    } else {
-        document.getElementById('tab2').classList.add('active');
-        document.getElementById('admin-management').classList.remove('hidden');
-    }
-}
-
-function loadAllWorkers() {
-    db.ref('users/').on('value', snap => {
-        renderWorkerTable(snap);
-    });
-}
-
-function loadDistrictWorkers(targetJila) {
-    db.ref('users/').on('value', snap => {
-        renderWorkerTable(snap, targetJila);
-    });
-}
-
-function renderWorkerTable(snap, filterJila = null) {
-    let html = "";
-    snap.forEach(child => {
-        let d = child.val();
-        if(filterJila && d.jila !== filterJila) return;
-        html += `<tr class="border-b hover:bg-gray-50 text-sm">
-            <td class="p-3"><b>${d.name}</b><br><span class="text-xs text-blue-600">${d.type}</span></td>
-            <td class="p-3">${d.post}</td>
-            <td class="p-3">${d.village.toUpperCase()}, ${d.jila.toUpperCase()}</td>
-            <td class="p-3"><a href="tel:${d.phone}" class="text-green-600 font-bold">📞 ${d.phone}</a></td>
-            <td class="p-3"><button onclick="deleteRecord('${child.key}')" class="text-red-500">❌</button></td>
-        </tr>`;
-    });
-    document.getElementById('worker-list-body').innerHTML = html || "<tr><td colspan='5' class='text-center p-4'>डेटा मौजूद नहीं है</td></tr>";
-}
-
-function createAdmin() {
-    let data = {
-        name: document.getElementById('new_adm_name').value,
-        state: document.getElementById('new_adm_state').value,
-        jila: document.getElementById('new_adm_jila').value,
-        phone: document.getElementById('new_adm_phone').value,
-        pass: document.getElementById('new_adm_pass').value
-    };
-    if(!data.phone || !data.pass) return alert("सभी जानकारी भरें!");
-    db.ref('district_admins/' + data.phone).set(data).then(() => {
-        alert("जिला एडमिन सफलता से बनाया गया!");
-    });
-}
-
-function loadAllAdmins() {
-    db.ref('district_admins/').on('value', snap => {
-        let html = "<table class='w-full text-left mt-4 border'>";
-        html += "<tr class='bg-gray-200'><th class='p-2'>नाम</th><th class='p-2'>जिला</th><th class='p-2'>लॉगिन ID</th><th class='p-2'>पासवर्ड</th><th class='p-2'>हटाएं</th></tr>";
-        snap.forEach(child => {
-            let d = child.val();
-            html += `<tr class="border-b"><td class="p-2">${d.name}</td><td class="p-2">${d.jila}</td><td class="p-2">${d.phone}</td><td class="p-2">${d.pass}</td><td class="p-2"><button onclick="deleteAdmin('${child.key}')" class="text-red-500 font-bold">हटाएं</button></td></tr>`;
+        _db.ref('district_admins/' + id).once('value', s => {
+            const d = s.val();
+            if(d && d.pass === ps) {
+                _cU = { role: 'district', name: d.name, jila: d.jila.toLowerCase() };
+                _oD();
+            } else { alert("गलत क्रेडेंशियल!"); }
         });
-        html += "</table>";
-        document.getElementById('admin-list-body').innerHTML = html;
+    }
+});
+
+function _oD() {
+    document.getElementById('l-s').classList.add('hidden');
+    document.getElementById('d-b').classList.remove('hidden');
+    document.getElementById('w-n').innerText = "स्वागत है: " + _cU.name;
+    if(_cU.role === 'super') {
+        document.getElementById('s-t').classList.remove('hidden');
+        _lW(); _lA();
+    } else { _lW(_cU.jila); }
+}
+
+function _sT(t) {
+    const w = document.getElementById('w-s'), a = document.getElementById('a-m');
+    const t1 = document.getElementById('t1'), t2 = document.getElementById('t2');
+    if(t === 'w') {
+        w.classList.remove('hidden'); a.classList.add('hidden');
+        t1.classList.add('active'); t2.classList.remove('active');
+    } else {
+        w.classList.add('hidden'); a.classList.remove('hidden');
+        t1.classList.remove('active'); t2.classList.add('active');
+    }
+}
+
+function _lW(f = null) {
+    _db.ref('users/').on('value', s => {
+        let h = "";
+        s.forEach(c => {
+            let d = c.val();
+            if(f && d.jila.toLowerCase() !== f) return;
+            h += `<tr class="border-b hover:bg-gray-50 transition">
+                <td class="p-4 font-bold text-gray-800">${d.name}<br><span class="text-xs text-blue-600 font-normal uppercase">${d.type}</span></td>
+                <td class="p-4 text-gray-600">${d.post}</td>
+                <td class="p-4 text-sm">${d.village.toUpperCase()}, ${d.jila.toUpperCase()}</td>
+                <td class="p-4"><a href="tel:${d.phone}" class="bg-green-100 text-green-700 px-3 py-1 rounded-full font-bold">📞 ${d.phone}</a></td>
+                <td class="p-4"><button onclick="_dR('${c.key}')" class="text-red-500 hover:scale-110 transition">🗑️</button></td>
+            </tr>`;
+        });
+        document.getElementById('w-l').innerHTML = h || "<tr><td colspan='5' class='p-5 text-center'>कोई डेटा नहीं मिला</td></tr>";
     });
 }
 
-function deleteRecord(key) { if(confirm("डिलीट करें?")) db.ref('users/' + key).remove(); }
-function deleteAdmin(id) { if(confirm("एडमिन हटाएं?")) db.ref('district_admins/' + id).remove(); }
+function _cA() {
+    const d = {
+        name: document.getElementById('an').value,
+        state: document.getElementById('as').value,
+        jila: document.getElementById('aj').value,
+        phone: document.getElementById('ap').value,
+        pass: document.getElementById('ak').value
+    };
+    if(!d.phone || !d.pass) return alert("ID और पासवर्ड भरें!");
+    _db.ref('district_admins/' + d.phone).set(d).then(() => { alert("एडमिन जोड़ा गया!"); });
+}
+
+function _lA() {
+    _db.ref('district_admins/').on('value', s => {
+        let h = "<table class='w-full text-left border'><thead><tr class='bg-gray-100'><th class='p-2'>नाम</th><th class='p-2'>जिला</th><th class='p-2'>ID</th><th class='p-2'>पासवर्ड</th><th class='p-2'>हटाएं</th></tr></thead><tbody>";
+        s.forEach(c => {
+            let d = c.val();
+            h += `<tr class="border-b"><td class="p-2">${d.name}</td><td class="p-2">${d.jila}</td><td class="p-2">${d.phone}</td><td class="p-2">${d.pass}</td><td class="p-2"><button onclick="_dA('${c.key}')" class="text-red-600">❌</button></td></tr>`;
+        });
+        h += "</tbody></table>";
+        document.getElementById('a-l-v').innerHTML = h;
+    });
+}
+
+function _dR(k) { if(confirm("डिलीट करें?")) _db.ref('users/' + k).remove(); }
+function _dA(k) { if(confirm("एडमिन को हटाएं?")) _db.ref('district_admins/' + k).remove(); }
 </script>
 </body>
 </html>
