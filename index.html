@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gram Shakti - All India</title>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gram Shakti - All India</title>
+
+    <meta name="description" content="ग्राम शक्ति - भारत का नंबर 1 गाँव सेवा पोर्टल। यहाँ मजदूर, राजमिस्त्री, ड्राइवर और कंपनियाँ सीधे एक-दूसरे से जुड़ सकते हैं।">
+    <meta name="keywords" content="Gram Shakti, मजदूर रजिस्ट्रेशन, नौकरी, गाँव में काम, राजमिस्त्री, ड्राइवर भर्ती, ग्राम सेवा">
+    <meta name="author" content="Vikash">
+    <meta property="og:title" content="ग्राम शक्ति - गाँव में ही पायें काम">
+    <meta property="og:description" content="मजदूरों और मिस्त्रियों के लिए सबसे बड़ा प्लेटफॉर्म। अभी रजिस्टर करें।">
+    <meta property="og:image" content="1770902092682 (1).png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    ... बाकी का पुराना कोड ...
+</head>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -13,108 +27,144 @@
 </style>
 </head>
 <body>
-  <div class="ad-box" onclick="_0x5s('a')"><img src="1770902092682 (1).png" onerror="this.src='https://via.placeholder.com/500x90?text=Top+Ad'"></div>
+  <div class="ad-box" onclick="_0x5s('a')"><img src="1770902092682 (1).png" onerror="this.src='https://via.placeholder.com/500x90?text=Gram+Shakti+Ad'"></div>
+  
   <div class="app-card">
     <h1 class="text-3xl font-bold text-orange-600 text-center mb-6 italic">ग्राम शक्ति</h1>
+    
     <div id="m-a">
         <div class="btn-opt bg-blue-600" onclick="_0xF('Worker')">👷 वर्कर रजिस्ट्रेशन (फॉर्म)</div>
         <div class="btn-opt bg-purple-700" onclick="_0xF('Company')">🏢 कंपनी भर्ती</div>
         <div class="btn-opt bg-green-600" onclick="_0xS()">🔎 काम या वर्कर ढूँढें</div>
         <div class="btn-opt bg-red-600 shadow-lg" onclick="_0xSh()">📲 दोस्तों को शेयर करें</div>
     </div>
+
     <div id="f-a"></div>
   </div>
-  <div class="ad-box" onclick="_0x5s('a')"><img src="1770902092682 (2).png" onerror="this.src='https://via.placeholder.com/500x90?text=Bottom+Ad'"></div>
+
+  <div class="ad-box" onclick="_0x5s('a')"><img src="1770902092682 (2).png" onerror="this.src='https://via.placeholder.com/500x90?text=Contact+Us'"></div>
 
 <script>
-// संवेदनशील डेटा को एन्क्रिप्ट किया गया है
-const _0x4f2a = ["\x41\x49\x7a\x61\x53\x79\x43\x75\x76\x65\x76\x33\x2d\x6a\x77\x5a\x77\x51\x75\x4f\x5f\x66\x48\x59\x79\x76\x32\x45\x32\x6f\x76\x4c\x6e\x79\x34\x4c\x68\x38\x51", "\x67\x72\x61\x6d\x2d\x73\x68\x61\x6a\x74\x69\x2d\x62\x31\x33\x35\x61\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x61\x70\x70\x2e\x63\x6f\x6d", "\x68\x74\x74\x70\x73\x3a\x2f\x2f\x67\x72\x61\x6d\x2d\x73\x68\x61\x6a\x74\x69\x2d\x62\x31\x33\x35\x61\x2d\x64\x65\x66\x61\x75\x6c\x74\x2d\x72\x74\x64\x62\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x69\x6f\x2e\x63\x6f\x6d"];
-firebase.initializeApp({apiKey:_0x4f2a[0],authDomain:_0x4f2a[1],databaseURL:_0x4f2a[2],projectId:"gram-shakti-b135a"});
+// --- फायरबेस सेटअप (लॉक किया हुआ) ---
+const _0x4f2a = ["\x41\x49\x7a\x61\x53\x79\x43\x75\x76\x65\x76\x33\x2d\x6a\x77\x5a\x77\x51\x75\x4f\x5f\x66\x48\x59\x79\x76\x32\x45\x32\x6f\x76\x4c\x6e\x79\x34\x4c\x68\x38\x51", "\x67\x72\x61\x6d\x2d\x73\x68\x61\x6a\x74\x69\x2d\x62\x31\x33\x35\x61\x2e\x66\x69\x72\x65\x62\x61\x73\x65\x61\x70\x70\x2e\x63\x6f\x6d", "https://gram-shakti-b135a-default-rtdb.firebaseio.com"];
+
+const firebaseConfig = {
+  apiKey: _0x4f2a[0],
+  authDomain: _0x4f2a[1],
+  databaseURL: _0x4f2a[2],
+  projectId: "gram-shakti-b135a"
+};
+
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 const _db = firebase.database();
 
+// --- डेटा सूचियाँ ---
 const _st = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu and Kashmir"];
 const _ct = ["मजदूर (Labour)", "राजमिस्त्री (Mason)", "इलेक्ट्रिशियन", "प्लम्बर", "पेंटर", "टेलर (दर्जी)", "बढ़ई (Carpenter)", "लोहार", "मैकेनिक (गाड़ी)", "ड्राइवर (Personal)", "ड्राइवर (Taxi/Ola/Uber)", "JCB ऑपरेटर", "ट्रैक्टर ड्राइवर", "किराना दुकान", "डेयरी/दूध", "सब्जी विक्रेता", "खाद-बीज भंडार", "सुपरवाइजर", "मुनीम/अकाउंटेंट", "कंप्यूटर ऑपरेटर", "सिक्योरिटी गार्ड", "टेंट हाउस"];
 
+// --- फंक्शन: फॉर्म खोलना ---
 function _0xF(t) {
     document.getElementById('m-a').style.display = 'none';
     let sO = _st.map(s => `<option value="${s}">${s}</option>`).join('');
     let cO = _ct.map(c => `<option value="${c}">${c}</option>`).join('');
-    document.getElementById('f-a').innerHTML = `<h2 class="text-xl font-bold mb-4 text-center text-blue-800">फॉर्म भरें</h2><label>नाम:</label><input type="text" id="fn" class="form-input"><label>कैटेगरी:</label><select id="fp" class="form-input">${cO}</select><label>मोबाइल:</label><input type="tel" id="fph" class="form-input"><label>राज्य:</label><select id="fs" class="form-input">${sO}</select><label>जिला:</label><input type="text" id="fj" class="form-input"><label>पंचायत:</label><input type="text" id="fpa" class="form-input"><label>गाँव:</label><input type="text" id="fv" class="form-input"><button class="btn-submit" onclick="_0xSv('${t}')">डेटा सेव करें ✅</button><button class="w-full text-gray-500 mt-4" onclick="location.reload()">← वापस</button>`;
+    document.getElementById('f-a').innerHTML = `
+        <h2 class="text-xl font-bold mb-4 text-center text-blue-800">${t === 'Worker' ? 'वर्कर' : 'कंपनी'} रजिस्ट्रेशन</h2>
+        <label>नाम:</label><input type="text" id="fn" class="form-input" placeholder="नाम लिखें">
+        <label>कैटेगरी:</label><select id="fp" class="form-input">${cO}</select>
+        <label>मोबाइल नंबर:</label><input type="tel" id="fph" class="form-input" placeholder="नंबर लिखें">
+        <label>राज्य:</label><select id="fs" class="form-input">${sO}</select>
+        <label>जिला:</label><input type="text" id="fj" class="form-input" placeholder="जिला">
+        <label>पंचायत:</label><input type="text" id="fpa" class="form-input" placeholder="पंचायत">
+        <label>गाँव:</label><input type="text" id="fv" class="form-input" placeholder="गाँव">
+        <button class="btn-submit" onclick="_0xSv('${t}')">डेटा सेव करें ✅</button>
+        <button class="w-full text-gray-500 mt-4 font-bold" onclick="location.reload()">← वापस</button>
+    `;
 }
 
+// --- फंक्शन: डेटा सेव करना ---
 function _0xSv(t) {
-    let d = {type:t,name:document.getElementById('fn').value,post:document.getElementById('fp').value,phone:document.getElementById('fph').value,state:document.getElementById('fs').value,jila:document.getElementById('fj').value.toLowerCase(),panchayat:document.getElementById('fpa').value.toLowerCase(),village:document.getElementById('fv').value.toLowerCase()};
-    if(!d.name || !d.phone || !d.jila) return alert("सब भरें!");
+    let d = {
+        type: t,
+        name: document.getElementById('fn').value.trim(),
+        post: document.getElementById('fp').value,
+        phone: document.getElementById('fph').value.trim(),
+        state: document.getElementById('fs').value,
+        jila: document.getElementById('fj').value.trim().toLowerCase(),
+        panchayat: document.getElementById('fpa').value.trim().toLowerCase(),
+        village: document.getElementById('fv').value.trim().toLowerCase()
+    };
+
+    if(!d.name || !d.phone || !d.jila || !d.village) return alert("कृपया सभी जानकारी भरें!");
+
     _db.ref('users/').push(d).then(() => {
-        document.getElementById('f-a').innerHTML = `<div class="text-center p-8"><div class="bg-green-100 p-6 rounded-full inline-block mb-4"><span style="font-size:50px">✅</span></div><h2 class="text-2xl font-bold text-green-700 mb-6">सफलतापूर्वक जुड़ गए!</h2><button class="btn-submit" style="background:#16a34a" onclick="location.reload()">ठीक है</button></div>`;
-    });
+        document.getElementById('f-a').innerHTML = `
+            <div class="text-center p-8">
+                <div class="bg-green-100 p-6 rounded-full inline-block mb-4"><span style="font-size:50px">✅</span></div>
+                <h2 class="text-2xl font-bold text-green-700 mb-6">सफलतापूर्वक जुड़ गए!</h2>
+                <button class="btn-submit" style="background:#16a34a" onclick="location.reload()">SUCCESS (ठीक है)</button>
+            </div>
+        `;
+    }).catch(err => alert("Error: " + err.message));
 }
 
+// --- फंक्शन: सर्च फॉर्म खोलना ---
 function _0xS() {
     document.getElementById('m-a').style.display = 'none';
-    let cO = _ct.map(c => `<option value="${c}">${c}</option>`).join('');
     let sO = _st.map(s => `<option value="${s}">${s}</option>`).join('');
-    document.getElementById('f-a').innerHTML = `<h2 class="text-xl font-bold mb-4 text-center">सर्च करें</h2><label>क्या चाहिए?</label><select id="sp" class="form-input">${cO}</select><label>राज्य:</label><select id="ss" class="form-input">${sO}</select><label>जिला:</label><input type="text" id="sj" class="form-input"><label>गाँव:</label><input type="text" id="sv" class="form-input"><button class="btn-submit" style="background:#000" onclick="_0xGR()">खोजें 🔎</button><button class="w-full text-gray-500 mt-4" onclick="location.reload()">← वापस</button>`;
+    let cO = _ct.map(c => `<option value="${c}">${c}</option>`).join('');
+    document.getElementById('f-a').innerHTML = `
+        <h2 class="text-xl font-bold mb-4 text-center">सर्च करें</h2>
+        <label>क्या चाहिए?</label><select id="sp" class="form-input">${cO}</select>
+        <label>राज्य:</label><select id="ss" class="form-input">${sO}</select>
+        <label>जिला:</label><input type="text" id="sj" class="form-input" placeholder="जिला लिखें">
+        <label>गाँव:</label><input type="text" id="sv" class="form-input" placeholder="गाँव लिखें">
+        <button class="btn-submit" style="background:black" onclick="_0xGR()">खोजें 🔎</button>
+        <button class="w-full text-gray-500 mt-4 font-bold" onclick="location.reload()">← वापस</button>
+    `;
 }
 
+// --- फंक्शन: रिजल्ट खोजना ---
 function _0xGR() {
-    let p = document.getElementById('sp').value, s = document.getElementById('ss').value, j = document.getElementById('sj').value.toLowerCase(), v = document.getElementById('sv').value.toLowerCase();
-    document.getElementById('f-a').innerHTML = `<p class="text-center">खोज जारी है...</p>`;
+    let p = document.getElementById('sp').value;
+    let s = document.getElementById('ss').value;
+    let j = document.getElementById('sj').value.trim().toLowerCase();
+    let v = document.getElementById('sv').value.trim().toLowerCase();
+    
+    document.getElementById('f-a').innerHTML = `<p class="text-center p-4">खोज जारी है...</p>`;
+    
     _db.ref('users/').once('value', sn => {
         let h = ""; let f = false;
         sn.forEach(c => {
             let d = c.val();
             if(d.post === p && d.state === s && d.jila === j && d.village === v) {
-                h += `<div style="background:#fff;padding:15px;border-radius:15px;margin-bottom:10px;border-left:6px solid #f97316;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 5px rgba(0,0,0,.1)"><div><b>${d.name}</b><br><small class="text-blue-600 font-bold">${d.post}</small></div><a href="tel:${d.phone}" class="bg-green-600 text-white p-3 rounded-full">📞</a></div>`;
+                h += `
+                <div style="background:#fff; padding:15px; border-radius:15px; margin-bottom:10px; border-left:6px solid #f97316; display:flex; justify-content:space-between; align-items:center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <div><b class="text-lg">${d.name}</b><br><small class="text-blue-600 font-bold">${d.post}</small><br><small>${d.village.toUpperCase()}</small></div>
+                    <a href="tel:${d.phone}" class="bg-green-600 text-white p-3 rounded-full">📞</a>
+                </div>`;
                 f = true;
             }
         });
-        document.getElementById('f-a').innerHTML = (f ? h : "<p class='text-center p-4'>नहीं मिला।</p>") + `<button class="btn-submit mt-4" style="background:#666" onclick="location.reload()">नई खोज</button>`;
+        document.getElementById('f-a').innerHTML = (f ? h : "<p class='text-center p-4'>कोई वर्कर नहीं मिला।</p>") + `<button class="btn-submit mt-4" style="background:#666" onclick="location.reload()">नई खोज</button>`;
     });
 }
 
+// --- फंक्शन: शेयर और विज्ञापन ---
 function _0xSh() {
-    const t = "🚩 *ग्राम शक्ति - डिजिटल सेवा* 🚩\n\nअब गाँव में ही पायें मजदूर, ड्राइवर, मिस्त्री और कंपिनयों में नौकरी।\n\nअभी अपना फॉर्म भरने के लिए नीचे लिंक पर क्लिक करें: \n";
+    const t = "🚩 *ग्राम शक्ति - डिजिटल सेवा* 🚩\n\nअब गाँव में ही पायें मजदूर, ड्राइवर, मिस्त्री और कंपनियों में नौकरी।\n\nअभी अपना फॉर्म भरें: \n";
     window.open(`https://wa.me/?text=${encodeURIComponent(t + window.location.href)}`, '_blank');
 }
 function _0x5s(x){window.open('https://wa.me/919784499059','_blank')}
-<script>
-// 1. राइट-क्लिक (Right Click) को पूरी तरह बंद करने के लिए
-document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-}, false);
 
-// 2. कीबोर्ड के शॉर्टकट्स (Ctrl+U, F12 आदि) को ब्लॉक करने के लिए
+// --- अतिरिक्त सुरक्षा (Anti-Theft) ---
+document.addEventListener('contextmenu', e => e.preventDefault());
 document.onkeydown = function(e) {
-    // F12 बटन बंद
-    if (event.keyCode == 123) {
-        return false;
-    }
-    // Ctrl+Shift+I (Inspect) बंद
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
-        return false;
-    }
-    // Ctrl+Shift+C (Element Selector) बंद
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
-        return false;
-    }
-    // Ctrl+Shift+J (Console) बंद
-    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
-        return false;
-    }
-    // Ctrl+U (View Source) को ब्लॉक करने के लिए
-    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
-        alert("सुरक्षा कारणों से यह ब्लॉक है!");
+    if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) || (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0))) {
         return false;
     }
 };
-
-// 3. कोड को 'Debugger' से सुरक्षित करना
-// अगर कोई फिर भी जबरदस्ती कोड खोलने की कोशिश करेगा तो उसका ब्राउज़र अटक जाएगा
-setInterval(function() {
-    debugger;
-}, 100);
-</script>
 </script>
 </body>
 </html>
