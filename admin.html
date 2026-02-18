@@ -170,6 +170,43 @@ function _lA() {
 
 function _dR(k) { if(confirm("डिलीट करें?")) _db.ref('users/' + k).remove(); }
 function _dA(k) { if(confirm("एडमिन को हटाएं?")) _db.ref('district_admins/' + k).remove(); }
+<script>
+// 1. राइट-क्लिक (Right Click) को पूरी तरह बंद करने के लिए
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+}, false);
+
+// 2. कीबोर्ड के शॉर्टकट्स (Ctrl+U, F12 आदि) को ब्लॉक करने के लिए
+document.onkeydown = function(e) {
+    // F12 बटन बंद
+    if (event.keyCode == 123) {
+        return false;
+    }
+    // Ctrl+Shift+I (Inspect) बंद
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+        return false;
+    }
+    // Ctrl+Shift+C (Element Selector) बंद
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+        return false;
+    }
+    // Ctrl+Shift+J (Console) बंद
+    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+        return false;
+    }
+    // Ctrl+U (View Source) को ब्लॉक करने के लिए
+    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+        alert("सुरक्षा कारणों से यह ब्लॉक है!");
+        return false;
+    }
+};
+
+// 3. कोड को 'Debugger' से सुरक्षित करना
+// अगर कोई फिर भी जबरदस्ती कोड खोलने की कोशिश करेगा तो उसका ब्राउज़र अटक जाएगा
+setInterval(function() {
+    debugger;
+}, 100);
+</script>
 </script>
 </body>
 </html>
