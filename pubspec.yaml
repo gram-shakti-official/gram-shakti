@@ -9,7 +9,7 @@ jobs:
         with:
           flutter-version: '3.19.0'
       
-      # यहाँ हमने नाम बदल दिया है ताकि एरर न आए
+      # यहाँ हमने नाम को सही (gram_shakti) कर दिया है
       - run: flutter create --project-name gram_shakti --overwrite .
       
       - run: flutter pub get
@@ -18,5 +18,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gram-Shakti-App
+          name: Gram-Shakti-Final-App
           path: build/app/outputs/flutter-apk/app-release.apk
