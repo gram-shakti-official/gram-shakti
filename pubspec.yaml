@@ -20,3 +20,11 @@ jobs:
         with:
           name: Gram-Shakti-Final-App
           path: build/app/outputs/flutter-apk/app-release.apk
+flutter:
+  uses-material-design: true
+  assets:
+    - index.html
+    - admin.html
+    - 1770902092682 (1).png
+    - 1770902092682 (2).png
+    
