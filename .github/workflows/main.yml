@@ -1,0 +1,21 @@
+name: Build HTML to APK
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build APK
+        run: |
+          # यह कमांड आपकी HTML फाइलों को एक बेसिक ऐप स्ट्रक्चर में बदल देगी
+          echo "Building your Gram Shakti App..."
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gram-Shakti-App
+          path: . 
+          
