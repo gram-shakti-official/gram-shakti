@@ -27,4 +27,4 @@ flutter:
     - admin.html
     - 1770902092682 (1).png
     - 1770902092682 (2).png
-    
+webview_flutter: ^4.4.2
