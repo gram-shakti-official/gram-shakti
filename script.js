@@ -8,12 +8,12 @@ var type = document.getElementById("type").value;
 var work = document.getElementById("work").value;
 var city = document.getElementById("city").value;
 
-if(name=="" || mobile==""){
-alert("Please fill all fields");
+if(name=="" || mobile=="" || type=="" || city==""){
+alert("Please fill all details");
 return;
 }
 
-var id = new Date().getTime();
+var id = Date.now();
 
 firebase.database().ref("users/"+id).set({
 
@@ -27,25 +27,19 @@ city:city
 
 alert("Registration Successful");
 
-window.location="index.html";
+window.location.href="index.html";
 
 }
+
 
 
 // LOGIN USER
 
 function loginUser(){
 
-var mobile = document.getElementById("mobile").value;
+var mobile = document.getElementById("loginMobile").value;
 
-if(mobile==""){
-alert("Enter mobile number");
-return;
-}
-
-var ref = firebase.database().ref("users");
-
-ref.once("value",function(snapshot){
+firebase.database().ref("users").once("value",function(snapshot){
 
 var data = snapshot.val();
 
@@ -57,23 +51,19 @@ if(data[key].mobile == mobile){
 
 found = true;
 
-localStorage.setItem("user", JSON.stringify(data[key]));
-
-break;
-
-}
-
-}
-
-if(found){
+localStorage.setItem("user",JSON.stringify(data[key]));
 
 alert("Login Successful");
 
-window.location="index.html";
+window.location.href="index.html";
 
-}else{
+}
 
-alert("User not found");
+}
+
+if(found == false){
+
+alert("User Not Found");
 
 }
 
