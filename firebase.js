@@ -1,4 +1,4 @@
-// Firebase Config
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA0J8TCjU2wxDNmT2O4VMfchY06arTO-O0",
   authDomain: "gram-shakti-app-2367b.firebaseapp.com",
@@ -10,8 +10,8 @@ const firebaseConfig = {
   measurementId: "G-NCEP6BBTWQ"
 };
 
-// Firebase Start
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-// Database
-const db = firebase.database();
+// Database reference
+const database = firebase.database();
