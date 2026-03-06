@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Post Advertisement</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script src="firebase.js"></script>
+<script src="script.js"></script>
+
+</head>
+
+<body>
+
+<h2>Post Your Advertisement</h2>
+
+<input type="text" id="businessName" placeholder="Business / Shop Name">
+<br><br>
+
+<input type="text" id="title" placeholder="Ad Title">
+<br><br>
+
+<textarea id="description" placeholder="Description"></textarea>
+<br><br>
+
+<input type="text" id="city" placeholder="City">
+<br><br>
+
+<input type="text" id="mobile" placeholder="Mobile Number">
+<br><br>
+
+<button onclick="postAd()">Post Advertisement</button>
+
+</body>
+
+</html>
