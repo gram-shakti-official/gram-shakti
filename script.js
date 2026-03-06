@@ -1,4 +1,6 @@
+// ===============================
 // REGISTER USER
+// ===============================
 
 function registerUser(){
 
@@ -33,7 +35,9 @@ window.location.href="index.html";
 
 
 
+// ===============================
 // LOGIN USER
+// ===============================
 
 function loginUser(){
 
@@ -70,3 +74,155 @@ alert("User Not Found");
 });
 
 }
+
+
+
+// ===============================
+// LOAD WORKERS LIST
+// ===============================
+
+function loadWorkers(){
+
+var workerRef = firebase.database().ref("users");
+
+workerRef.on("value", function(snapshot){
+
+var data = snapshot.val();
+
+var html = "";
+
+for(var key in data){
+
+if(data[key].type == "worker"){
+
+html += "<div style='border:1px solid gray;padding:10px;margin:10px;'>";
+
+html += "<b>Name:</b> " + data[key].name + "<br>";
+html += "<b>Work:</b> " + data[key].work + "<br>";
+html += "<b>Location:</b> " + data[key].city + "<br>";
+html += "<b>Mobile:</b> " + data[key].mobile + "<br>";
+
+html += "</div>";
+
+}
+
+}
+
+var workerBox = document.getElementById("workerList");
+
+if(workerBox){
+
+workerBox.innerHTML = html;
+
+}
+
+});
+
+}
+
+
+
+// ===============================
+// ADS DISPLAY CONTROL SYSTEM
+// ===============================
+
+var adShowCount = {};
+var allAds = [];
+
+function loadAds(){
+
+var adRef = firebase.database().ref("advertisements");
+
+adRef.on("value", function(snapshot){
+
+var data = snapshot.val();
+
+allAds = [];
+
+for(var key in data){
+
+allAds.push(data[key]);
+
+}
+
+showAds();
+
+});
+
+}
+
+
+
+// ===============================
+// SHOW ADS (MAX 3 TIMES)
+// ===============================
+
+function showAds(){
+
+var html = "";
+
+var count = 0;
+
+for(var i=0;i<allAds.length;i++){
+
+var ad = allAds[i];
+
+var adId = ad.title + ad.mobile;
+
+if(!adShowCount[adId]){
+
+adShowCount[adId] = 0;
+
+}
+
+if(adShowCount[adId] < 3 && count < 5){
+
+html += "<div style='border:1px solid green;padding:10px;margin:10px;background:#f5fff5;'>";
+
+html += "<b>Advertisement</b><br>";
+
+html += "<b>Business:</b> " + ad.businessName + "<br>";
+
+html += "<b>Title:</b> " + ad.title + "<br>";
+
+html += "<b>Description:</b> " + ad.description + "<br>";
+
+html += "<b>Location:</b> " + ad.city + "<br>";
+
+html += "<b>Mobile:</b> " + ad.mobile + "<br>";
+
+html += "</div>";
+
+adShowCount[adId]++;
+
+count++;
+
+}
+
+}
+
+var adBox = document.getElementById("adsBox");
+
+if(adBox){
+
+adBox.innerHTML = html;
+
+}
+
+}
+
+
+
+// ===============================
+// PAGE LOAD SYSTEM
+// ===============================
+
+window.onload = function(){
+
+loadWorkers();
+
+loadAds();
+
+setInterval(showAds, 10000); // हर 10 सेकंड में नए ads
+
+};
