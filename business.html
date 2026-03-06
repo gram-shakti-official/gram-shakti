@@ -1,1 +1,77 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+
+<title>Business Dashboard</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<h2>Business / Shop Dashboard</h2>
+
+<p>Welcome Business Owner</p>
+
+<h3>Post Advertisement</h3>
+
+<input type="text" id="businessName" placeholder="Business Name">
+
+<br><br>
+
+<input type="text" id="businessType" placeholder="Shop / Company / School / Dhaba">
+
+<br><br>
+
+<input type="text" id="city" placeholder="City / Panchayat">
+
+<br><br>
+
+<textarea id="adText" placeholder="Write Advertisement"></textarea>
+
+<br><br>
+
+<button onclick="postAd()">Post Advertisement</button>
+
+<br><br>
+
+<h3>Your Advertisements</h3>
+
+<div id="adList"></div>
+
+<script>
+
+function postAd(){
+
+var name = document.getElementById("businessName").value;
+
+var type = document.getElementById("businessType").value;
+
+var city = document.getElementById("city").value;
+
+var ad = document.getElementById("adText").value;
+
+var adData = {
+
+name:name,
+type:type,
+city:city,
+ad:ad
+
+};
+
+firebase.database().ref("advertisements").push(adData);
+
+alert("Advertisement Posted");
+
+}
+
+</script>
+
+</body>
+
+</html>
