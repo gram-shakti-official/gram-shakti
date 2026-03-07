@@ -18,13 +18,11 @@ return;
 var id = Date.now();
 
 firebase.database().ref("users/"+id).set({
-
 name:name,
 mobile:mobile,
 type:type,
 work:work,
 city:city
-
 });
 
 alert("Registration Successful");
@@ -55,6 +53,7 @@ if(data[key].mobile == mobile){
 
 found = true;
 
+localStorage.setItem("mobile",mobile);
 localStorage.setItem("user",JSON.stringify(data[key]));
 
 alert("Login Successful");
@@ -102,6 +101,8 @@ html += "<b>Work:</b> " + data[key].work + "<br>";
 html += "<b>Location:</b> " + data[key].city + "<br>";
 html += "<b>Mobile:</b> " + data[key].mobile + "<br>";
 
+html += "<button onclick=\"hireWorker('"+data[key].mobile+"','"+data[key].work+"','"+data[key].city+"')\">Hire Worker</button>";
+
 html += "</div>";
 
 }
@@ -111,12 +112,112 @@ html += "</div>";
 var workerBox = document.getElementById("workerList");
 
 if(workerBox){
-
 workerBox.innerHTML = html;
+}
+
+});
+
+}
+
+
+
+// ===============================
+// HIRE WORKER SYSTEM
+// ===============================
+
+function hireWorker(workerMobile,work,city){
+
+var customerMobile = localStorage.getItem("mobile");
+
+if(!customerMobile){
+alert("Please login first");
+return;
+}
+
+var id = Date.now();
+
+firebase.database().ref("hire_requests/"+id).set({
+
+workerMobile:workerMobile,
+customerMobile:customerMobile,
+work:work,
+city:city,
+status:"pending"
+
+});
+
+alert("Hire Request Sent");
+
+}
+
+
+
+// ===============================
+// WORKER REQUEST LIST
+// ===============================
+
+function loadWorkerRequests(){
+
+var workerMobile = localStorage.getItem("mobile");
+
+var requestContainer = document.getElementById("requestList");
+
+firebase.database().ref("hire_requests").on("value",(snapshot)=>{
+
+var html="";
+
+snapshot.forEach((data)=>{
+
+var req = data.val();
+
+if(req.workerMobile == workerMobile){
+
+html += "<div style='border:1px solid red;padding:10px;margin:10px;'>";
+
+html += "<b>Customer:</b> "+req.customerMobile+"<br>";
+html += "<b>Work:</b> "+req.work+"<br>";
+html += "<b>City:</b> "+req.city+"<br>";
+html += "<b>Status:</b> "+req.status+"<br>";
+
+html += "<button onclick=\"acceptRequest('"+data.key+"')\">Accept</button>";
+
+html += "<button onclick=\"rejectRequest('"+data.key+"')\">Reject</button>";
+
+html += "</div>";
 
 }
 
 });
+
+if(requestContainer){
+requestContainer.innerHTML = html;
+}
+
+});
+
+}
+
+
+
+function acceptRequest(id){
+
+firebase.database().ref("hire_requests/"+id).update({
+status:"accepted"
+});
+
+alert("Request Accepted");
+
+}
+
+
+
+function rejectRequest(id){
+
+firebase.database().ref("hire_requests/"+id).update({
+status:"rejected"
+});
+
+alert("Request Rejected");
 
 }
 
@@ -155,9 +256,7 @@ html += "</div>";
 var box = document.getElementById("customerList");
 
 if(box){
-
 box.innerHTML = html;
-
 }
 
 });
@@ -199,9 +298,7 @@ html += "</div>";
 var box = document.getElementById("companyList");
 
 if(box){
-
 box.innerHTML = html;
-
 }
 
 });
@@ -284,9 +381,7 @@ html += "</div>";
 var adBox = document.getElementById("adsBox");
 
 if(adBox){
-
 adBox.innerHTML = html;
-
 }
 
 });
@@ -305,8 +400,12 @@ loadWorkers();
 loadCustomers();
 loadCompanies();
 loadAds();
+loadWorkerRequests();
 
 };
+
+
+
 // ===============================
 // SEARCH SYSTEM
 // ===============================
@@ -335,7 +434,6 @@ var city = (user.city || "").toLowerCase();
 
 if(name.includes(search) || work.includes(search) || city.includes(search)){
 
-// WORKERS
 if(user.type == "worker"){
 
 workerHTML += "<div style='border:1px solid gray;padding:10px;margin:10px;'>";
@@ -349,7 +447,6 @@ workerHTML += "</div>";
 
 }
 
-// COMPANY
 if(user.type == "company"){
 
 companyHTML += "<div style='border:1px solid blue;padding:10px;margin:10px;'>";
@@ -362,7 +459,6 @@ companyHTML += "</div>";
 
 }
 
-// SHOP
 if(user.type == "shop"){
 
 shopHTML += "<div style='border:1px solid green;padding:10px;margin:10px;'>";
@@ -386,4 +482,4 @@ document.getElementById("shopList").innerHTML = shopHTML;
 
 });
 
-}
+  }
