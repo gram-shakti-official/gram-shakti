@@ -9,17 +9,19 @@
 
 <link rel="stylesheet" href="style.css">
 
-<!-- Firebase -->
-
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script src="firebase.js"></script>
 
+<script src="script.js"></script>
+
 </head>
 
 <body>
+
+<div class="container">
 
 <h2>Customer Dashboard</h2>
 
@@ -27,34 +29,9 @@
 
 <hr>
 
-<h3>Find Workers</h3>
+<h3>Available Workers</h3>
 
-<ul>
-
-<li>Driver</li>
-<li>Domestic Worker</li>
-<li>Labor</li>
-<li>Plumber</li>
-<li>Electrician</li>
-<li>Cook</li>
-<li>Cleaner</li>
-<li>Security Guard</li>
-
-</ul>
-
-<br>
-
-<h3>Local Services</h3>
-
-<ul>
-
-<li>Vegetable Shops</li>
-<li>Milk & Dairy</li>
-<li>Grocery Stores</li>
-<li>Restaurants</li>
-<li>Medical Stores</li>
-
-</ul>
+<div id="workerList"></div>
 
 <hr>
 
@@ -65,33 +42,57 @@
 <br>
 
 <a href="index.html">
-<button>Back to Home</button>
+
+<button class="menuBtn">Back to Home</button>
+
 </a>
+
+</div>
+
 
 <script>
 
 var mobile = localStorage.getItem("mobile");
 
+if(!mobile){
+
+alert("Please login first");
+
+window.location="login.html";
+
+}
+
+
+
+// LOAD CUSTOMER REQUESTS
+
 function loadRequests(){
 
-firebase.database().ref("requests").on("value", function(snapshot){
+firebase.database().ref("hire_requests").on("value",(snapshot)=>{
 
 var data = snapshot.val();
 
-var html = "";
+var html="";
 
 for(var key in data){
 
-if(data[key].customerMobile == mobile){
+var req = data[key];
 
-html += "<div style='border:1px solid gray;padding:10px;margin:10px;'>";
+if(req.customerMobile == mobile){
 
-html += "<b>Worker Mobile:</b> "+data[key].workerMobile+"<br>";
-html += "<b>Work:</b> "+data[key].work+"<br>";
-html += "<b>City:</b> "+data[key].city+"<br>";
-html += "<b>Status:</b> "+data[key].status+"<br>";
+html += `
+<div class="card">
 
-html += "</div>";
+<b>Worker Mobile:</b> ${req.workerMobile}<br>
+
+<b>Work:</b> ${req.work}<br>
+
+<b>City:</b> ${req.city}<br>
+
+<b>Status:</b> ${req.status}
+
+</div>
+`;
 
 }
 
