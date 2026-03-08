@@ -9,16 +9,17 @@
 
 <link rel="stylesheet" href="style.css">
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-<!-- Firebase Config -->
 <script src="firebase.js"></script>
+<script src="script.js"></script>
 
 </head>
 
 <body>
+
+<div class="container">
 
 <h2>Worker Dashboard</h2>
 
@@ -34,7 +35,8 @@
 
 <h3>Your Services</h3>
 
-<ul>
+<ul style="text-align:left">
+
 <li>Driver</li>
 <li>Plumber</li>
 <li>Electrician</li>
@@ -42,6 +44,7 @@
 <li>Cook</li>
 <li>Cleaner</li>
 <li>Gardener</li>
+
 </ul>
 
 <hr>
@@ -53,34 +56,55 @@
 <br>
 
 <a href="index.html">
-<button>Back to Home</button>
+
+<button class="menuBtn">Back to Home</button>
+
 </a>
+
+</div>
 
 
 <script>
 
 var mobile = localStorage.getItem("mobile");
 
+if(!mobile){
 
-// WORKER PROFILE LOAD
+alert("Please login first");
 
-firebase.database().ref("users").once("value", function(snapshot){
+window.location="login.html";
+
+}
+
+
+
+// WORKER PROFILE
+
+firebase.database().ref("users").once("value",(snapshot)=>{
 
 var data = snapshot.val();
-var html = "";
+
+var html="";
 
 for(var key in data){
 
 if(data[key].mobile == mobile){
 
-html += "<div style='border:1px solid gray;padding:10px;margin:10px;'>";
+var user=data[key];
 
-html += "<b>Name:</b> "+data[key].name+"<br>";
-html += "<b>Work:</b> "+data[key].work+"<br>";
-html += "<b>City:</b> "+data[key].city+"<br>";
-html += "<b>Mobile:</b> "+data[key].mobile+"<br>";
+html += `
+<div class="card">
 
-html += "</div>";
+<b>Name:</b> ${user.name}<br>
+
+<b>Work:</b> ${user.work}<br>
+
+<b>City:</b> ${user.city}<br>
+
+<b>Mobile:</b> ${user.mobile}
+
+</div>
+`;
 
 }
 
@@ -92,83 +116,8 @@ document.getElementById("workerProfile").innerHTML = html;
 
 
 
-
-// LOAD REQUESTS
-
-function loadWorkerRequests(){
-
-firebase.database().ref("requests").on("value", function(snapshot){
-
-var data = snapshot.val();
-var html = "";
-
-for(var key in data){
-
-if(data[key].workerMobile == mobile){
-
-html += "<div style='border:1px solid black;padding:10px;margin:10px;'>";
-
-html += "<b>Customer:</b> "+data[key].customerMobile+"<br>";
-html += "<b>Work:</b> "+data[key].work+"<br>";
-html += "<b>City:</b> "+data[key].city+"<br>";
-html += "<b>Status:</b> "+data[key].status+"<br><br>";
-
-html += "<button onclick=\"acceptRequest('"+key+"')\">Accept</button>";
-
-html += " ";
-
-html += "<button onclick=\"rejectRequest('"+key+"')\">Reject</button>";
-
-html += "</div>";
-
-}
-
-}
-
-document.getElementById("requestList").innerHTML = html;
-
-});
-
-}
-
-
-loadWorkerRequests();
-
-
-
-
-// ACCEPT REQUEST
-
-function acceptRequest(id){
-
-firebase.database().ref("requests/"+id).update({
-
-status : "Accepted"
-
-});
-
-alert("Request Accepted");
-
-}
-
-
-
-
-// REJECT REQUEST
-
-function rejectRequest(id){
-
-firebase.database().ref("requests/"+id).update({
-
-status : "Rejected"
-
-});
-
-alert("Request Rejected");
-
-}
-
 </script>
 
 </body>
+
 </html>
