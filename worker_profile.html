@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Worker Profile - Gram Shakti</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="style.css">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script src="firebase.js"></script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Worker Profile</h1>
+
+<div id="workerProfile" class="card"></div>
+
+</div>
+
+
+<script>
+
+function getWorkerId(){
+
+const params = new URLSearchParams(window.location.search);
+
+return params.get("id");
+
+}
+
+var workerId = getWorkerId();
+
+if(workerId){
+
+var ref = firebase.database().ref("users/"+workerId);
+
+ref.once("value", function(snapshot){
+
+var user = snapshot.val();
+
+var html = "";
+
+html += "<h2>"+user.name+"</h2>";
+
+html += "<p><b>Work:</b> "+user.work+"</p>";
+
+html += "<p><b>City:</b> "+user.city+"</p>";
+
+html += "<p><b>Mobile:</b> "+user.mobile+"</p>";
+
+if(user.police_verified){
+
+html += "<p style='color:green'><b>✔ Police Verified Worker</b></p>";
+
+}else{
+
+html += "<p style='color:red'><b>Unverified Worker</b></p>";
+
+}
+
+document.getElementById("workerProfile").innerHTML = html;
+
+});
+
+}
+
+</script>
+
+</body>
+
+</html>
