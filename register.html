@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 
 <head>
@@ -13,16 +13,19 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script src="firebase.js"></script>
+<script src="script.js"></script>
 
 </head>
 
 <body>
 
+<div class="container">
+
 <h2>Register</h2>
 
-<input type="text" id="name" placeholder="Name"><br><br>
+<input type="text" id="name" placeholder="Full Name">
 
-<input type="text" id="mobile" placeholder="Mobile Number"><br><br>
+<input type="text" id="mobile" placeholder="Mobile Number">
 
 <select id="type">
 
@@ -32,67 +35,27 @@
 
 <option value="customer">Customer</option>
 
-<option value="business">Shop / Business / School</option>
+<option value="shop">Shop / Business</option>
+
+<option value="company">Company</option>
 
 </select>
 
-<br><br>
+<input type="text" id="work" placeholder="Work / Service (Electrician, Driver, etc.)">
 
-<input type="text" id="work" placeholder="Work / Service">
-
-<br><br>
-
-<input type="text" id="city" placeholder="City / Village">
-
-<br><br>
+<input type="text" id="city" placeholder="Village / City">
 
 <button onclick="registerUser()">Register</button>
 
-<script>
+<br><br>
 
-function registerUser(){
+<a href="login.html">
 
-var name = document.getElementById("name").value;
-var mobile = document.getElementById("mobile").value;
-var type = document.getElementById("type").value;
-var work = document.getElementById("work").value;
-var city = document.getElementById("city").value;
+<button class="menuBtn">Already Registered? Login</button>
 
-var id = Date.now();
+</a>
 
-firebase.database().ref("users/"+id).set({
-
-name:name,
-mobile:mobile,
-type:type,
-work:work,
-city:city
-
-});
-
-alert("Registration Successful");
-
-if(type=="worker"){
-
-window.location="worker.html";
-
-}
-
-if(type=="customer"){
-
-window.location="customer.html";
-
-}
-
-if(type=="business"){
-
-window.location="business.html";
-
-}
-
-}
-
-</script>
+</div>
 
 </body>
 
