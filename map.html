@@ -9,19 +9,55 @@
 
 <link rel="stylesheet" href="style.css">
 
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
 <style>
 
-#map{
+body{
+font-family:Arial;
+margin:0;
+}
 
+.container{
+padding:15px;
+}
+
+#map{
 height:500px;
 width:100%;
 border-radius:10px;
+margin-top:10px;
+}
 
+.searchBox{
+text-align:center;
+margin-bottom:10px;
+}
+
+.searchBox input{
+padding:10px;
+width:60%;
+border:1px solid #ccc;
+border-radius:6px;
+}
+
+.searchBox button{
+padding:10px 15px;
+border:none;
+border-radius:6px;
+background:#2a6df4;
+color:white;
+margin-left:5px;
 }
 
 </style>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAP_KEY"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script src="firebase.js"></script>
 
 </head>
 
@@ -31,17 +67,15 @@ border-radius:10px;
 
 <h1>Nearby Workers Map</h1>
 
-<h2>🇮🇳 हिंदी</h2>
+<div class="searchBox">
 
-<p>
-इस मैप में आप अपने आसपास मौजूद वर्कर देख सकते हैं।
-</p>
+<input type="number" id="pincodeInput" placeholder="PIN Code डालें">
 
-<h2>🇬🇧 English</h2>
+<button onclick="searchByPin()">Search</button>
 
-<p>
-This map shows workers available near your location.
-</p>
+<button onclick="myLocation()">📍 My Location</button>
+
+</div>
 
 <div id="map"></div>
 
@@ -50,53 +84,175 @@ This map shows workers available near your location.
 
 <script>
 
-function initMap(){
+/* MAP START */
 
-if(navigator.geolocation){
+var map = L.map('map').setView([20.5937,78.9629],5);
 
-navigator.geolocation.getCurrentPosition(function(position){
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+maxZoom:19
+}).addTo(map);
 
-var lat = position.coords.latitude;
+var markers = [];
 
-var lng = position.coords.longitude;
 
-var userLocation = {lat:lat, lng:lng};
+/* CLEAR OLD MARKERS */
 
-var map = new google.maps.Map(
+function clearMarkers(){
 
-document.getElementById("map"),
+markers.forEach(function(marker){
 
-{
+map.removeLayer(marker);
 
-zoom:12,
+});
 
-center:userLocation
+markers = [];
 
 }
 
+
+/* DISTANCE FUNCTION (KM) */
+
+function getDistance(lat1,lon1,lat2,lon2){
+
+var R = 6371;
+
+var dLat = (lat2-lat1) * Math.PI/180;
+var dLon = (lon2-lon1) * Math.PI/180;
+
+var a =
+Math.sin(dLat/2) * Math.sin(dLat/2) +
+Math.cos(lat1 * Math.PI/180) *
+Math.cos(lat2 * Math.PI/180) *
+Math.sin(dLon/2) *
+Math.sin(dLon/2);
+
+var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+return R * c;
+
+}
+
+
+/* PIN SEARCH */
+
+async function searchByPin(){
+
+let pin = document.getElementById("pincodeInput").value;
+
+if(pin.length !== 6){
+
+alert("सही PIN Code डालें");
+
+return;
+
+}
+
+try{
+
+const res = await fetch(
+`https://nominatim.openstreetmap.org/search?format=json&postalcode=${pin}&country=India`
 );
 
-var marker = new google.maps.Marker({
+const data = await res.json();
 
-position:userLocation,
+if(data.length > 0){
 
-map:map,
+let lat = parseFloat(data[0].lat);
+let lon = parseFloat(data[0].lon);
 
-title:"Your Location"
+map.setView([lat,lon],13);
 
-});
-
-});
+loadWorkers(lat,lon);
 
 }else{
 
-alert("Geolocation not supported");
+alert("लोकेशन नहीं मिल रही");
+
+}
+
+}catch(e){
+
+console.log(e);
 
 }
 
 }
 
-window.onload = initMap;
+
+/* MY LOCATION */
+
+function myLocation(){
+
+if(navigator.geolocation){
+
+navigator.geolocation.getCurrentPosition(function(pos){
+
+let lat = pos.coords.latitude;
+let lon = pos.coords.longitude;
+
+map.setView([lat,lon],13);
+
+loadWorkers(lat,lon);
+
+});
+
+}
+
+}
+
+
+/* LOAD WORKERS */
+
+function loadWorkers(userLat,userLng){
+
+clearMarkers();
+
+var ref = firebase.database().ref("users");
+
+ref.once("value",function(snapshot){
+
+var data = snapshot.val();
+
+for(var key in data){
+
+var user = data[key];
+
+if(user.lat && user.lng){
+
+var distance = getDistance(
+
+userLat,
+userLng,
+user.lat,
+user.lng
+
+);
+
+if(distance <= 10){
+
+var marker = L.marker([user.lat,user.lng]).addTo(map);
+
+markers.push(marker);
+
+marker.bindPopup(
+
+"<b>"+user.name+"</b><br>"+
+user.work+"<br>"+
+user.village+"<br>"+
+distance.toFixed(2)+" km दूर<br>"+
+"<a href='tel:"+user.mobile+"'>📞 Call</a>"
+
+);
+
+}
+
+}
+
+}
+
+});
+
+}
 
 </script>
 
