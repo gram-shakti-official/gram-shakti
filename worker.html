@@ -3,17 +3,71 @@
 
 <head>
 
-<title>Worker Dashboard - Gram Shakti</title>
+<title>Worker Registration - Gram Shakti</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="style.css">
 
+<style>
+
+body{
+font-family:Arial;
+margin:0;
+background:#f4f4f4;
+}
+
+.container{
+padding:20px;
+max-width:400px;
+margin:auto;
+}
+
+h1{
+text-align:center;
+}
+
+input,select{
+
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:6px;
+border:1px solid #ccc;
+
+}
+
+button{
+
+width:100%;
+padding:12px;
+background:#28a745;
+color:white;
+border:none;
+border-radius:6px;
+font-size:16px;
+margin-top:10px;
+
+}
+
+.locationBtn{
+
+background:#2a6df4;
+
+}
+
+#status{
+text-align:center;
+margin-top:10px;
+font-weight:bold;
+}
+
+</style>
+
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script src="firebase.js"></script>
-<script src="categories.js"></script>
 
 </head>
 
@@ -21,140 +75,181 @@
 
 <div class="container">
 
-<h2>Worker Dashboard</h2>
+<h1>Worker Registration</h1>
 
-<p>Welcome Worker</p>
+<input 
+type="text" 
+id="name" 
+placeholder="Name"
+required>
 
-<hr>
+<input 
+type="tel" 
+id="mobile" 
+placeholder="Mobile Number"
+minlength="10"
+maxlength="10"
+pattern="[0-9]{10}"
+required>
 
-<h3>Your Profile</h3>
+<select id="work">
 
-<div id="workerProfile"></div>
-
-<hr>
-
-<h3>Your Services</h3>
-
-<select id="serviceSelect">
-
-<option value="">Select Your Service</option>
+<option value="">Select Work</option>
+<option>Electrician</option>
+<option>Plumber</option>
+<option>Mason</option>
+<option>Driver</option>
+<option>Carpenter</option>
+<option>Painter</option>
 
 </select>
 
-<br>
+<input 
+type="number" 
+id="pincode" 
+placeholder="PIN Code"
+required>
 
-<button class="menuBtn" onclick="addService()">
-Add Service
+<input 
+type="text" 
+id="village" 
+placeholder="Village / Area"
+required>
+
+
+<button class="locationBtn" onclick="getLocation()">
+
+📍 Get GPS Location
+
 </button>
 
-<ul id="serviceList" style="text-align:left"></ul>
 
-<hr>
+<button onclick="registerWorker()">
 
-<h3>Hire Requests</h3>
+Register Worker
 
-<div id="requestList"></div>
-
-<br>
-
-<a href="index.html">
-
-<button class="menuBtn">
-Back to Home
 </button>
 
-</a>
+<p id="status"></p>
 
 </div>
 
 
 <script>
 
-/* LOGIN CHECK */
-
-var mobile = localStorage.getItem("mobile");
-
-if(!mobile){
-
-alert("Please login first");
-
-window.location="login.html";
-
-}
+var lat = "";
+var lng = "";
 
 
-/* LOAD PROFILE */
+/* GET GPS LOCATION */
 
-firebase.database().ref("users").once("value", function(snapshot){
+function getLocation(){
 
-var data = snapshot.val();
+let status = document.getElementById("status");
 
-var html="";
+status.innerHTML = "लोकेशन खोजी जा रही है... ⏳";
 
-for(var key in data){
+if(navigator.geolocation){
 
-var user=data[key];
+navigator.geolocation.getCurrentPosition(function(position){
 
-if(user.mobile == mobile){
+lat = position.coords.latitude;
+lng = position.coords.longitude;
 
-html += `
-<div class="card">
+status.innerHTML = "लोकेशन मिल गई ✅";
 
-<b>Name:</b> ${user.name}<br>
+}, function(){
 
-<b>Work:</b> ${user.work}<br>
-
-<b>City:</b> ${user.city}<br>
-
-<b>Mobile:</b> ${user.mobile}
-
-</div>
-`;
-
-}
-
-}
-
-document.getElementById("workerProfile").innerHTML = html;
+status.innerHTML = "लोकेशन नहीं मिल सकी ❌";
 
 });
 
+}else{
 
-/* LOAD CATEGORIES */
+status.innerHTML = "GPS supported नहीं है";
 
-var select=document.getElementById("serviceSelect");
+}
 
-categories.forEach(function(cat){
-
-var option=document.createElement("option");
-
-option.value=cat;
-option.text=cat;
-
-select.appendChild(option);
-
-});
+}
 
 
-/* ADD SERVICE */
 
-function addService(){
+/* REGISTER WORKER */
 
-var service=document.getElementById("serviceSelect").value;
+function registerWorker(){
 
-if(service==""){
+var name = document.getElementById("name").value;
+var mobile = document.getElementById("mobile").value;
+var work = document.getElementById("work").value;
+var pincode = document.getElementById("pincode").value;
+var village = document.getElementById("village").value;
 
-alert("Select service first");
+if(!name || !mobile || !work || !pincode || !village){
+
+alert("सभी जानकारी भरें");
 
 return;
 
 }
 
-var li=document.createElement("li");
+if(mobile.length != 10){
 
-li.innerText=service;
+alert("सही 10 अंकों का मोबाइल नंबर डालें");
 
-document.getElementById("serviceList").appendChild(li);
+return;
+
+}
+
+if(!lat){
+
+alert("पहले GPS Location लें");
+
+return;
+
+}
+
+
+var ref = firebase.database().ref("users");
+
+var newUser = ref.push();
+
+newUser.set({
+
+name:name,
+mobile:mobile,
+work:work,
+pincode:pincode,
+village:village,
+lat:lat,
+lng:lng,
+type:"worker",
+timestamp:Date.now()
+
+},function(error){
+
+if(error){
+
+alert("डेटा सेव नहीं हो पाया ❌");
+
+}else{
+
+document.getElementById("status").innerHTML =
+"पंजीकरण सफल रहा! ✅";
+
+/* FORM RESET */
+
+document.querySelectorAll("input").forEach(function(input){
+input.value="";
+});
+
+document.getElementById("work").value="";
+
+lat="";
+lng="";
+
+}
+
+});
 
 }
 
