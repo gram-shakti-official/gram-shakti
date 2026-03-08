@@ -14,11 +14,108 @@
 
 <script src="firebase.js"></script>
 
+<style>
+
+/* Splash Screen */
+
+#splash{
+
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:white;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+
+}
+
+#splash img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* Main App */
+
+.container{
+padding:15px;
+display:none;
+}
+
+.title{
+text-align:center;
+color:#2a6df4;
+}
+
+.tagline{
+text-align:center;
+color:#666;
+}
+
+.searchBtn{
+background:#2a6df4;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:6px;
+}
+
+.menu{
+text-align:center;
+margin:15px 0;
+}
+
+.menuBtn{
+background:#ff9800;
+border:none;
+padding:12px 20px;
+margin:5px;
+border-radius:8px;
+color:white;
+font-size:16px;
+}
+
+.card{
+
+border:1px solid #ddd;
+padding:10px;
+margin:10px 0;
+border-radius:8px;
+background:white;
+
+}
+
+.company{
+background:#e8f1ff;
+}
+
+.shop{
+background:#eaffea;
+}
+
+</style>
+
 </head>
 
 <body>
 
-<div class="container">
+
+<!-- SPLASH BANNER -->
+
+<div id="splash">
+
+<img src="banner.jpg">
+
+</div>
+
+
+<!-- MAIN APP -->
+
+<div class="container" id="mainApp">
 
 <h1 class="title">Gram Shakti</h1>
 
@@ -30,12 +127,16 @@
 
 <div class="menu">
 
-<a href="login.html">
-<button class="menuBtn">Login</button>
+<a href="customer.html">
+<button class="menuBtn">Customer</button>
 </a>
 
-<a href="register.html">
-<button class="menuBtn">Register</button>
+<a href="worker.html">
+<button class="menuBtn">Worker</button>
+</a>
+
+<a href="business.html">
+<button class="menuBtn">Company</button>
 </a>
 
 </div>
@@ -62,6 +163,18 @@
 
 
 <script>
+
+/* Splash Screen 3 sec */
+
+setTimeout(function(){
+
+document.getElementById("splash").style.display="none";
+document.getElementById("mainApp").style.display="block";
+
+},3000);
+
+
+/* Firebase Load Data */
 
 var ref = firebase.database().ref("users");
 
@@ -135,15 +248,38 @@ shopHTML += "</div>";
 }
 
 document.getElementById("workerList").innerHTML = workerHTML;
-
 document.getElementById("companyList").innerHTML = companyHTML;
-
 document.getElementById("shopList").innerHTML = shopHTML;
 
 });
+
+
+/* Search Function */
+
+function searchData(){
+
+var input = document.getElementById("searchInput").value.toLowerCase();
+
+var cards = document.querySelectorAll(".card");
+
+cards.forEach(function(card){
+
+if(card.innerText.toLowerCase().includes(input)){
+
+card.style.display="block";
+
+}else{
+
+card.style.display="none";
+
+}
+
+});
+
+}
 
 </script>
 
 </body>
 
-</html>
+                      </html>
