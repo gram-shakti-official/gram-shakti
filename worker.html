@@ -3,7 +3,7 @@
 
 <head>
 
-<title>Worker Dashboard</title>
+<title>Worker Dashboard - Gram Shakti</title>
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -13,7 +13,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script src="firebase.js"></script>
-<script src="script.js"></script>
+<script src="categories.js"></script>
 
 </head>
 
@@ -35,17 +35,19 @@
 
 <h3>Your Services</h3>
 
-<ul style="text-align:left">
+<select id="serviceSelect">
 
-<li>Driver</li>
-<li>Plumber</li>
-<li>Electrician</li>
-<li>Labor</li>
-<li>Cook</li>
-<li>Cleaner</li>
-<li>Gardener</li>
+<option value="">Select Your Service</option>
 
-</ul>
+</select>
+
+<br>
+
+<button class="menuBtn" onclick="addService()">
+Add Service
+</button>
+
+<ul id="serviceList" style="text-align:left"></ul>
 
 <hr>
 
@@ -57,7 +59,9 @@
 
 <a href="index.html">
 
-<button class="menuBtn">Back to Home</button>
+<button class="menuBtn">
+Back to Home
+</button>
 
 </a>
 
@@ -65,6 +69,8 @@
 
 
 <script>
+
+/* LOGIN CHECK */
 
 var mobile = localStorage.getItem("mobile");
 
@@ -77,10 +83,9 @@ window.location="login.html";
 }
 
 
+/* LOAD PROFILE */
 
-// WORKER PROFILE
-
-firebase.database().ref("users").once("value",(snapshot)=>{
+firebase.database().ref("users").once("value", function(snapshot){
 
 var data = snapshot.val();
 
@@ -88,9 +93,9 @@ var html="";
 
 for(var key in data){
 
-if(data[key].mobile == mobile){
-
 var user=data[key];
+
+if(user.mobile == mobile){
 
 html += `
 <div class="card">
@@ -115,6 +120,43 @@ document.getElementById("workerProfile").innerHTML = html;
 });
 
 
+/* LOAD CATEGORIES */
+
+var select=document.getElementById("serviceSelect");
+
+categories.forEach(function(cat){
+
+var option=document.createElement("option");
+
+option.value=cat;
+option.text=cat;
+
+select.appendChild(option);
+
+});
+
+
+/* ADD SERVICE */
+
+function addService(){
+
+var service=document.getElementById("serviceSelect").value;
+
+if(service==""){
+
+alert("Select service first");
+
+return;
+
+}
+
+var li=document.createElement("li");
+
+li.innerText=service;
+
+document.getElementById("serviceList").appendChild(li);
+
+}
 
 </script>
 
