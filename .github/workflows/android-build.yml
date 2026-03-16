@@ -10,17 +10,29 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build Android APK
-        # यह एक्शन बिना किसी भारी सेटअप के आपकी वेबसाइट को सीधे APK में बदल देगा
-        uses: alywars/sql-to-apk@v1.1
+      - name: Set up Java
+        uses: actions/setup-java@v3
         with:
-          website-url: https://gram-shakti-official.github.io/gram_shakti/
-          app-name: "Gram Shakti"
-          icon-url: https://raw.githubusercontent.com/gram-shakti-official/gram_shakti/main/assets/icon.png
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Create Webview Project
+        run: |
+          # 1. एक बेसिक एंड्रॉइड प्रोजेक्ट स्ट्रक्चर खुद बनाना
+          git clone https://github.com/r0adkll/stonky-webview-template android-project
+          
+          # 2. अपनी वेबसाइट की फाइल्स को assets फोल्डर में डालना
+          mkdir -p android-project/app/src/main/assets
+          cp -r *.html *.css *.js android-project/app/src/main/assets/ 2>/dev/null || true
+          cp -r assets/* android-project/app/src/main/assets/ 2>/dev/null || true
+          
+          # 3. बिल्ड शुरू करना
+          cd android-project
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gram-Shakti-Installable
-          path: ./*.apk
-
+          name: Gram-Shakti-Success-APK
+          path: android-project/app/build/outputs/apk/debug/app-debug.apk
