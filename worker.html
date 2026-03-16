@@ -1,260 +1,158 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="hi">
 <head>
-
-<title>Worker Registration - Gram Shakti</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="style.css">
-
-<style>
-
-body{
-font-family:Arial;
-margin:0;
-background:#f4f4f4;
-}
-
-.container{
-padding:20px;
-max-width:400px;
-margin:auto;
-}
-
-h1{
-text-align:center;
-}
-
-input,select{
-
-width:100%;
-padding:10px;
-margin:8px 0;
-border-radius:6px;
-border:1px solid #ccc;
-
-}
-
-button{
-
-width:100%;
-padding:12px;
-background:#28a745;
-color:white;
-border:none;
-border-radius:6px;
-font-size:16px;
-margin-top:10px;
-
-}
-
-.locationBtn{
-
-background:#2a6df4;
-
-}
-
-#status{
-text-align:center;
-margin-top:10px;
-font-weight:bold;
-}
-
-</style>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<script src="firebase.js"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Worker Registration - Gram Shakti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans Devanagari', sans-serif; background-color: #fdfaf5; }
+        .golden-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .brown-btn { background: linear-gradient(135deg, #4e342e 0%, #212121 100%); }
+        .input-premium { @apply w-full p-4 bg-white border border-gray-100 rounded-2xl outline-none shadow-sm focus:ring-2 focus:ring-[#bf953f] transition-all; }
+        
+        /* GPS पल्स एनीमेशन */
+        .gps-active { animation: pulse 2s infinite; }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(37, 99, 235, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+        }
+    </style>
 </head>
+<body class="p-4 pb-20">
 
-<body>
+    <div class="max-w-md mx-auto">
+        <div class="text-center my-8">
+            <h1 class="text-4xl golden-text font-black italic">वर्कर पंजीकरण</h1>
+            <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-[0.2em] font-bold">Register as a Skilled Worker</p>
+        </div>
 
-<div class="container">
+        <div class="bg-white rounded-[2.5rem] p-6 shadow-2xl border border-[#bf953f]/20 space-y-4">
+            
+            <div>
+                <label class="text-xs font-bold text-gray-400 ml-2 uppercase">पूरा नाम</label>
+                <input type="text" id="name" class="input-premium mt-1" placeholder="जैसे: विकास कुमार">
+            </div>
 
-<h1>Worker Registration</h1>
+            <div>
+                <label class="text-xs font-bold text-gray-400 ml-2 uppercase">मोबाइल नंबर</label>
+                <input type="tel" id="mobile" class="input-premium mt-1" placeholder="9784..." maxlength="10">
+            </div>
 
-<input 
-type="text" 
-id="name" 
-placeholder="Name"
-required>
+            <div>
+                <label class="text-xs font-bold text-gray-400 ml-2 uppercase">काम की श्रेणी (Category)</label>
+                <select id="work" class="input-premium mt-1">
+                    <option value="">काम चुनें</option>
+                    <option>Farmer (किसान)</option>
+                    <option>Tractor Service (ट्रैक्टर)</option>
+                    <option>Electrician (बिजली मिस्त्री)</option>
+                    <option>Plumber (नल मिस्त्री)</option>
+                    <option>Mason (राज मिस्त्री)</option>
+                    <option>Driver (गाड़ी चालक)</option>
+                    <option>Carpenter (बढ़ई)</option>
+                    <option>Painter (रंगसाज)</option>
+                    <option>Mechanic (मैकेनिक)</option>
+                    <option>Labor (मजदूर)</option>
+                    <option>Tailor (दर्जी)</option>
+                </select>
+            </div>
 
-<input 
-type="tel" 
-id="mobile" 
-placeholder="Mobile Number"
-minlength="10"
-maxlength="10"
-pattern="[0-9]{10}"
-required>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-bold text-gray-400 ml-2 uppercase">पिनकोड</label>
+                    <input type="number" id="pincode" class="input-premium mt-1" placeholder="302001">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-400 ml-2 uppercase">गाँव/क्षेत्र</label>
+                    <input type="text" id="village" class="input-premium mt-1" placeholder="गाँव का नाम">
+                </div>
+            </div>
 
-<select id="work">
+            <button onclick="getLocation()" id="gpsBtn" class="w-full bg-blue-50 text-blue-600 p-4 rounded-2xl font-bold flex items-center justify-center gap-2 border border-blue-100 active:scale-95 transition-all">
+                <span id="gpsIcon">📍</span> <span id="gpsText">GPS लोकेशन सेट करें</span>
+            </button>
 
-<option value="">Select Work</option>
-<option>Electrician</option>
-<option>Plumber</option>
-<option>Mason</option>
-<option>Driver</option>
-<option>Carpenter</option>
-<option>Painter</option>
+            <button onclick="registerWorker()" class="w-full brown-btn text-[#fcf6ba] p-5 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all mt-4">
+                पंजीकरण पूरा करें ✨
+            </button>
 
-</select>
-
-<input 
-type="number" 
-id="pincode" 
-placeholder="PIN Code"
-required>
-
-<input 
-type="text" 
-id="village" 
-placeholder="Village / Area"
-required>
-
-
-<button class="locationBtn" onclick="getLocation()">
-
-📍 Get GPS Location
-
-</button>
-
-
-<button onclick="registerWorker()">
-
-Register Worker
-
-</button>
-
-<p id="status"></p>
-
-</div>
-
+            <p id="status" class="text-center text-xs font-bold"></p>
+        </div>
+    </div>
 
 <script>
+    var lat = ""; var lng = "";
+    
+    // Firebase Initialize (आपकी ID: gram-shakti-app-2367b)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0J8TCjU2wxDNmT2O4VMfchY06arTO-O0",
+      databaseURL: "https://gram-shakti-app-2367b-default-rtdb.firebaseio.com",
+      projectId: "gram-shakti-app-2367b",
+    };
+    firebase.initializeApp(firebaseConfig);
 
-var lat = "";
-var lng = "";
+    function getLocation() {
+        let btn = document.getElementById("gpsBtn");
+        let txt = document.getElementById("gpsText");
+        txt.innerText = "लोकेशन ढूँढ रहे हैं...";
+        btn.classList.add("gps-active");
 
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                lat = position.coords.latitude;
+                lng = position.coords.longitude;
+                txt.innerText = "लोकेशन सेट हो गई ✅";
+                btn.classList.replace("bg-blue-50", "bg-green-50");
+                btn.classList.replace("text-blue-600", "text-green-600");
+                btn.classList.remove("gps-active");
+            }, function() {
+                alert("लोकेशन नहीं मिल सकी। कृपया GPS ऑन करें।");
+                txt.innerText = "GPS ऑन करके फिर कोशिश करें";
+            });
+        }
+    }
 
-/* GET GPS LOCATION */
+    function registerWorker() {
+        var name = document.getElementById("name").value.trim();
+        var mobile = document.getElementById("mobile").value.trim();
+        var work = document.getElementById("work").value;
+        var pincode = document.getElementById("pincode").value;
+        var village = document.getElementById("village").value.trim();
 
-function getLocation(){
+        if (!name || !mobile || !work || !pincode || !village) {
+            alert("कृपया सभी जानकारी भरें!"); return;
+        }
+        if (!lat) {
+            alert("मैप पर दिखाने के लिए GPS लोकेशन लेना जरूरी है!"); return;
+        }
 
-let status = document.getElementById("status");
-
-status.innerHTML = "लोकेशन खोजी जा रही है... ⏳";
-
-if(navigator.geolocation){
-
-navigator.geolocation.getCurrentPosition(function(position){
-
-lat = position.coords.latitude;
-lng = position.coords.longitude;
-
-status.innerHTML = "लोकेशन मिल गई ✅";
-
-}, function(){
-
-status.innerHTML = "लोकेशन नहीं मिल सकी ❌";
-
-});
-
-}else{
-
-status.innerHTML = "GPS supported नहीं है";
-
-}
-
-}
-
-
-
-/* REGISTER WORKER */
-
-function registerWorker(){
-
-var name = document.getElementById("name").value;
-var mobile = document.getElementById("mobile").value;
-var work = document.getElementById("work").value;
-var pincode = document.getElementById("pincode").value;
-var village = document.getElementById("village").value;
-
-if(!name || !mobile || !work || !pincode || !village){
-
-alert("सभी जानकारी भरें");
-
-return;
-
-}
-
-if(mobile.length != 10){
-
-alert("सही 10 अंकों का मोबाइल नंबर डालें");
-
-return;
-
-}
-
-if(!lat){
-
-alert("पहले GPS Location लें");
-
-return;
-
-}
-
-
-var ref = firebase.database().ref("users");
-
-var newUser = ref.push();
-
-newUser.set({
-
-name:name,
-mobile:mobile,
-work:work,
-pincode:pincode,
-village:village,
-lat:lat,
-lng:lng,
-type:"worker",
-timestamp:Date.now()
-
-},function(error){
-
-if(error){
-
-alert("डेटा सेव नहीं हो पाया ❌");
-
-}else{
-
-document.getElementById("status").innerHTML =
-"पंजीकरण सफल रहा! ✅";
-
-/* FORM RESET */
-
-document.querySelectorAll("input").forEach(function(input){
-input.value="";
-});
-
-document.getElementById("work").value="";
-
-lat="";
-lng="";
-
-}
-
-});
-
-}
-
+        firebase.database().ref("users/" + mobile).set({
+            name: name,
+            mobile: mobile,
+            work: work,
+            pincode: pincode,
+            village: village,
+            lat: lat,
+            lng: lng,
+            type: "worker",
+            status: "verified", // डिफ़ॉल्ट वेरिफाइड या पेंडिंग रख सकते हैं
+            timestamp: Date.now()
+        }, function(error) {
+            if (error) { alert("Error: " + error.message); } 
+            else {
+                document.getElementById("status").innerHTML = "<span class='text-green-600'>सफलतापूर्वक पंजीकृत! ✅</span>";
+                alert("बधाई हो! आप ग्राम शक्ति से जुड़ चुके हैं।");
+                window.location.href = "login.html";
+            }
+        });
+    }
 </script>
-
 </body>
-
 </html>
