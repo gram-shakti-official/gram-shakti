@@ -1,16 +1,18 @@
-name: Build Android APK
+name: Debug and Build APK
 
 on: 
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
+      - name: List Files
+        run: ls -R  # यह आपकी सारी फाइलों की लिस्ट दिखाएगा
+
       - name: Install Java
         uses: actions/setup-java@v3
         with:
@@ -23,20 +25,19 @@ jobs:
           channel: 'stable'
 
       - name: Get Dependencies
-        # यह कमांड आपके फोल्डर के अंदर जाकर काम करेगी
         run: |
-          cd $(find . -name "pubspec.yaml" -exec dirname {} \;)
+          FILE_PATH=$(find . -name "pubspec.yaml" -print -quit)
+          if [ -z "$FILE_PATH" ]; then
+            echo "Error: pubspec.yaml not found anywhere!"
+            exit 1
+          fi
+          cd $(dirname "$FILE_PATH")
           flutter pub get
-        
-      - name: Build APK
-        run: |
-          cd $(find . -name "pubspec.yaml" -exec dirname {} \;)
           flutter build apk --release --no-tree-shake-icons
 
       - name: Save APK
         uses: actions/upload-artifact@v4
         with:
           name: Gram-Shakti-APK
-          # यह फाइल को कहीं से भी ढूंढ कर निकाल लेगा
           path: "**/build/app/outputs/flutter-apk/app-release.apk"
           
