@@ -1,43 +1,128 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="hi">
 <head>
-
-<title>Post Advertisement</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="style.css">
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<script src="firebase.js"></script>
-<script src="script.js"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Post Ad - Gram Shakti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Noto Sans Devanagari', sans-serif; 
+            background-color: #fdfaf5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .golden-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .brown-btn {
+            background: linear-gradient(135deg, #4e342e 0%, #212121 100%);
+        }
+        .input-premium {
+            @apply w-full p-4 bg-white border border-gray-100 rounded-2xl outline-none shadow-sm focus:ring-2 focus:ring-[#bf953f] transition-all;
+        }
+    </style>
 </head>
+<body class="p-6 pb-20">
 
-<body>
+    <div class="max-w-md mx-auto">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl golden-text font-black italic">नया विज्ञापन</h1>
+            <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">अपना व्यापार बढ़ाएं</p>
+        </div>
 
-<h2>Post Your Advertisement</h2>
+        <div class="bg-white rounded-[2.5rem] p-6 shadow-2xl border border-[#bf953f]/20 space-y-4">
+            
+            <div>
+                <label class="text-xs font-bold text-gray-400 ml-2 uppercase">बिजनेस / दुकान का नाम</label>
+                <input type="text" id="businessName" class="input-premium mt-1" placeholder="उदा: विकास हार्डवेयर">
+            </div>
 
-<input type="text" id="businessName" placeholder="Business / Shop Name">
-<br><br>
+            <div>
+                <label class="text-xs font-bold text-gray-400 ml-2 uppercase">विज्ञापन का शीर्षक (Title)</label>
+                <input type="text" id="title" class="input-premium mt-1" placeholder="उदा: भारी छूट! आज ही आएं">
+            </div>
 
-<input type="text" id="title" placeholder="Ad Title">
-<br><br>
+            <div>
+                <label class="text-xs font-bold text-gray-400 ml-2 uppercase">विवरण (Description)</label>
+                <textarea id="description" rows="4" class="input-premium mt-1 resize-none" placeholder="अपनी सर्विस या ऑफर के बारे में लिखें..."></textarea>
+            </div>
 
-<textarea id="description" placeholder="Description"></textarea>
-<br><br>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-bold text-gray-400 ml-2 uppercase">शहर / पंचायत</label>
+                    <input type="text" id="city" class="input-premium mt-1" placeholder="जयपुर">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-gray-400 ml-2 uppercase">मोबाइल नंबर</label>
+                    <input type="tel" id="mobile" class="input-premium mt-1" placeholder="9784..." maxlength="10">
+                </div>
+            </div>
 
-<input type="text" id="city" placeholder="City">
-<br><br>
+            <button onclick="postAd()" class="w-full brown-btn text-[#fcf6ba] p-5 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all mt-4">
+                विज्ञापन सबमिट करें ✨
+            </button>
+        </div>
+    </div>
 
-<input type="text" id="mobile" placeholder="Mobile Number">
-<br><br>
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-3 flex justify-around shadow-lg">
+        <div onclick="location.href='index.html'" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">🏠</span>
+            <span class="text-[10px] font-bold">होम</span>
+        </div>
+        <div class="flex flex-col items-center text-[#bf953f]">
+            <span class="text-xl">📢</span>
+            <span class="text-[10px] font-bold">विज्ञापन</span>
+        </div>
+        <div onclick="location.href='dashboard.html'" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">📊</span>
+            <span class="text-[10px] font-bold">डैशबोर्ड</span>
+        </div>
+    </div>
 
-<button onclick="postAd()">Post Advertisement</button>
+<script>
+    // आपका Firebase Config (gram-shakti-app-2367b)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0J8TCjU2wxDNmT2O4VMfchY06arTO-O0",
+      databaseURL: "https://gram-shakti-app-2367b-default-rtdb.firebaseio.com",
+      projectId: "gram-shakti-app-2367b",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
+    function postAd(){
+        var businessName = document.getElementById("businessName").value.trim();
+        var title = document.getElementById("title").value.trim();
+        var description = document.getElementById("description").value.trim();
+        var city = document.getElementById("city").value.trim();
+        var mobile = document.getElementById("mobile").value.trim();
+
+        if(!businessName || !title || !description || !mobile) {
+            alert("कृपया सभी जानकारी भरें!");
+            return;
+        }
+
+        var adData = {
+            businessName: businessName,
+            title: title,
+            description: description,
+            city: city,
+            mobile: mobile,
+            time: Date.now(),
+            status: "active"
+        };
+
+        database.ref("ads").push(adData).then(() => {
+            alert("आपका विज्ञापन सफलतापूर्वक पोस्ट हो गया! ✅");
+            // फॉर्म साफ़ करना
+            document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+            window.location.href = "index.html"; // होम पर भेजें
+        }).catch(e => alert("Error: " + e.message));
+    }
+</script>
 </body>
-
 </html>
