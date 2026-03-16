@@ -1,386 +1,193 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="hi">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Gram Shakti - Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Noto Sans Devanagari', sans-serif; 
+            background-color: #fdfaf5; /* हल्का क्रीम बैकग्राउंड */
+            -webkit-tap-highlight-color: transparent;
+        }
 
-<title>Gram Shakti App</title>
+        /* गोल्डन ग्रेडिएंट टेक्स्ट */
+        .golden-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.1));
+        }
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+        /* प्रीमियम ब्राउन ग्रेडिएंट */
+        .brown-gradient {
+            background: linear-gradient(135deg, #4e342e 0%, #212121 100%);
+        }
 
-<link rel="stylesheet" href="style.css">
+        /* Splash Screen */
+        #splash {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #212121; display: flex; align-items: center;
+            justify-content: center; z-index: 9999; transition: opacity 0.5s ease;
+        }
 
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+        .premium-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(139, 94, 0, 0.1);
+            border: 1px solid #f3e5f5;
+            transition: transform 0.2s;
+        }
+        .premium-card:active { transform: scale(0.97); }
 
-<script src="firebase.js"></script>
-
-<style>
-
-/* Splash Screen */
-
-#splash{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:white;
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:9999;
-}
-
-#splash img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-/* Main App */
-
-.container{
-padding:15px;
-display:none;
-}
-
-.title{
-text-align:center;
-color:#2a6df4;
-}
-
-.tagline{
-text-align:center;
-color:#666;
-}
-
-/* Search */
-
-.searchBox{
-text-align:center;
-margin-top:10px;
-}
-
-.searchBtn{
-background:#2a6df4;
-color:white;
-border:none;
-padding:10px 15px;
-border-radius:6px;
-}
-
-/* Old Menu */
-
-.menu{
-text-align:center;
-margin:15px 0;
-}
-
-.menuBtn{
-background:#ff9800;
-border:none;
-padding:12px 20px;
-margin:5px;
-border-radius:8px;
-color:white;
-font-size:16px;
-}
-
-/* NEW BIG BUTTONS */
-
-.bigButtons{
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:15px;
-margin-top:20px;
-}
-
-.bigBtn{
-width:90%;
-max-width:350px;
-border:none;
-border-radius:12px;
-overflow:hidden;
-cursor:pointer;
-font-size:20px;
-font-weight:bold;
-}
-
-.bigBtnTop{
-padding:25px;
-color:white;
-display:flex;
-align-items:center;
-justify-content:center;
-gap:10px;
-}
-
-.bigBtnBottom{
-background:black;
-color:white;
-padding:6px;
-font-size:13px;
-text-align:center;
-}
-
-/* Button Colors */
-
-.workerBtn .bigBtnTop{
-background:#28a745;
-}
-
-.customerBtn .bigBtnTop{
-background:#ff9800;
-}
-
-.companyBtn .bigBtnTop{
-background:#2196f3;
-}
-
-/* Cards */
-
-.card{
-border:1px solid #ddd;
-padding:10px;
-margin:10px 0;
-border-radius:8px;
-background:white;
-}
-
-.company{
-background:#e8f1ff;
-}
-
-.shop{
-background:#eaffea;
-}
-
-</style>
-
+        /* सर्च बॉक्स */
+        .search-container {
+            border: 2px solid #bf953f;
+            border-radius: 15px;
+        }
+    </style>
 </head>
+<body class="pb-24">
 
-<body>
+    <div id="splash">
+        <div class="text-center">
+            <h1 class="text-5xl golden-text mb-2 italic">Gram Shakti</h1>
+            <p class="text-gray-400 text-xs tracking-[0.3em] uppercase">Rural Digital Revolution</p>
+        </div>
+    </div>
 
+    <div id="mainApp" class="hidden">
+        
+        <div class="brown-gradient p-8 rounded-b-[3rem] shadow-2xl text-center">
+            <h1 class="text-4xl golden-text italic">Gram Shakti</h1>
+            <p class="text-gray-300 text-[10px] mt-1 tracking-widest uppercase">Work • Services • Local Market</p>
+            
+            <div class="mt-6 flex bg-white rounded-2xl p-2 shadow-inner border border-[#bf953f]/30">
+                <input type="text" id="searchInput" placeholder="वर्कर, सर्विस या शहर खोजें..." 
+                       class="flex-1 p-2 outline-none text-sm text-gray-700 bg-transparent px-4">
+                <button onclick="searchData()" class="brown-gradient text-[#fcf6ba] px-6 py-2 rounded-xl font-bold text-sm">खोजें</button>
+            </div>
+        </div>
 
-<!-- SPLASH BANNER -->
+        <div class="px-4 -mt-8 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="location.href='worker.html'" class="premium-card p-6 flex flex-col items-center border-b-4 border-green-600">
+                    <span class="text-3xl mb-2">👷</span>
+                    <span class="font-bold text-gray-800">वर्कर</span>
+                    <span class="text-[9px] text-gray-400 uppercase">काम ढूंढें</span>
+                </button>
+                <button onclick="location.href='business.html'" class="premium-card p-6 flex flex-col items-center border-b-4 border-blue-600">
+                    <span class="text-3xl mb-2">🏢</span>
+                    <span class="font-bold text-gray-800">कंपनी</span>
+                    <span class="text-[9px] text-gray-400 uppercase">हायर करें</span>
+                </button>
+            </div>
+            <button onclick="location.href='customer.html'" class="premium-card w-full p-4 flex items-center justify-between border-l-8 border-[#bf953f]">
+                <div class="flex items-center">
+                    <span class="text-3xl mr-4">👤</span>
+                    <div class="text-left">
+                        <p class="font-bold text-gray-800 leading-tight">ग्राहक (Customer)</p>
+                        <p class="text-[10px] text-gray-400">आस-पास की सेवाएँ बुक करें</p>
+                    </div>
+                </div>
+                <span class="text-gray-300">❯</span>
+            </button>
+        </div>
 
-<div id="splash">
+        <div class="p-4 space-y-8 mt-6">
+            
+            <section>
+                <h2 class="text-[#8d6e63] font-bold text-lg mb-3 flex items-center">
+                    <span class="w-2 h-6 bg-[#bf953f] rounded-full mr-2"></span> उपलब्ध वर्कर
+                </h2>
+                <div id="workerList" class="space-y-4"></div>
+            </section>
 
-<img src="banner.jpg">
+            <section>
+                <h2 class="text-[#8d6e63] font-bold text-lg mb-3 flex items-center">
+                    <span class="w-2 h-6 bg-blue-500 rounded-full mr-2"></span> हायर करने वाली कंपनियाँ
+                </h2>
+                <div id="companyList" class="space-y-4"></div>
+            </section>
 
-</div>
+        </div>
+    </div>
 
-
-<!-- MAIN APP -->
-
-<div class="container" id="mainApp">
-
-<h1 class="title">Gram Shakti</h1>
-
-<p class="tagline">India Work • Services • Local Market</p>
-
-
-<!-- SEARCH -->
-
-<div class="searchBox">
-
-<input type="text" id="searchInput" placeholder="Search Worker, Service, City">
-
-<button class="searchBtn" onclick="searchData()">Search</button>
-
-</div>
-
-
-<!-- OLD MENU (रखा गया है) -->
-
-<div class="menu">
-
-<a href="customer.html">
-<button class="menuBtn">Customer</button>
-</a>
-
-<a href="worker.html">
-<button class="menuBtn">Worker</button>
-</a>
-
-<a href="business.html">
-<button class="menuBtn">Company</button>
-</a>
-
-</div>
-
-
-<!-- NEW BIG BUTTONS -->
-
-<div class="bigButtons">
-
-<a href="worker.html">
-<button class="bigBtn workerBtn">
-
-<div class="bigBtnTop">
-👷 Worker
-</div>
-
-<div class="bigBtnBottom">
-काम खोजें और कमाई करें
-</div>
-
-</button>
-</a>
-
-
-<a href="business.html">
-<button class="bigBtn companyBtn">
-
-<div class="bigBtnTop">
-🏢 Company
-</div>
-
-<div class="bigBtnBottom">
-वर्कर हायर करें
-</div>
-
-</button>
-</a>
-
-
-<a href="customer.html">
-<button class="bigBtn customerBtn">
-
-<div class="bigBtnTop">
-👤 Customer
-</div>
-
-<div class="bigBtnBottom">
-आसपास की सेवाएँ खोजें
-</div>
-
-</button>
-</a>
-
-</div>
-
-
-<hr>
-
-<h2>Workers</h2>
-
-<div id="workerList"></div>
-
-<hr>
-
-<h2>Companies Hiring</h2>
-
-<div id="companyList"></div>
-
-<hr>
-
-<h2>Local Shops</h2>
-
-<div id="shopList"></div>
-
-</div>
-
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-3 flex justify-around shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <div class="flex flex-col items-center text-[#bf953f]">
+            <span class="text-xl">🏠</span>
+            <span class="text-[10px] font-bold">होम</span>
+        </div>
+        <div onclick="location.href='dashboard.html'" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">📊</span>
+            <span class="text-[10px] font-bold">डैशबोर्ड</span>
+        </div>
+        <div onclick="location.href='contact.html'" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">🎧</span>
+            <span class="text-[10px] font-bold">सपोर्ट</span>
+        </div>
+    </div>
 
 <script>
+    // आपका Firebase Config (जो आपने पहले दिया था)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0J8TCjU2wxDNmT2O4VMfchY06arTO-O0",
+      databaseURL: "https://gram-shakti-app-2367b-default-rtdb.firebaseio.com",
+      projectId: "gram-shakti-app-2367b",
+    };
+    firebase.initializeApp(firebaseConfig);
 
-/* Splash Screen */
+    // Splash Screen Logic
+    setTimeout(() => {
+        document.getElementById("splash").style.opacity = "0";
+        setTimeout(() => {
+            document.getElementById("splash").style.display = "none";
+            document.getElementById("mainApp").classList.remove("hidden");
+        }, 500);
+    }, 2500);
 
-setTimeout(function(){
+    // Firebase डेटा लोड करना
+    firebase.database().ref("users").on("value", function(snapshot){
+        var data = snapshot.val();
+        var workerHTML = ""; var companyHTML = "";
+        
+        for(var key in data){
+            var user = data[key];
+            let cardTemplate = `
+                <div class="premium-card p-4 relative overflow-hidden">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="font-bold text-gray-800 text-lg">${user.name}</h3>
+                            <p class="text-xs text-blue-600 font-bold uppercase tracking-tighter">${user.work || user.type}</p>
+                        </div>
+                        <a href="tel:${user.mobile}" class="bg-green-500 text-white p-2 px-4 rounded-xl text-xs font-bold shadow-md">📞 कॉल</a>
+                    </div>
+                    <div class="mt-3 flex items-center text-[11px] text-gray-400 font-bold">
+                        <span class="mr-2">📍 ${user.city}</span>
+                        <span class="bg-gray-100 px-2 py-0.5 rounded italic">ID: ${user.mobile}</span>
+                    </div>
+                </div>`;
 
-document.getElementById("splash").style.display="none";
-document.getElementById("mainApp").style.display="block";
+            if(user.type == "worker") workerHTML += cardTemplate;
+            else if(user.type == "company") companyHTML += cardTemplate;
+        }
+        document.getElementById("workerList").innerHTML = workerHTML || "<p class='text-center text-gray-300'>कोई वर्कर नहीं मिला</p>";
+        document.getElementById("companyList").innerHTML = companyHTML || "<p class='text-center text-gray-300'>कोई कंपनी नहीं मिली</p>";
+    });
 
-},3000);
-
-
-/* Firebase Load Data */
-
-var ref = firebase.database().ref("users");
-
-ref.on("value", function(snapshot){
-
-var data = snapshot.val();
-
-var workerHTML = "";
-var companyHTML = "";
-var shopHTML = "";
-
-for(var key in data){
-
-var user = data[key];
-
-if(user.type == "worker"){
-
-workerHTML += "<div class='card'>";
-workerHTML += "<b>Name:</b> "+user.name+"<br>";
-workerHTML += "<b>Work:</b> "+user.work+"<br>";
-workerHTML += "<b>City:</b> "+user.city+"<br>";
-workerHTML += "<b>Mobile:</b> "+user.mobile+"<br>";
-workerHTML += "<br><a href='tel:"+user.mobile+"'>📞 Call</a>";
-workerHTML += "</div>";
-
-}
-
-if(user.type == "company"){
-
-companyHTML += "<div class='card company'>";
-companyHTML += "<b>Company:</b> "+user.name+"<br>";
-companyHTML += "<b>City:</b> "+user.city+"<br>";
-companyHTML += "<b>Contact:</b> "+user.mobile+"<br>";
-companyHTML += "<br><a href='tel:"+user.mobile+"'>📞 Call</a>";
-companyHTML += "</div>";
-
-}
-
-if(user.type == "shop"){
-
-shopHTML += "<div class='card shop'>";
-shopHTML += "<b>Shop:</b> "+user.name+"<br>";
-shopHTML += "<b>Category:</b> "+user.work+"<br>";
-shopHTML += "<b>City:</b> "+user.city+"<br>";
-shopHTML += "<b>Mobile:</b> "+user.mobile+"<br>";
-shopHTML += "<br><a href='tel:"+user.mobile+"'>📞 Call</a>";
-shopHTML += "</div>";
-
-}
-
-}
-
-document.getElementById("workerList").innerHTML = workerHTML;
-document.getElementById("companyList").innerHTML = companyHTML;
-document.getElementById("shopList").innerHTML = shopHTML;
-
-});
-
-
-/* Search */
-
-function searchData(){
-
-var input = document.getElementById("searchInput").value.toLowerCase();
-
-var cards = document.querySelectorAll(".card");
-
-cards.forEach(function(card){
-
-if(card.innerText.toLowerCase().includes(input)){
-
-card.style.display="block";
-
-}else{
-
-card.style.display="none";
-
-}
-
-});
-
-}
-
+    // सर्च फंक्शन
+    function searchData(){
+        var input = document.getElementById("searchInput").value.toLowerCase();
+        var cards = document.querySelectorAll(".premium-card");
+        cards.forEach(card => {
+            card.style.display = card.innerText.toLowerCase().includes(input) ? "block" : "none";
+        });
+    }
 </script>
-
 </body>
-
-  </html>
+</html>
