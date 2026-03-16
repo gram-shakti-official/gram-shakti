@@ -22,25 +22,18 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Install dependencies
-        # 'gram_shakti' फोल्डर के अंदर जाकर कमांड रन करेगा
+      - name: Install dependencies and Build
         run: |
-          if [ -d "gram_shakti" ]; then
-            cd gram_shakti
-          fi
+          # यह कमांड खुद ढूंढेगी कि pubspec.yaml कहाँ है और वहीं जाकर काम करेगी
+          PUBSPEC_PATH=$(find . -name "pubspec.yaml" -print -quit)
+          PROJECT_DIR=$(dirname "$PUBSPEC_PATH")
+          echo "Project found in: $PROJECT_DIR"
+          cd "$PROJECT_DIR"
           flutter pub get
-
-      - name: Build APK
-        run: |
-          if [ -d "gram_shakti" ]; then
-            cd gram_shakti
-          fi
           flutter build apk --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          # यह रिपॉजिटरी में कहीं भी बनी APK को ढूंढ लेगा
           path: "**/build/app/outputs/flutter-apk/app-release.apk"
-          
