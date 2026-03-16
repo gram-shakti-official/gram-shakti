@@ -1,80 +1,115 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="hi">
 <head>
-
-<title>Worker Profile - Gram Shakti</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="style.css">
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<script src="firebase.js"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Worker Profile - Gram Shakti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans Devanagari', sans-serif; background-color: #fdfaf5; }
+        .golden-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .brown-bg { background: linear-gradient(135deg, #4e342e 0%, #212121 100%); }
+        .profile-card {
+            background: white;
+            border-radius: 3rem;
+            box-shadow: 0 20px 40px rgba(139, 94, 0, 0.1);
+            border: 1px solid #bf953f20;
+        }
+        .verified-badge { background: #dcfce7; color: #16a34a; border: 1px solid #16a34a40; }
+        .unverified-badge { background: #fee2e2; color: #ef4444; border: 1px solid #ef444440; }
+    </style>
 </head>
+<body class="p-4 pb-24">
 
-<body>
+    <button onclick="window.history.back()" class="mb-4 text-gray-400 font-bold flex items-center gap-2">
+        <span>❮</span> वापस जाएं
+    </button>
 
-<div class="container">
+    <div class="max-w-md mx-auto">
+        <div id="workerProfile" class="profile-card p-8 text-center space-y-6">
+            <div class="animate-pulse flex flex-col items-center">
+                <div class="w-24 h-24 bg-gray-200 rounded-full mb-4"></div>
+                <div class="h-6 bg-gray-200 w-48 rounded mb-2"></div>
+                <div class="h-4 bg-gray-200 w-32 rounded"></div>
+            </div>
+        </div>
 
-<h1>Worker Profile</h1>
-
-<div id="workerProfile" class="card"></div>
-
-</div>
-
+        <div id="actionButtons" class="mt-8 space-y-3 hidden">
+            <a id="callBtn" href="#" class="w-full brown-bg text-[#fcf6ba] p-5 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl">
+                <span>📞</span> अभी कॉल करें (Call Now)
+            </a>
+            <a id="waBtn" href="#" class="w-full bg-green-600 text-white p-5 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl">
+                <span>💬</span> व्हाट्सएप मैसेज (WhatsApp)
+            </a>
+        </div>
+    </div>
 
 <script>
+    // आपका Firebase Config (gram-shakti-app-2367b)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0J8TCjU2wxDNmT2O4VMfchY06arTO-O0",
+      databaseURL: "https://gram-shakti-app-2367b-default-rtdb.firebaseio.com",
+      projectId: "gram-shakti-app-2367b",
+    };
+    firebase.initializeApp(firebaseConfig);
 
-function getWorkerId(){
+    function getWorkerId() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get("id");
+    }
 
-const params = new URLSearchParams(window.location.search);
+    var workerId = getWorkerId();
 
-return params.get("id");
+    if(workerId) {
+        firebase.database().ref("users/" + workerId).once("value", function(snapshot) {
+            var user = snapshot.val();
+            if(!user) {
+                document.getElementById("workerProfile").innerHTML = "<p class='text-red-500 font-bold'>वर्कर नहीं मिला!</p>";
+                return;
+            }
 
-}
+            // वेरिफिकेशन स्टेटस
+            let verifyBadge = user.police_verified 
+                ? `<div class="verified-badge px-4 py-1 rounded-full text-[10px] font-bold uppercase inline-block mx-auto mb-2">✔ Police Verified</div>`
+                : `<div class="unverified-badge px-4 py-1 rounded-full text-[10px] font-bold uppercase inline-block mx-auto mb-2">Unverified</div>`;
 
-var workerId = getWorkerId();
+            let html = `
+                <div class="relative">
+                    <div class="w-24 h-24 brown-bg rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-[#bf953f30]">
+                        <span class="text-4xl">👷</span>
+                    </div>
+                    ${verifyBadge}
+                </div>
+                
+                <div>
+                    <h2 class="text-3xl font-black text-gray-800 italic uppercase tracking-tight">${user.name}</h2>
+                    <p class="text-[#bf953f] font-bold text-sm tracking-[0.2em] uppercase mt-1">${user.work}</p>
+                </div>
 
-if(workerId){
+                <div class="bg-[#fdfaf5] p-4 rounded-2xl space-y-2 text-left border border-[#bf953f10]">
+                    <p class="text-xs text-gray-400 font-bold uppercase">लोकेशन</p>
+                    <p class="text-gray-700 font-bold flex items-center gap-2">📍 ${user.city || user.village}</p>
+                </div>
 
-var ref = firebase.database().ref("users/"+workerId);
+                <div class="pt-4">
+                    <p class="text-[10px] text-gray-300 font-bold italic">Member since: ${new Date(user.timestamp || Date.now()).toLocaleDateString()}</p>
+                </div>
+            `;
 
-ref.once("value", function(snapshot){
-
-var user = snapshot.val();
-
-var html = "";
-
-html += "<h2>"+user.name+"</h2>";
-
-html += "<p><b>Work:</b> "+user.work+"</p>";
-
-html += "<p><b>City:</b> "+user.city+"</p>";
-
-html += "<p><b>Mobile:</b> "+user.mobile+"</p>";
-
-if(user.police_verified){
-
-html += "<p style='color:green'><b>✔ Police Verified Worker</b></p>";
-
-}else{
-
-html += "<p style='color:red'><b>Unverified Worker</b></p>";
-
-}
-
-document.getElementById("workerProfile").innerHTML = html;
-
-});
-
-}
-
+            document.getElementById("workerProfile").innerHTML = html;
+            
+            // बटन एक्टिवेट करें
+            document.getElementById("callBtn").href = "tel:" + user.mobile;
+            document.getElementById("waBtn").href = "https://wa.me/91" + user.mobile + "?text=नमस्ते " + user.name + ", मैं आपको ग्राम शक्ति ऐप के माध्यम से काम के लिए संपर्क कर रहा हूँ।";
+            document.getElementById("actionButtons").classList.remove("hidden");
+        });
+    }
 </script>
-
 </body>
-
 </html>
