@@ -17,10 +17,19 @@ jobs:
 
       - name: Clean and Prepare Project
         run: |
+          # 1. पुरानी फाइलों की सफाई
           rm -rf android www node_modules
+          
+          # 2. 'www' फोल्डर बनाना और फाइलों को चेक करना
           mkdir www
           cp -r *.html *.css *.js www/ 2>/dev/null || true
           cp -r assets www/ 2>/dev/null || true
+          
+          echo "--- Files inside www folder ---"
+          ls -R www
+          echo "-------------------------------"
+          
+          # 3. Capacitor सेटअप
           npm install @capacitor/core @capacitor/cli @capacitor/android
           npx cap init "Gram Shakti" "com.gramshakti.app" --web-dir www
           npx cap add android
@@ -31,17 +40,16 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: 'gradle' # इससे बिल्ड ज्यादा स्टेबल होगा
 
-      - name: Build APK
+      - name: Build APK with Clean Cache
         run: |
           cd android
           chmod +x gradlew
-          # '--no-daemon' इस्तेमाल करने से मेमोरी वाले एरर नहीं आएंगे
-          ./gradlew assembleDebug --no-daemon
+          # 'clean' और '--refresh-dependencies' एरर को खत्म करेंगे
+          ./gradlew clean assembleDebug --refresh-dependencies --no-daemon
 
       - name: Save APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gram-Shakti-Final
+          name: Gram-Shakti-Success-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
