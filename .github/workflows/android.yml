@@ -23,16 +23,20 @@ jobs:
           channel: 'stable'
 
       - name: Get Dependencies
-        # Agar aapka code kisi folder mein hai to niche './' ke baad folder ka naam likhein
-        # Agar folder ka naam nahi pata to sirf 'flutter pub get' rehne dein
-        run: flutter pub get
+        # यह कमांड आपके फोल्डर के अंदर जाकर काम करेगी
+        run: |
+          cd $(find . -name "pubspec.yaml" -exec dirname {} \;)
+          flutter pub get
         
       - name: Build APK
-        run: flutter build apk --release --no-tree-shake-icons
+        run: |
+          cd $(find . -name "pubspec.yaml" -exec dirname {} \;)
+          flutter build apk --release --no-tree-shake-icons
 
       - name: Save APK
         uses: actions/upload-artifact@v4
         with:
           name: Gram-Shakti-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          # यह फाइल को कहीं से भी ढूंढ कर निकाल लेगा
+          path: "**/build/app/outputs/flutter-apk/app-release.apk"
           
