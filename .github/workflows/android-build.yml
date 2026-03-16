@@ -13,26 +13,28 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '11'
           distribution: 'temurin'
 
-      - name: Create Webview Project
+      - name: Build with Simple WebView
         run: |
-          # 1. एक बेसिक एंड्रॉइड प्रोजेक्ट स्ट्रक्चर खुद बनाना
-          git clone https://github.com/r0adkll/stonky-webview-template android-project
+          # 1. एक सरल WebView ऐप क्लोन करें जो पक्का काम करता है
+          git clone https://github.com/S64/android-webview-example.git build-folder
           
-          # 2. अपनी वेबसाइट की फाइल्स को assets फोल्डर में डालना
-          mkdir -p android-project/app/src/main/assets
-          cp -r *.html *.css *.js android-project/app/src/main/assets/ 2>/dev/null || true
-          cp -r assets/* android-project/app/src/main/assets/ 2>/dev/null || true
+          # 2. अपनी वेबसाइट की फाइलों को इसके अंदर डालें
+          mkdir -p build-folder/app/src/main/assets
+          cp -r *.html *.css *.js build-folder/app/src/main/assets/ 2>/dev/null || true
           
-          # 3. बिल्ड शुरू करना
-          cd android-project
+          # 3. ऐप का नाम बदलें (Gram Shakti)
+          sed -i 's/WebView Example/Gram Shakti/g' build-folder/app/src/main/res/values/strings.xml
+          
+          # 4. बिल्ड करें
+          cd build-folder
           chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gram-Shakti-Success-APK
-          path: android-project/app/build/outputs/apk/debug/app-debug.apk
+          name: Gram-Shakti-Final
+          path: build-folder/app/build/outputs/apk/debug/*.apk
