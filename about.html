@@ -2,136 +2,118 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>About - Gram Shakti</title>
     <style>
-        /* साफ़ और प्रोफेशनल डिजाइन के लिए CSS यहीं जोड़ दी है */
+        /* एंड्रॉइड ऐप जैसा अहसास देने के लिए CSS */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', sans-serif; /* एंड्रॉइड का स्टैंडर्ड फॉन्ट */
             line-height: 1.6;
-            color: #333;
-            background-color: #f4f7f6;
+            color: #212121;
+            background-color: #ffffff;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent; /* टच करने पर नीला घेरा न आए */
         }
-        .container {
-            max-width: 700px;
-            margin: auto;
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #2c3e50;
+        
+        /* ऐप का हेडर जैसा लुक */
+        .app-header {
+            background-color: #27ae60;
+            color: white;
+            padding: 20px 15px;
             text-align: center;
-            border-bottom: 2px solid #27ae60;
-            padding-bottom: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+
+        .container {
+            padding: 20px;
+            padding-bottom: 50px;
+        }
+
         h2 {
             color: #27ae60;
+            font-size: 1.2rem;
             margin-top: 25px;
-            font-size: 1.4rem;
+            border-left: 4px solid #27ae60;
+            padding-left: 10px;
         }
-        h3 {
-            color: #2980b9;
-            font-size: 1.1rem;
-        }
+
         p {
             margin-bottom: 15px;
-            text-align: justify;
+            font-size: 15px;
+            color: #444;
         }
-        .features-box {
-            background: #e8f5e9;
+
+        /* कार्ड जैसा स्टाइल मोबाइल के लिए */
+        .feature-card {
+            background: #f9f9f9;
             padding: 15px;
-            border-radius: 8px;
-            border-left: 5px solid #27ae60;
-            margin: 20px 0;
+            border-radius: 10px;
+            border: 1px solid #eee;
+            margin: 15px 0;
         }
-        ul {
-            padding-left: 20px;
+
+        .feature-card b {
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 5px;
         }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.9rem;
-            color: #7f8c8d;
-            border-top: 1px solid #eee;
-            padding-top: 15px;
-        }
-        .contact-btn {
-            display: inline-block;
+
+        /* बटन जो ऐप जैसा लगे */
+        .btn-contact {
+            display: block;
             background: #27ae60;
             color: white;
-            padding: 10px 20px;
+            text-align: center;
+            padding: 12px;
             text-decoration: none;
-            border-radius: 5px;
-            margin-top: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
 
+<div class="app-header">
+    <h1 style="margin:0; font-size: 20px;">Gram Shakti (ग्राम शक्ति)</h1>
+</div>
+
 <div class="container">
-    <h1>About Gram Shakti</h1>
+    
+    <h2>🇮🇳 हमारा मिशन</h2>
+    <p><b>Gram Shakti</b> एक डिजिटल मंच है जो ग्रामीण भारत के कुशल कामगारों, दुकानदारों और सेवाओं को सीधे ग्राहकों से जोड़ता है।</p>
 
-    <section>
-        <h2>🇮🇳 हमारा उद्देश्य (Our Vision)</h2>
-        <p>
-            <b>Gram Shakti</b> एक डिजिटल प्लेटफॉर्म है जिसका मुख्य उद्देश्य ग्रामीण और शहरी भारत के हुनरमंद लोगों को काम, 
-            आवश्यक सेवाओं और स्थानीय व्यवसायों से सीधा जोड़ना है।
-        </p>
-        
-        <div class="features-box">
-            <h3>मुख्य विशेषताएं:</h3>
-            <ul>
-                <li>आस-पास के वर्कर और काम ढूंढें।</li>
-                <li>बिना किसी बिचौलिए के सीधा संपर्क।</li>
-                <li>पुलिस वेरिफिकेशन द्वारा सुरक्षित 'Verified Workers'।</li>
-                <li>डेटा सुरक्षा और गोपनीयता की पूरी गारंटी।</li>
-            </ul>
-        </div>
+    <div class="feature-card">
+        <b>✅ प्रमाणित वर्कर (Verified Workers)</b>
+        सुरक्षा के लिए हम पुलिस वेरिफिकेशन का विकल्प देते हैं, जिससे ग्राहकों का भरोसा बढ़ता है।
+    </div>
 
-        <p>
-            हमारा लक्ष्य है कि हर हाथ को काम मिले और हर जरूरत के लिए सही व्यक्ति आसानी से मिल सके। 
-            हम डिजिटल माध्यम से भारत के गांवों को सशक्त बनाने के लिए प्रतिबद्ध हैं।
-        </p>
-    </section>
+    <div class="feature-card">
+        <b>🚀 बिचौलिया मुक्त (No Middleman)</b>
+        वर्कर और ग्राहक आपस में सीधे बात कर सकते हैं, जिससे ज्यादा कमाई और सही दाम मिलता है।
+    </div>
 
-    <hr>
+    <h2>🇬🇧 Our Mission</h2>
+    <p>Gram Shakti is a digital ecosystem designed to empower rural and urban workers by providing direct access to local job opportunities and businesses.</p>
 
-    <section>
-        <h2>🇬🇧 About Us</h2>
-        <p>
-            <b>Gram Shakti</b> is a digital ecosystem designed to bridge the gap between skilled individuals, 
-            service providers, and local businesses across India.
-        </p>
+    <div class="feature-card">
+        <b>🔒 Privacy & Security</b>
+        We take your data seriously. No personal information is shared without your explicit consent.
+    </div>
 
-        <p>
-            Whether you are a worker looking for employment or a customer seeking a reliable service, 
-            Gram Shakti provides a transparent and secure platform to connect directly.
-        </p>
-
-        <div class="features-box">
-            <h3>Key Benefits:</h3>
-            <ul>
-                <li>Find local jobs & services instantly.</li>
-                <li>Verified profiles for enhanced trust.</li>
-                <li>No hidden charges or middlemen.</li>
-                <li>Your data privacy is our top priority.</li>
-            </ul>
-        </div>
-    </section>
-
-    <section style="text-align: center;">
-        <h2>संपर्क करें (Contact Us)</h2>
-        <p>किसी भी सहायता या जानकारी के लिए हमें ईमेल करें:</p>
-        <a href="mailto:support@gramshakti.com" class="contact-btn">support@gramshakti.com</a>
-    </section>
+    <a href="mailto:support@gramshakti.com" class="btn-contact">Support से संपर्क करें</a>
 
     <div class="footer">
-        <p>© 2026 Gram Shakti Digital. All Rights Reserved.</p>
-        <p>Made with ❤️ for Rural India</p>
+        <p>© 2026 Gram Shakti Digital</p>
+        <p>भारत में निर्मित 🇮🇳</p>
     </div>
 </div>
 
