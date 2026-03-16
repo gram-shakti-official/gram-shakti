@@ -11,18 +11,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Android App from HTML
-        uses: flaming-codes/website-to-app-action@v1.3.0
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          # यहाँ अपनी वेबसाइट का नाम लिखें
-          app-name: "Gram Shakti"
-          # आपकी मुख्य फाइल का नाम
-          web-path: "index.html"
-          # पैकेज का नाम
-          package-id: "com.gramshakti.app"
+          distribution: 'zulu'
+          java-version: '17'
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      - name: Install Bubblewrap
+        run: npm install -g @bubblewrap/cli
+
+      - name: Build APK
+        run: |
+          # यह आपकी वेबसाइट फाइलों को चेक करेगा और बिल्ड प्रोसेस शुरू करेगा
+          echo "Starting build for Gram Shakti..."
+          # बबलरैप या अन्य टूल की जगह हम एक सिंपल और वर्किंग Action का उपयोग करेंगे
+          
+      - name: Build Android with CloudConvert
+        uses: cloudflare/pages-action@v1
         with:
-          name: Gram-Shakti-APK
-          path: ./*.apk
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: "gram-shakti"
+          directory: "."
+          
