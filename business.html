@@ -1,77 +1,139 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="hi">
 <head>
-
-<title>Business Dashboard</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Business Dashboard - Gram Shakti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Noto Sans Devanagari', sans-serif; 
+            background-color: #f0f2f5;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .glass-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+        }
+    </style>
 </head>
+<body class="pb-10">
 
-<body>
+    <div class="glass-header text-white p-6 rounded-b-[2.5rem] shadow-xl mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold italic">Gram Shakti Digital</h1>
+                <p class="text-blue-100 text-sm">बिजनेस डैशबोर्ड</p>
+            </div>
+            <div class="bg-white/20 p-2 rounded-full">
+                🏢
+            </div>
+        </div>
+        <div class="mt-6 bg-white/10 p-4 rounded-2xl border border-white/20">
+            <p class="text-xs uppercase tracking-wider text-blue-200">नमस्ते,</p>
+            <h2 class="text-lg font-bold">बिजनेस ओनर (Business Owner)</h2>
+        </div>
+    </div>
 
-<h2>Business / Shop Dashboard</h2>
+    <div class="px-4 space-y-6">
+        <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
+            <h3 class="text-gray-800 font-bold mb-4 flex items-center">
+                <span class="bg-blue-100 p-2 rounded-lg mr-2">📢</span> नया विज्ञापन पोस्ट करें
+            </h3>
+            
+            <div class="space-y-3">
+                <input type="text" id="businessName" class="w-full p-4 bg-gray-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="बिजनेस का नाम">
+                
+                <input type="text" id="businessType" class="w-full p-4 bg-gray-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="दुकान / स्कूल / ढाबा / कंपनी">
+                
+                <input type="text" id="city" class="w-full p-4 bg-gray-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="शहर / पंचायत">
+                
+                <textarea id="adText" rows="3" class="w-full p-4 bg-gray-50 border-none rounded-2xl outline-none focus:ring-2 focus:ring-blue-500" placeholder="विज्ञापन का विवरण यहाँ लिखें..."></textarea>
+                
+                <button onclick="postAd()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-bold shadow-lg shadow-blue-200 active:scale-95 transition-all">
+                    विज्ञापन पोस्ट करें ✨
+                </button>
+            </div>
+        </div>
 
-<p>Welcome Business Owner</p>
-
-<h3>Post Advertisement</h3>
-
-<input type="text" id="businessName" placeholder="Business Name">
-
-<br><br>
-
-<input type="text" id="businessType" placeholder="Shop / Company / School / Dhaba">
-
-<br><br>
-
-<input type="text" id="city" placeholder="City / Panchayat">
-
-<br><br>
-
-<textarea id="adText" placeholder="Write Advertisement"></textarea>
-
-<br><br>
-
-<button onclick="postAd()">Post Advertisement</button>
-
-<br><br>
-
-<h3>Your Advertisements</h3>
-
-<div id="adList"></div>
+        <div>
+            <h3 class="text-gray-700 font-bold mb-4 ml-2">आपके सक्रिय विज्ञापन (Your Ads)</h3>
+            <div id="adList" class="space-y-4">
+                <div class="text-center p-10 text-gray-400 text-sm">लोड हो रहा है...</div>
+            </div>
+        </div>
+    </div>
 
 <script>
+    // फायरबेस कॉन्फ़िगरेशन
+    const firebaseConfig = {
+        apiKey: "AIzaSyCuvev3-jwZwQuO_fHYyv2E2ovLny4Lh8Q",
+        databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com",
+        projectId: "gram-shakti-b135a"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-function postAd(){
+    // नया विज्ञापन डालना
+    function postAd(){
+        var name = document.getElementById("businessName").value.trim();
+        var type = document.getElementById("businessType").value.trim();
+        var city = document.getElementById("city").value.trim();
+        var ad = document.getElementById("adText").value.trim();
 
-var name = document.getElementById("businessName").value;
+        if(!name || !ad) {
+            alert("कृपया जरूरी जानकारी भरें!");
+            return;
+        }
 
-var type = document.getElementById("businessType").value;
+        var adData = {
+            name: name,
+            type: type,
+            city: city,
+            ad: ad,
+            timestamp: Date.now()
+        };
 
-var city = document.getElementById("city").value;
+        db.ref("advertisements").push(adData).then(() => {
+            alert("विज्ञापन पोस्ट हो गया! ✅");
+            document.querySelectorAll('input, textarea').forEach(i => i.value = "");
+        });
+    }
 
-var ad = document.getElementById("adText").value;
+    // विज्ञापन दिखाना (Real-time)
+    db.ref("advertisements").on("value", function(snapshot){
+        var data = snapshot.val();
+        var html = "";
+        if(!data) {
+            document.getElementById("adList").innerHTML = "<div class='bg-white p-6 rounded-2xl text-center text-gray-400'>कोई विज्ञापन नहीं मिला</div>";
+            return;
+        }
 
-var adData = {
+        for(var key in data){
+            html += `
+            <div class="bg-white p-5 rounded-2xl shadow-sm border-b-4 border-blue-600">
+                <div class="flex justify-between items-start">
+                    <span class="text-[10px] font-bold bg-blue-50 text-blue-600 px-2 py-1 rounded-md uppercase tracking-widest">${data[key].type}</span>
+                    <button onclick="deleteAd('${key}')" class="text-red-300 hover:text-red-500 text-sm">🗑️</button>
+                </div>
+                <h4 class="font-bold text-gray-800 mt-2">${data[key].name}</h4>
+                <p class="text-sm text-gray-600 mt-1">${data[key].ad}</p>
+                <div class="mt-3 flex items-center text-xs text-gray-400">
+                    <span class="mr-2">📍 ${data[key].city}</span>
+                </div>
+            </div>`;
+        }
+        document.getElementById("adList").innerHTML = html;
+    });
 
-name:name,
-type:type,
-city:city,
-ad:ad
-
-};
-
-firebase.database().ref("advertisements").push(adData);
-
-alert("Advertisement Posted");
-
-}
-
+    // विज्ञापन डिलीट करने का फंक्शन (डैशबोर्ड के लिए जरूरी)
+    function deleteAd(key) {
+        if(confirm("क्या आप इस विज्ञापन को हटाना चाहते हैं?")) {
+            db.ref("advertisements/" + key).remove();
+        }
+    }
 </script>
-
 </body>
-
 </html>
