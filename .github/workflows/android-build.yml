@@ -2,7 +2,7 @@ name: Build Android APK
 
 on:
   push:
-    branches: [ main ] # अगर आपकी ब्रांच का नाम अलग है तो यहाँ बदलें
+    branches: [ main ]
 
 jobs:
   build:
@@ -23,13 +23,24 @@ jobs:
           channel: 'stable'
 
       - name: Install dependencies
-        run: flutter pub get
+        # 'gram_shakti' फोल्डर के अंदर जाकर कमांड रन करेगा
+        run: |
+          if [ -d "gram_shakti" ]; then
+            cd gram_shakti
+          fi
+          flutter pub get
 
       - name: Build APK
-        run: flutter build apk --release
+        run: |
+          if [ -d "gram_shakti" ]; then
+            cd gram_shakti
+          fi
+          flutter build apk --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          # यह रिपॉजिटरी में कहीं भी बनी APK को ढूंढ लेगा
+          path: "**/build/app/outputs/flutter-apk/app-release.apk"
+          
