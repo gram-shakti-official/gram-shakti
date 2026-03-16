@@ -1,4 +1,4 @@
-name: Build Mobile App
+name: Build Gram Shakti App
 
 on:
   push:
@@ -10,46 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Build Android APK
+        # यह एक्शन बिना किसी भारी सेटअप के आपकी वेबसाइट को सीधे APK में बदल देगा
+        uses: alywars/sql-to-apk@v1.1
         with:
-          node-version: 18
+          website-url: https://gram-shakti-official.github.io/gram_shakti/
+          app-name: "Gram Shakti"
+          icon-url: https://raw.githubusercontent.com/gram-shakti-official/gram_shakti/main/assets/icon.png
 
-      - name: Clean and Prepare Project
-        run: |
-          # 1. पुरानी फाइलों की सफाई
-          rm -rf android www node_modules
-          
-          # 2. 'www' फोल्डर बनाना और फाइलों को चेक करना
-          mkdir www
-          cp -r *.html *.css *.js www/ 2>/dev/null || true
-          cp -r assets www/ 2>/dev/null || true
-          
-          echo "--- Files inside www folder ---"
-          ls -R www
-          echo "-------------------------------"
-          
-          # 3. Capacitor सेटअप
-          npm install @capacitor/core @capacitor/cli @capacitor/android
-          npx cap init "Gram Shakti" "com.gramshakti.app" --web-dir www
-          npx cap add android
-          npx cap copy android
-
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Build APK with Clean Cache
-        run: |
-          cd android
-          chmod +x gradlew
-          # 'clean' और '--refresh-dependencies' एरर को खत्म करेंगे
-          ./gradlew clean assembleDebug --refresh-dependencies --no-daemon
-
-      - name: Save APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gram-Shakti-Success-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: Gram-Shakti-Installable
+          path: ./*.apk
