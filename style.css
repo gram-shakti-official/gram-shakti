@@ -1,231 +1,173 @@
-/* BODY */
+/* --- GRAM SHAKTI PREMIUM THEME --- */
 
-body{
-
-font-family: Arial, sans-serif;
-background: linear-gradient(135deg,#4facfe,#00f2fe);
-margin:0;
-padding:0;
-text-align:center;
-
+/* मुख्य बॉडी और बैकग्राउंड */
+body {
+    font-family: 'Noto Sans Devanagari', 'Roboto', sans-serif;
+    background-color: #fdfaf5; /* हल्का क्रीम/रॉयल बैकग्राउंड */
+    margin: 0;
+    padding: 0;
+    color: #333;
+    -webkit-tap-highlight-color: transparent; /* टच इफेक्ट साफ़ करने के लिए */
 }
 
-
-/* HEADER */
-
-.title{
-
-background:#2e7d32;
-color:white;
-padding:16px;
-margin:0;
-border-radius:0 0 15px 15px;
-font-size:26px;
-
+/* गोल्डन मेटालिक टेक्स्ट इफेक्ट */
+.golden-text {
+    background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: bold;
 }
 
-.tagline{
-
-color:#333;
-font-size:14px;
-margin-top:10px;
-
+/* प्रीमियम ब्राउन हेडर */
+.title {
+    background: linear-gradient(135deg, #4e342e 0%, #212121 100%);
+    color: #fcf6ba; /* गोल्डन वाइट */
+    padding: 25px 15px;
+    margin: 0;
+    border-radius: 0 0 40px 40px;
+    font-size: 28px;
+    font-style: italic;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    text-align: center;
 }
 
-
-/* CONTAINER */
-
-.container{
-
-background:white;
-width:92%;
-max-width:420px;
-margin:auto;
-padding:20px;
-margin-top:25px;
-border-radius:15px;
-box-shadow:0 6px 25px rgba(0,0,0,0.25);
-
+.tagline {
+    color: #bf953f;
+    font-size: 12px;
+    margin-top: 10px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
-
-/* INPUT */
-
-input,select{
-
-width:92%;
-padding:12px;
-margin:10px;
-border:1px solid #ccc;
-border-radius:8px;
-font-size:15px;
-
+/* कंटेनर कार्ड */
+.container {
+    background: white;
+    width: 90%;
+    max-width: 450px;
+    margin: -30px auto 20px auto; /* हेडर के ऊपर चढ़ा हुआ लुक */
+    padding: 25px;
+    border-radius: 30px;
+    box-shadow: 0 15px 35px rgba(139, 94, 0, 0.1);
+    position: relative;
+    z-index: 10;
 }
 
-
-/* SEARCH BUTTON */
-
-.searchBtn{
-
-background:#ff7043;
-color:white;
-border:none;
-padding:10px 18px;
-border-radius:8px;
-cursor:pointer;
-font-size:15px;
-
+/* इनपुट और ड्रॉपडाउन (Premium Look) */
+input, select, textarea {
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #f3e5f5;
+    background-color: #f9f9f9;
+    border-radius: 18px;
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
+    transition: 0.3s;
 }
 
-.searchBtn:hover{
-
-background:#f4511e;
-
+input:focus, select:focus {
+    border-color: #bf953f;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(191, 149, 63, 0.2);
 }
 
-
-/* MENU BUTTONS */
-
-.menu{
-
-margin-top:12px;
-
+/* प्रीमियम बटन (Brown-Gold) */
+.menuBtn, .searchBtn {
+    background: linear-gradient(135deg, #4e342e 0%, #212121 100%);
+    color: #fcf6ba;
+    border: none;
+    padding: 15px 25px;
+    margin: 10px 0;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    transition: 0.3s;
 }
 
-.menuBtn{
-
-background:#2e7d32;
-color:white;
-margin:6px;
-padding:13px 25px;
-border:none;
-border-radius:10px;
-font-size:16px;
-cursor:pointer;
-
+.menuBtn:active, .searchBtn:active {
+    transform: scale(0.96);
 }
 
-.menuBtn:hover{
-
-background:#1b5e20;
-
+/* कैटेगरी टैग */
+.category {
+    display: inline-block;
+    background: #fff3e0;
+    color: #e65100;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-top: 8px;
+    border: 1px solid #ffe0b2;
 }
 
-
-/* CATEGORY BUTTON */
-
-.category{
-
-display:inline-block;
-background:#1976d2;
-color:white;
-padding:6px 10px;
-border-radius:20px;
-font-size:13px;
-margin-top:5px;
-
+/* प्रीमियम कार्ड्स (Workers, Shops, Ads) */
+.card {
+    background: white;
+    border-radius: 25px;
+    padding: 20px;
+    margin: 15px 0;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    text-align: left;
+    border: 1px solid #fdfaf5;
+    position: relative;
+    overflow: hidden;
 }
 
-
-/* CARDS */
-
-.card{
-
-background:white;
-border-radius:12px;
-padding:15px;
-margin:12px 5px;
-box-shadow:0 4px 15px rgba(0,0,0,0.15);
-text-align:left;
-transition:0.3s;
-
+/* कंपनी और शॉप के लिए अलग शेड */
+.company {
+    border-left: 8px solid #1e3a8a; /* डार्क ब्लू */
 }
 
-.card:hover{
-
-transform:scale(1.02);
-
+.shop {
+    border-left: 8px solid #bf953f; /* गोल्डन ब्राउन */
 }
 
-
-/* COMPANY CARD */
-
-.company{
-
-border-left:6px solid #1976d2;
-
+.verified {
+    color: #2e7d32;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
 }
 
-
-/* SHOP CARD */
-
-.shop{
-
-border-left:6px solid #ff9800;
-
+.verified::before {
+    content: "✔️";
+    margin-right: 5px;
 }
 
-
-/* VERIFIED */
-
-.verified{
-
-color:green;
-font-weight:bold;
-
+/* मोबाइल ऑप्टिमाइजेशन */
+@media (max-width: 600px) {
+    .container {
+        width: 92%;
+    }
+    .title {
+        font-size: 24px;
+        border-radius: 0 0 30px 30px;
+    }
 }
 
-
-/* MOBILE OPTIMIZATION */
-
-@media (max-width:600px){
-
-.container{
-
-width:95%;
-padding:18px;
-
+/* Splash Screen (Premium Dark) */
+#splash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #212121;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
 }
 
-input{
-
-width:95%;
-
-}
-
-.menuBtn{
-
-width:90%;
-display:block;
-margin:auto;
-margin-top:8px;
-
-}
-
-}
-
-
-/* SPLASH SCREEN */
-
-#splash{
-
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:white;
-display:flex;
-align-items:center;
-justify-content:center;
-z-index:9999;
-
-}
-
-#splash img{
-
-width:100%;
-height:100%;
-object-fit:cover;
-
+#splash h1 {
+    font-size: 40px;
+    margin-bottom: 0;
 }
