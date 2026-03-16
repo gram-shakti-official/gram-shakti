@@ -15,14 +15,19 @@ jobs:
         with:
           node-version: 18
 
-      - name: Prepare Web Folder and Android Project
+      - name: Clean and Prepare Project
         run: |
-          # 1. एक नया 'www' फोल्डर बनाएं और अपनी वेबसाइट की फाइल्स उसमें डालें
+          # 1. पुराने किसी भी फोल्डर को पूरी तरह हटा दें
+          rm -rf android
+          rm -rf www
+          rm -rf node_modules
+          
+          # 2. वेबसाइट फाइल्स के लिए 'www' फोल्डर बनाएं
           mkdir www
           cp -r *.html *.css *.js www/ 2>/dev/null || true
           cp -r assets www/ 2>/dev/null || true
           
-          # 2. Capacitor इंस्टॉल और सेटअप करें
+          # 3. Capacitor सेटअप करें
           npm install @capacitor/core @capacitor/cli @capacitor/android
           npx cap init "Gram Shakti" "com.gramshakti.app" --web-dir www
           npx cap add android
@@ -43,5 +48,5 @@ jobs:
       - name: Save APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gram-Shakti-Working-APK
+          name: Gram-Shakti-Ready-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
