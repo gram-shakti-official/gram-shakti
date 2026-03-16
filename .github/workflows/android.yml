@@ -1,0 +1,37 @@
+name: Build Android APK
+
+on: 
+  push:
+    branches:
+      - main  # या आपके मेन ब्रांच का जो भी नाम हो
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0' # अपनी जरूरत के हिसाब से बदल सकते हैं
+          channel: 'stable'
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Save APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Gram-Shakti-APK
+          path: build/app/outputs/flutter-apk/app-release.apk
+          
