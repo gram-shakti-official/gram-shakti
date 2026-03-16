@@ -1,261 +1,165 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="hi">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Map - Gram Shakti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans Devanagari', sans-serif; background-color: #fdfaf5; margin: 0; }
+        .golden-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .brown-bg { background: linear-gradient(135deg, #4e342e 0%, #212121 100%); }
+        
+        #map {
+            height: 60vh; width: 100%;
+            border-bottom: 5px solid #bf953f;
+            z-index: 1;
+        }
 
-<title>Nearby Workers Map - Gram Shakti</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="style.css">
-
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-
-<style>
-
-body{
-font-family:Arial;
-margin:0;
-}
-
-.container{
-padding:15px;
-}
-
-#map{
-height:500px;
-width:100%;
-border-radius:10px;
-margin-top:10px;
-}
-
-.searchBox{
-text-align:center;
-margin-bottom:10px;
-}
-
-.searchBox input{
-padding:10px;
-width:60%;
-border:1px solid #ccc;
-border-radius:6px;
-}
-
-.searchBox button{
-padding:10px 15px;
-border:none;
-border-radius:6px;
-background:#2a6df4;
-color:white;
-margin-left:5px;
-}
-
-</style>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<script src="firebase.js"></script>
-
+        /* लीफलेट मैप के बटन्स को सुंदर बनाना */
+        .leaflet-bar a { background: #fff !important; color: #bf953f !important; }
+        
+        /* सर्च बॉक्स का प्रीमियम लुक */
+        .search-container {
+            position: absolute; top: 10px; left: 10px; right: 10px;
+            z-index: 1000;
+        }
+        .input-premium {
+            @apply w-full p-4 bg-white/95 rounded-2xl outline-none shadow-2xl border border-[#bf953f]/30 focus:ring-2 focus:ring-[#bf953f];
+        }
+    </style>
 </head>
+<body class="pb-20">
 
-<body>
+    <div class="relative">
+        <div class="search-container space-y-2">
+            <div class="flex gap-2">
+                <input type="number" id="pincodeInput" class="input-premium flex-1 font-bold text-gray-800" placeholder="पिन कोड (उदा: 302001)">
+                <button onclick="searchByPin()" class="brown-bg text-[#fcf6ba] px-6 rounded-2xl font-bold shadow-lg">खोजें</button>
+            </div>
+            <button onclick="myLocation()" class="w-full bg-white/95 p-3 rounded-xl shadow-md text-blue-600 font-bold flex items-center justify-center gap-2 border border-blue-100">
+                📍 मेरी लोकेशन (My Location)
+            </button>
+        </div>
+        <div id="map"></div>
+    </div>
 
-<div class="container">
+    <div class="p-4 -mt-6 relative z-10">
+        <div class="bg-white rounded-[2rem] p-6 shadow-2xl border-t-4 border-[#bf953f]">
+            <h2 class="text-xl font-bold text-gray-800 leading-tight">आस-पास के वर्कर</h2>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">आपके 10KM के दायरे में</p>
+            <div id="statusText" class="mt-4 text-sm text-amber-700 font-bold italic">मैप पर पिनकोड या लोकेशन से वर्कर खोजें...</div>
+        </div>
+    </div>
 
-<h1>Nearby Workers Map</h1>
-
-<div class="searchBox">
-
-<input type="number" id="pincodeInput" placeholder="PIN Code डालें">
-
-<button onclick="searchByPin()">Search</button>
-
-<button onclick="myLocation()">📍 My Location</button>
-
-</div>
-
-<div id="map"></div>
-
-</div>
-
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-3 flex justify-around shadow-lg z-[2000]">
+        <div onclick="location.href='index.html'" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">🏠</span>
+            <span class="text-[10px] font-bold">होम</span>
+        </div>
+        <div class="flex flex-col items-center text-[#bf953f]">
+            <span class="text-xl">🗺️</span>
+            <span class="text-[10px] font-bold">मैप</span>
+        </div>
+        <div onclick="location.href='contact.html'" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">🎧</span>
+            <span class="text-[10px] font-bold">सपोर्ट</span>
+        </div>
+    </div>
 
 <script>
-
-/* MAP START */
-
-var map = L.map('map').setView([20.5937,78.9629],5);
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-maxZoom:19
-}).addTo(map);
-
-var markers = [];
-
-
-/* CLEAR OLD MARKERS */
-
-function clearMarkers(){
-
-markers.forEach(function(marker){
-
-map.removeLayer(marker);
-
-});
-
-markers = [];
-
-}
-
-
-/* DISTANCE FUNCTION (KM) */
-
-function getDistance(lat1,lon1,lat2,lon2){
-
-var R = 6371;
-
-var dLat = (lat2-lat1) * Math.PI/180;
-var dLon = (lon2-lon1) * Math.PI/180;
-
-var a =
-Math.sin(dLat/2) * Math.sin(dLat/2) +
-Math.cos(lat1 * Math.PI/180) *
-Math.cos(lat2 * Math.PI/180) *
-Math.sin(dLon/2) *
-Math.sin(dLon/2);
-
-var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-return R * c;
-
-}
-
-
-/* PIN SEARCH */
-
-async function searchByPin(){
-
-let pin = document.getElementById("pincodeInput").value;
-
-if(pin.length !== 6){
-
-alert("सही PIN Code डालें");
-
-return;
-
-}
-
-try{
-
-const res = await fetch(
-`https://nominatim.openstreetmap.org/search?format=json&postalcode=${pin}&country=India`
-);
-
-const data = await res.json();
-
-if(data.length > 0){
-
-let lat = parseFloat(data[0].lat);
-let lon = parseFloat(data[0].lon);
-
-map.setView([lat,lon],13);
-
-loadWorkers(lat,lon);
-
-}else{
-
-alert("लोकेशन नहीं मिल रही");
-
-}
-
-}catch(e){
-
-console.log(e);
-
-}
-
-}
-
-
-/* MY LOCATION */
-
-function myLocation(){
-
-if(navigator.geolocation){
-
-navigator.geolocation.getCurrentPosition(function(pos){
-
-let lat = pos.coords.latitude;
-let lon = pos.coords.longitude;
-
-map.setView([lat,lon],13);
-
-loadWorkers(lat,lon);
-
-});
-
-}
-
-}
-
-
-/* LOAD WORKERS */
-
-function loadWorkers(userLat,userLng){
-
-clearMarkers();
-
-var ref = firebase.database().ref("users");
-
-ref.once("value",function(snapshot){
-
-var data = snapshot.val();
-
-for(var key in data){
-
-var user = data[key];
-
-if(user.lat && user.lng){
-
-var distance = getDistance(
-
-userLat,
-userLng,
-user.lat,
-user.lng
-
-);
-
-if(distance <= 10){
-
-var marker = L.marker([user.lat,user.lng]).addTo(map);
-
-markers.push(marker);
-
-marker.bindPopup(
-
-"<b>"+user.name+"</b><br>"+
-user.work+"<br>"+
-user.village+"<br>"+
-distance.toFixed(2)+" km दूर<br>"+
-"<a href='tel:"+user.mobile+"'>📞 Call</a>"
-
-);
-
-}
-
-}
-
-}
-
-});
-
-}
-
+    // Firebase Config (Your ID: gram-shakti-app-2367b)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0J8TCjU2wxDNmT2O4VMfchY06arTO-O0",
+      databaseURL: "https://gram-shakti-app-2367b-default-rtdb.firebaseio.com",
+      projectId: "gram-shakti-app-2367b",
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // मैप सेटअप
+    var map = L.map('map', { zoomControl: false }).setView([20.5937, 78.9629], 5);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    var markers = [];
+
+    function clearMarkers(){
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+    }
+
+    // हावरसाइन फॉर्मूला (Distance Calculation)
+    function getDistance(lat1, lon1, lat2, lon2) {
+        var R = 6371;
+        var dLat = (lat2 - lat1) * Math.PI / 180;
+        var dLon = (lon2 - lon1) * Math.PI / 180;
+        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
+    async function searchByPin(){
+        let pin = document.getElementById("pincodeInput").value;
+        if(pin.length !== 6) { alert("सही पिनकोड डालें!"); return; }
+        
+        document.getElementById('statusText').innerText = "लोकेशन खोजी जा रही है...";
+        try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&postalcode=${pin}&country=India`);
+            const data = await res.json();
+            if(data.length > 0){
+                let lat = parseFloat(data[0].lat);
+                let lon = parseFloat(data[0].lon);
+                map.setView([lat, lon], 13);
+                loadWorkers(lat, lon);
+            } else { alert("पिनकोड नहीं मिला!"); }
+        } catch(e) { console.log(e); }
+    }
+
+    function myLocation(){
+        if(navigator.geolocation){
+            navigator.geolocation.getCurrentPosition(function(pos){
+                let lat = pos.coords.latitude;
+                let lon = pos.coords.longitude;
+                map.setView([lat, lon], 13);
+                loadWorkers(lat, lon);
+            });
+        }
+    }
+
+    function loadWorkers(uLat, uLng){
+        clearMarkers();
+        document.getElementById('statusText').innerText = "वर्कर खोजे जा रहे हैं...";
+        
+        firebase.database().ref("users").once("value", function(snapshot){
+            var data = snapshot.val();
+            var count = 0;
+            for(var key in data){
+                var user = data[key];
+                if(user.lat && user.lng){
+                    var dist = getDistance(uLat, uLng, user.lat, user.lng);
+                    if(dist <= 10){
+                        count++;
+                        var marker = L.marker([user.lat, user.lng]).addTo(map);
+                        markers.push(marker);
+                        marker.bindPopup(`
+                            <div class="text-center">
+                                <b class="text-blue-600">${user.name}</b><br>
+                                <span class="text-xs">${user.work}</span><br>
+                                <b class="text-green-600">${dist.toFixed(1)} km दूर</b><br>
+                                <a href="tel:${user.mobile}" class="block bg-blue-600 text-white p-1 rounded mt-1 no-underline">📞 Call</a>
+                            </div>
+                        `);
+                    }
+                }
+            }
+            document.getElementById('statusText').innerText = count > 0 ? `${count} वर्कर मिले!` : "इस दायरे में कोई वर्कर नहीं मिला।";
+        });
+    }
 </script>
-
 </body>
-
 </html>
