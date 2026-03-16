@@ -1,62 +1,148 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="hi">
 <head>
-
-<title>Register - Gram Shakti</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="style.css">
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<script src="firebase.js"></script>
-<script src="script.js"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Register - Gram Shakti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans Devanagari', sans-serif; background-color: #fdfaf5; }
+        .golden-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .brown-btn { background: linear-gradient(135deg, #4e342e 0%, #212121 100%); }
+        .input-premium { @apply w-full p-4 bg-white border border-gray-100 rounded-2xl outline-none shadow-sm focus:ring-2 focus:ring-[#bf953f] transition-all text-sm; }
+        
+        /* कस्टम ड्रॉपडाउन स्टाइल */
+        select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23bf953f'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1.2em; }
+    </style>
 </head>
+<body class="p-6 pb-20">
 
-<body>
+    <div class="max-w-md mx-auto">
+        <div class="text-center mb-6">
+            <h1 class="text-4xl golden-text font-black italic">नया रजिस्ट्रेशन</h1>
+            <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-[0.2em] font-bold">Join Gram Shakti Family</p>
+        </div>
 
-<div class="container">
+        <div class="bg-white rounded-[2.5rem] p-6 shadow-2xl border border-[#bf953f]/20 space-y-4">
+            
+            <input type="text" id="name" class="input-premium" placeholder="आपका पूरा नाम">
+            
+            <input type="tel" id="mobile" class="input-premium" placeholder="मोबाइल नंबर (10 अंक)" maxlength="10">
 
-<h2>Register</h2>
+            <select id="type" class="input-premium" onchange="toggleWorkInput()">
+                <option value="">आप कौन हैं? (Select Type)</option>
+                <option value="worker">वर्कर (Worker)</option>
+                <option value="customer">ग्राहक (Customer)</option>
+                <option value="shop">दुकानदार (Shop Owner)</option>
+                <option value="company">कंपनी (Company)</option>
+            </select>
 
-<input type="text" id="name" placeholder="Full Name">
+            <input type="text" id="work" class="input-premium" placeholder="आपका काम (उदा: ड्राइवर, मिस्त्री)">
 
-<input type="text" id="mobile" placeholder="Mobile Number">
+            <div class="grid grid-cols-2 gap-2">
+                <input type="number" id="pincodeInput" class="input-premium" placeholder="पिनकोड" oninput="loadVillages()" maxlength="6">
+                <select id="villageSelect" class="input-premium text-[11px]">
+                    <option value="">गाँव चुनें</option>
+                </select>
+            </div>
 
-<select id="type">
+            <input type="password" id="password" class="input-premium" placeholder="पासवर्ड बनाएं (Min 6 letters)">
 
-<option value="">Select Type</option>
+            <button onclick="registerUser()" class="w-full brown-btn text-[#fcf6ba] p-5 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all mt-4">
+                अकाउंट बनाएं ✨
+            </button>
+        </div>
 
-<option value="worker">Worker</option>
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-500">पहले से अकाउंट है?</p>
+            <a href="login.html" class="text-[#aa771c] font-bold text-sm border-b border-[#aa771c]">लॉगिन करें</a>
+        </div>
+    </div>
 
-<option value="customer">Customer</option>
+<script>
+    // आपका Firebase Config (gram-shakti-app-2367b)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0J8TCjU2wxDNmT2O4VMfchY06arTO-O0",
+      databaseURL: "https://gram-shakti-app-2367b-default-rtdb.firebaseio.com",
+      projectId: "gram-shakti-app-2367b",
+    };
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-<option value="shop">Shop / Business</option>
+    // पिनकोड से गाँव लोड करना
+    async function loadVillages() {
+        let pin = document.getElementById("pincodeInput").value;
+        let villageSelect = document.getElementById("villageSelect");
+        if(pin.length === 6){
+            villageSelect.innerHTML = "<option>लोड हो रहा...</option>";
+            try {
+                const res = await fetch("https://api.postalpincode.in/pincode/" + pin);
+                const data = await res.json();
+                if(data[0].Status === "Success"){
+                    let villages = data[0].PostOffice;
+                    villageSelect.innerHTML = "<option value=''>अपना गाँव चुनें</option>";
+                    villages.forEach(place => {
+                        let opt = document.createElement("option");
+                        opt.value = place.Name;
+                        opt.text = place.Name;
+                        villageSelect.appendChild(opt);
+                    });
+                } else { villageSelect.innerHTML = "<option>नहीं मिला</option>"; }
+            } catch(e) { villageSelect.innerHTML = "<option>Error</option>"; }
+        }
+    }
 
-<option value="company">Company</option>
+    function toggleWorkInput() {
+        let type = document.getElementById("type").value;
+        let workInput = document.getElementById("work");
+        // अगर ग्राहक है तो काम वाला इनपुट छुपा सकते हैं या बदल सकते हैं
+        workInput.placeholder = (type === 'worker') ? "आपका काम (मिस्त्री, पेंटर आदि)" : "नोट (Optional)";
+    }
 
-</select>
+    function registerUser() {
+        const name = document.getElementById("name").value.trim();
+        const mobile = document.getElementById("mobile").value.trim();
+        const type = document.getElementById("type").value;
+        const work = document.getElementById("work").value.trim();
+        const pin = document.getElementById("pincodeInput").value;
+        const village = document.getElementById("villageSelect").value;
+        const pass = document.getElementById("password").value;
 
-<input type="text" id="work" placeholder="Work / Service (Electrician, Driver, etc.)">
+        if(!name || mobile.length !== 10 || !pass || !pin || !type) {
+            alert("कृपया सभी जरूरी जानकारी सही से भरें!");
+            return;
+        }
 
-<input type="text" id="city" placeholder="Village / City">
+        // Firebase Auth के लिए वर्चुअल ईमेल (ताकि OTP की झंझट न हो)
+        let virtualEmail = mobile + "@gramshakti.com";
 
-<button onclick="registerUser()">Register</button>
-
-<br><br>
-
-<a href="login.html">
-
-<button class="menuBtn">Already Registered? Login</button>
-
-</a>
-
-</div>
-
+        firebase.auth().createUserWithEmailAndPassword(virtualEmail, pass)
+        .then((userCredential) => {
+            // डेटाबेस में सेव करें
+            database.ref("users/" + mobile).set({
+                name: name,
+                mobile: mobile,
+                type: type,
+                work: work,
+                pin: pin,
+                village: village,
+                registeredAt: Date.now()
+            }).then(() => {
+                alert("रजिस्ट्रेशन सफल! अब लॉगिन करें। ✅");
+                window.location.href = "login.html";
+            });
+        })
+        .catch((error) => {
+            alert("त्रुटि: " + error.message);
+        });
+    }
+</script>
 </body>
-
 </html>
