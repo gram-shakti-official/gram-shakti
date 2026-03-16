@@ -1,147 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="hi">
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Gram Shakti Login</title>
-
-<link rel="stylesheet" href="style.css">
-
-<!-- Firebase -->
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
-<script src="firebase.js"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Login - Gram Shakti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans Devanagari', sans-serif; background-color: #fdfaf5; }
+        .golden-text {
+            background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .brown-btn { background: linear-gradient(135deg, #4e342e 0%, #212121 100%); }
+        .input-premium { @apply w-full p-4 bg-white border border-gray-100 rounded-2xl outline-none shadow-sm focus:ring-2 focus:ring-[#bf953f] transition-all; }
+    </style>
 </head>
+<body class="flex items-center justify-center min-h-screen p-6">
 
-<body>
+    <div class="w-full max-w-md bg-white rounded-[3rem] shadow-2xl p-8 border border-[#bf953f]/20">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl golden-text font-black italic">Gram Shakti</h1>
+            <p class="text-xs text-gray-400 mt-1 uppercase tracking-widest">लॉगिन पोर्टल</p>
+        </div>
 
-<div class="container">
+        <div class="space-y-4">
+            <div>
+                <label class="text-xs font-bold text-gray-400 ml-2 uppercase">मोबाइल नंबर / ईमेल</label>
+                <input type="text" id="email" class="input-premium" placeholder="अपना नंबर या ईमेल डालें">
+            </div>
 
-<h2>Gram Shakti Login</h2>
+            <div>
+                <label class="text-xs font-bold text-gray-400 ml-2 uppercase">पासवर्ड</label>
+                <input type="password" id="password" class="input-premium" placeholder="••••••••">
+            </div>
 
-<p>Mobile Number</p>
+            <button onclick="loginUser()" class="w-full brown-btn text-[#fcf6ba] p-5 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition-all mt-4">
+                लॉगिन करें ✨
+            </button>
+        </div>
 
-<input type="text" id="phone" placeholder="Enter Mobile Number">
-
-<button onclick="sendOTP()">Send OTP</button>
-
-<div id="otpBox" style="display:none;">
-
-<p>Enter OTP</p>
-
-<input type="text" id="otp" placeholder="Enter OTP">
-
-<button onclick="verifyOTP()">Verify OTP</button>
-
-</div>
-
-<div id="recaptcha-container"></div>
-
-<br>
-
-<a href="register.html">
-<button class="menuBtn">New User Register</button>
-</a>
-
-</div>
-
+        <div class="mt-8 text-center">
+            <p class="text-sm text-gray-500">नया अकाउंट बनाना है?</p>
+            <a href="register.html" class="text-[#aa771c] font-bold text-sm border-b border-[#aa771c]">अभी रजिस्टर करें</a>
+        </div>
+    </div>
 
 <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA0J8TCjU2wxDNmT2O4VMfchY06arTO-O0",
+      authDomain: "gram-shakti-app-2367b.firebaseapp.com",
+      databaseURL: "https://gram-shakti-app-2367b-default-rtdb.firebaseio.com",
+      projectId: "gram-shakti-app-2367b"
+    };
+    firebase.initializeApp(firebaseConfig);
 
-window.onload = function () {
+    function loginUser() {
+        var email = document.getElementById("email").value;
+        var password = document.getElementById("password").value;
 
-window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
-"recaptcha-container",
-{
-size: "normal",
-callback: function(response) {}
-}
-);
+        // अगर यूजर मोबाइल नंबर डाले तो उसे ईमेल फॉर्मेट में बदल दें (Firebase Auth के लिए)
+        if(!email.includes("@")) {
+            email = email + "@gramshakti.com";
+        }
 
-};
-
-
-// SEND OTP
-
-function sendOTP(){
-
-var phone = document.getElementById("phone").value;
-
-if(phone.length != 10){
-
-alert("Enter valid mobile number");
-
-return;
-
-}
-
-var appVerifier = window.recaptchaVerifier;
-
-firebase.auth().signInWithPhoneNumber("+91"+phone, appVerifier)
-
-.then(function (confirmationResult){
-
-window.confirmationResult = confirmationResult;
-
-document.getElementById("otpBox").style.display = "block";
-
-alert("OTP Sent");
-
-})
-
-.catch(function (error){
-
-alert(error.message);
-
-});
-
-}
-
-
-
-// VERIFY OTP
-
-function verifyOTP(){
-
-var code = document.getElementById("otp").value;
-
-confirmationResult.confirm(code)
-
-.then(function (result){
-
-var user = result.user;
-
-var phone = document.getElementById("phone").value;
-
-// save login session
-
-localStorage.setItem("mobile",phone);
-
-alert("Login Successful");
-
-// redirect to home
-
-window.location.href = "index.html";
-
-})
-
-.catch(function (error){
-
-alert("Wrong OTP");
-
-});
-
-}
-
+        firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            localStorage.setItem("mobile", email.split("@")[0]);
+            alert("लॉगिन सफल!");
+            window.location.href = "index.html";
+        })
+        .catch((error) => {
+            alert("गलत जानकारी! कृपया सही नंबर और पासवर्ड डालें।");
+        });
+    }
 </script>
-
 </body>
-
 </html>
