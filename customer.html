@@ -1,113 +1,124 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="hi">
 <head>
-
-<title>Customer Dashboard</title>
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="style.css">
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-<script src="firebase.js"></script>
-
-<script src="script.js"></script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Customer Dashboard - Gram Shakti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Noto Sans Devanagari', sans-serif; 
+            background-color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .status-pending { color: #f59e0b; background: #fef3c7; }
+        .status-accepted { color: #10b981; background: #d1fae5; }
+        .status-rejected { color: #ef4444; background: #fee2e2; }
+    </style>
 </head>
+<body class="pb-24">
 
-<body>
+    <div class="bg-blue-600 text-white p-6 rounded-b-[2.5rem] shadow-lg mb-6">
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">ग्राहक डैशबोर्ड</h1>
+                <p class="text-blue-100 text-xs">ग्राम शक्ति मैनेजमेंट</p>
+            </div>
+            <div class="bg-white/20 p-3 rounded-2xl">👤</div>
+        </div>
+    </div>
 
-<div class="container">
+    <div class="px-4">
+        <div class="bg-white p-4 rounded-2xl shadow-sm mb-6 border-l-4 border-blue-500">
+            <h2 class="text-gray-800 font-bold">नमस्ते, ग्राहक जी</h2>
+            <p class="text-[10px] text-gray-400 uppercase font-bold tracking-widest mt-1">आपकी बुकिंग और रिक्वेस्ट यहाँ दिखेंगी</p>
+        </div>
 
-<h2>Customer Dashboard</h2>
+        <h3 class="text-gray-700 font-bold mb-4 ml-2">आपकी रिक्वेस्ट (Hire Requests)</h3>
+        <div id="requestStatus" class="space-y-4">
+            <div class="text-center p-10 text-gray-400 text-sm italic">रिक्वेस्ट चेक की जा रही हैं...</div>
+        </div>
+    </div>
 
-<p>Welcome Customer</p>
-
-<hr>
-
-<h3>Available Workers</h3>
-
-<div id="workerList"></div>
-
-<hr>
-
-<h3>Your Hire Requests</h3>
-
-<div id="requestStatus"></div>
-
-<br>
-
-<a href="index.html">
-
-<button class="menuBtn">Back to Home</button>
-
-</a>
-
-</div>
-
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-3 flex justify-around shadow-lg">
+        <button onclick="window.location='index.html'" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">🏠</span>
+            <span class="text-[10px] font-bold">होम</span>
+        </button>
+        <div class="flex flex-col items-center text-blue-600">
+            <span class="text-xl">📋</span>
+            <span class="text-[10px] font-bold">मेरी रिक्वेस्ट</span>
+        </div>
+        <button onclick="window.location='contact.html'" class="flex flex-col items-center text-gray-400">
+            <span class="text-xl">🎧</span>
+            <span class="text-[10px] font-bold">सपोर्ट</span>
+        </button>
+    </div>
 
 <script>
+    // फायरबेस कॉन्फ़िगरेशन
+    const firebaseConfig = {
+        apiKey: "AIzaSyCuvev3-jwZwQuO_fHYyv2E2ovLny4Lh8Q",
+        databaseURL: "https://gram-shakti-b135a-default-rtdb.firebaseio.com",
+        projectId: "gram-shakti-b135a"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-var mobile = localStorage.getItem("mobile");
+    // लोकल स्टोरेज से मोबाइल नंबर लेना
+    var mobile = localStorage.getItem("mobile");
+    if(!mobile){
+        alert("कृपया पहले लॉगिन करें");
+        window.location="login.html";
+    }
 
-if(!mobile){
+    // रिक्वेस्ट लोड करना
+    function loadRequests(){
+        db.ref("hire_requests").on("value", (snapshot) => {
+            var data = snapshot.val();
+            var html = "";
+            if(!data) {
+                document.getElementById("requestStatus").innerHTML = "<p class='text-center p-10 text-gray-400'>आपने अभी तक कोई रिक्वेस्ट नहीं भेजी है।</p>";
+                return;
+            }
 
-alert("Please login first");
+            for(var key in data){
+                var req = data[key];
+                if(req.customerMobile == mobile){
+                    // स्टेटस के हिसाब से रंग सेट करना
+                    let statusClass = "status-pending";
+                    let statusText = req.status || "पेंडिंग";
 
-window.location="login.html";
+                    if(statusText.toLowerCase() === 'accepted' || statusText === 'स्वीकार') statusClass = "status-accepted";
+                    if(statusText.toLowerCase() === 'rejected' || statusText === 'अस्वीकार') statusClass = "status-rejected";
 
-}
+                    html += `
+                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-bold px-3 py-1 rounded-full ${statusClass} uppercase tracking-widest">${statusText}</span>
+                            <p class="text-[10px] text-gray-300">${new Date(req.time || Date.now()).toLocaleDateString()}</p>
+                        </div>
+                        <h4 class="font-bold text-gray-800 text-lg">${req.work}</h4>
+                        <p class="text-xs text-gray-500 mt-1 uppercase font-bold tracking-tight">📍 शहर: ${req.city}</p>
+                        
+                        <div class="mt-4 pt-4 border-t border-dashed border-gray-100 flex justify-between items-center">
+                            <div>
+                                <p class="text-[9px] text-gray-400 uppercase leading-none">वर्कर मोबाइल</p>
+                                <p class="font-bold text-gray-700 text-sm">${req.workerMobile}</p>
+                            </div>
+                            <a href="tel:${req.workerMobile}" class="bg-blue-600 text-white p-2 px-4 rounded-xl text-[10px] font-bold shadow-md shadow-blue-100">📞 कॉल करें</a>
+                        </div>
+                    </div>`;
+                }
+            }
+            document.getElementById("requestStatus").innerHTML = html || "<p class='text-center p-10 text-gray-400'>रिक्वेस्ट नहीं मिली</p>";
+        });
+    }
 
-
-
-// LOAD CUSTOMER REQUESTS
-
-function loadRequests(){
-
-firebase.database().ref("hire_requests").on("value",(snapshot)=>{
-
-var data = snapshot.val();
-
-var html="";
-
-for(var key in data){
-
-var req = data[key];
-
-if(req.customerMobile == mobile){
-
-html += `
-<div class="card">
-
-<b>Worker Mobile:</b> ${req.workerMobile}<br>
-
-<b>Work:</b> ${req.work}<br>
-
-<b>City:</b> ${req.city}<br>
-
-<b>Status:</b> ${req.status}
-
-</div>
-`;
-
-}
-
-}
-
-document.getElementById("requestStatus").innerHTML = html;
-
-});
-
-}
-
-loadRequests();
-
+    loadRequests();
 </script>
-
 </body>
-
 </html>
