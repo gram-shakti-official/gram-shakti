@@ -15,10 +15,11 @@ jobs:
         with:
           node-version: 18
 
-      - name: Create Android Project Structure
+      - name: Create or Update Android Project
         run: |
-          # यह कमांड्स खुद ही वो android फोल्डर और जरूरी फाइलें बना देंगी
           npm install @capacitor/core @capacitor/cli @capacitor/android
+          # पुराने फोल्डर को हटाकर नया बनाएंगे ताकि एरर न आए
+          rm -rf android 
           npx cap init "Gram Shakti" "com.gramshakti.app" --web-dir .
           npx cap add android
           npx cap copy android
@@ -38,5 +39,5 @@ jobs:
       - name: Save APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gram-Shakti-Success
+          name: Gram-Shakti-Final-Build
           path: android/app/build/outputs/apk/debug/app-debug.apk
