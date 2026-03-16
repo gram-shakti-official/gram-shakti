@@ -1,33 +1,32 @@
-name: Build Android WebView APK
+name: Build Android APK
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Set up Java
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: '17'
 
-      - name: Create Android Project
+      - name: Build APK
         run: |
-          # यह कमांड आपकी वेबसाइट को एक बेसिक Android फ्रेमवर्क में डाल देगी
-          npx degit r0adkll/stonky-webview-template android-app
-          cp -r ./* android-app/app/src/main/assets/ 2>/dev/null || true
-          cd android-app
+          cd android
           chmod +x gradlew
-          ./gradlew assembleRelease
+          ./gradlew assembleDebug
 
       - name: Upload APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: Gram-Shakti-Web-APK
-          path: "android-app/app/build/outputs/apk/release/*.apk"
-          
+          name: gram-shakti-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
