@@ -12,62 +12,52 @@ jobs:
         with:
           channel: 'stable'
 
-      - name: Create Flutter Project & Inject Code
+      - name: Create App and Inject Code
         run: |
-          # 1. नया प्रोजेक्ट बनाना (ताकि android फोल्डर बन जाए)
+          # 1. Project banana
           flutter create . --platforms android --org com.gramshakti.app
           
-          # 2. इंटरनेट परमिशन जोड़ना (इसके बिना ऐप में इंटरनेट नहीं चलेगा)
+          # 2. Internet permission dena
           sed -i '/<application/i \    <uses-permission android:name="android.permission.INTERNET" />' android/app/src/main/AndroidManifest.xml
           
-          # 3. जरूरी लाइब्रेरी जोड़ना
-          flutter pub add webview_flutter
+          # 3. Libraries add karna
+          flutter pub add webview_flutter flutter_launcher_icons
           
-          # 4. main.dart फाइल लिखना (वेबसाइट को ऐप में लोड करने के लिए)
+          # 4. App ka main code (Link ke sath)
           cat <<EOF > lib/main.dart
           import 'package:flutter/material.dart';
           import 'package:webview_flutter/webview_flutter.dart';
-
-          void main() => runApp(const MaterialApp(
-            home: GramShakti(), 
-            debugShowCheckedModeBanner: false
-          ));
-
+          void main() => runApp(const MaterialApp(home: GramShakti(), debugShowCheckedModeBanner: false));
           class GramShakti extends StatefulWidget {
             const GramShakti({super.key});
             @override
             State<GramShakti> createState() => _GramShaktiState();
           }
-
           class _GramShaktiState extends State<GramShakti> {
             late final WebViewController controller;
-            
             @override
             void initState() {
               super.initState();
               controller = WebViewController()
                 ..setJavaScriptMode(JavaScriptMode.unrestricted)
-                ..setBackgroundColor(const Color(0x00000000))
-                ..setNavigationDelegate(
-                  NavigationDelegate(
-                    onWebResourceError: (WebResourceError error) {
-                      debugPrint("Error loading page: \${error.description}");
-                    },
-                  ),
-                )
                 ..loadRequest(Uri.parse('https://gram-shakti-official.github.io/gram_shakti/'));
             }
-
             @override
             Widget build(BuildContext context) {
-              return Scaffold(
-                body: SafeArea(
-                  child: WebViewWidget(controller: controller),
-                ),
-              );
+              return Scaffold(body: SafeArea(child: WebViewWidget(controller: controller)));
             }
           }
           EOF
+
+          # 5. Check agar icon.png hai toh logo set karo
+          if [ -f "icon.png" ]; then
+            cat <<EOF > flutter_launcher_icons.yaml
+          flutter_launcher_icons:
+            android: "launcher_icon"
+            image_path: "icon.png"
+          EOF
+            flutter pub run flutter_launcher_icons
+          fi
 
       - name: Build APK
         run: flutter build apk --release
@@ -75,5 +65,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gram-Shakti-Final-App
+          name: Gram-Shakti-App
           path: build/app/outputs/flutter-apk/app-release.apk
