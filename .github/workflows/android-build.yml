@@ -1,18 +1,57 @@
 name: Build Android APK
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-      - run: flutter pub get
-      - run: flutter build apk --release
+
+      - name: Create Flutter Project & Inject Code
+        run: |
+          # 1. एक नया प्रोजेक्ट बनाओ (ताकि android फोल्डर अपने आप बन जाए)
+          flutter create . --platforms android --org com.gramshakti.app
+          
+          # 2. जरूरी लाइब्रेरी जोड़ो
+          flutter pub add webview_flutter
+          
+          # 3. main.dart फाइल को अपने वेबसाइट लिंक के साथ लिखो
+          cat <<EOF > lib/main.dart
+          import 'package:flutter/material.dart';
+          import 'package:webview_flutter/webview_flutter.dart';
+          void main() => runApp(const MaterialApp(home: GramShakti(), debugShowCheckedModeBanner: false));
+          class GramShakti extends StatefulWidget {
+            const GramShakti({super.key});
+            @override
+            State<GramShakti> createState() => _GramShaktiState();
+          }
+          class _GramShaktiState extends State<GramShakti> {
+            late final WebViewController controller;
+            @override
+            void initState() {
+              super.initState();
+              controller = WebViewController()
+                ..setJavaScriptMode(JavaScriptMode.unrestricted)
+                ..loadRequest(Uri.parse('https://gram-shakti-official.github.io/gram_shakti/'));
+            }
+            @override
+            Widget build(BuildContext context) {
+              return Scaffold(body: SafeArea(child: WebViewWidget(controller: controller)));
+            }
+          }
+          EOF
+
+      - name: Build APK
+        run: flutter build apk --release
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gram-Shakti-App
+          name: Gram-Shakti-Final-App
           path: build/app/outputs/flutter-apk/app-release.apk
           
