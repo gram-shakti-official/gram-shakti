@@ -1,26 +1,34 @@
-name: Deploy Website to Cloudflare Pages
+name: Deploy Website to GitHub Pages
 
+# यह तब चलेगा जब आप 'main' ब्रांच में कोई बदलाव करेंगे
 on:
   push:
     branches:
-      - main  # या आपकी मुख्य ब्रांच का जो भी नाम हो
+      - main
+  workflow_dispatch: # इससे आप इसे बटन दबाकर भी चला सकते हैं
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Publish to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: "gram-shakti-web" # यहाँ अपने प्रोजेक्ट का नाम लिखें
-          directory: "." # अगर HTML फाइलें रूट फोल्डर में हैं, तो '.' रहने दें
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          # यहाँ '.' का मतलब है कि आपकी HTML फाइलें मुख्य फोल्डर में हैं
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+        
