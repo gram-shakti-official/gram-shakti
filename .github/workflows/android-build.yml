@@ -1,11 +1,10 @@
 name: Deploy Website to GitHub Pages
 
-# यह तब चलेगा जब आप 'main' ब्रांच में कोई बदलाव करेंगे
 on:
   push:
     branches:
       - main
-  workflow_dispatch: # इससे आप इसे बटन दबाकर भी चला सकते हैं
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,6 +13,11 @@ permissions:
 
 jobs:
   deploy:
+    # यहाँ environment जोड़ना ज़रूरी है
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -25,10 +29,8 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # यहाँ '.' का मतलब है कि आपकी HTML फाइलें मुख्य फोल्डर में हैं
           path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        
